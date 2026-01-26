@@ -1,5 +1,5 @@
 function Home() {
-  return <h2>Trang chủ</h2>;
+  return <h2>Chưa có thông tin nào</h2>;
 }
 
 export default Home;
