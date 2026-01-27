@@ -1,0 +1,260 @@
+/* Container chính: Chia đôi màn hình */
+.loginWrapper {
+    display: flex;
+    /* Sử dụng fixed để full màn hình, tránh scroll do margin mặc định của body */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #f5f5f5;
+    /* Màu nền tổng thể */
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+    /* Ẩn thanh scroll trên desktop */
+}
+
+/* Reset box-sizing để padding không làm vỡ layout */
+.loginWrapper * {
+    box-sizing: border-box;
+}
+
+/* Phần bên trái: Hình ảnh */
+.loginLeft {
+    flex: 1;
+    /* Chiếm 1 nửa màn hình */
+    position: relative;
+    background-color: #000;
+    /* Màu nền đen nếu ảnh chưa load */
+    display: flex;
+    /* Để căn giữa overlay content */
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    /* Đảm bảo ảnh không tràn ra ngoài khi bo góc */
+}
+
+.backgroundImage {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Đảm bảo ảnh phủ kín khung */
+    opacity: 0.7;
+    /* Làm mờ ảnh để chữ dễ đọc */
+    filter: brightness(0.8);
+    /* Giảm độ sáng của ảnh */
+}
+
+.overlayContent {
+    position: relative;
+    z-index: 10;
+    /* Đảm bảo nội dung nằm trên ảnh */
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+
+.kristLogo {
+    width: 100px;
+    /* Điều chỉnh kích thước logo */
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.welcomeText {
+    font-size: 2.5em;
+    /* Kích thước chữ to hơn */
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.tagline {
+    font-size: 1.1em;
+    line-height: 1.5;
+}
+
+/* Phần bên phải: Form đăng nhập */
+.loginRight {
+    flex: 1;
+    /* Chiếm 1 nửa màn hình */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    background-color: white;
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.05);
+    /* Bóng đổ nhẹ bên trái */
+}
+
+.formContainer {
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+
+.formTitle {
+    font-size: 2.5em;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.formSubtitle {
+    font-size: 1em;
+    color: #666;
+    margin-bottom: 40px;
+}
+
+.errorMessage {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    font-size: 0.9em;
+}
+
+.loginForm {
+    text-align: left;
+}
+
+.inputGroup {
+    margin-bottom: 20px;
+}
+
+.inputLabel {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.9em;
+    color: #555;
+    font-weight: 600;
+}
+
+.inputField {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1em;
+    box-sizing: border-box;
+    /* Đảm bảo padding không làm tăng kích thước input */
+    transition: border-color 0.3s ease;
+}
+
+.inputField:focus {
+    outline: none;
+    border-color: #000;
+    /* Đổi màu viền khi focus */
+}
+
+.optionsGroup {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    font-size: 0.9em;
+}
+
+.rememberMe {
+    display: flex;
+    align-items: center;
+}
+
+.checkbox {
+    margin-right: 8px;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.checkboxLabel {
+    color: #555;
+    cursor: pointer;
+}
+
+.forgotPassword {
+    color: #000;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.forgotPassword:hover {
+    text-decoration: underline;
+}
+
+.loginButton {
+    width: 100%;
+    padding: 15px;
+    background-color: #000;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.loginButton:hover {
+    background-color: #333;
+}
+
+.registerLink {
+    margin-top: 30px;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.registerLink a {
+    color: #000;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.registerLink a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive cho màn hình nhỏ hơn */
+@media (max-width: 992px) {
+
+    /* Cho tablet và mobile */
+    .loginWrapper {
+        flex-direction: column;
+        /* Xếp dọc ảnh và form */
+        overflow-y: auto;
+        /* Cho phép scroll nội dung trên mobile */
+    }
+
+    .loginLeft {
+        height: 300px;
+        /* Chiều cao cố định cho ảnh trên mobile */
+        flex: none;
+        /* Không chiếm full chiều rộng */
+        width: 100%;
+    }
+
+    .overlayContent {
+        padding: 15px;
+    }
+
+    .welcomeText {
+        font-size: 2em;
+    }
+
+    .tagline {
+        font-size: 1em;
+    }
+
+    .loginRight {
+        padding: 30px;
+        flex: none;
+        width: 100%;
+    }
+
+    .formContainer {
+        max-width: 100%;
+    }
+}

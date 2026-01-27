@@ -1,23 +1,34 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 
-import Login from "./pages/Login";
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
 import Home from "./pages/Home";
-import Register from "./pages/Register";
+
+function AppLayout() {
+  const location = useLocation();
+  const isAuthPage = location.pathname === "/login" || location.pathname === "/register";
+
+  return (
+    <>
+      {!isAuthPage && <Header />}
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="*" element={<h2 className="text-center mt-5">404 - Không tìm thấy trang</h2>} />
+      </Routes>
+      {!isAuthPage && <Footer />}
+    </>
+  );
+}
 
 function App() {
   return (
-
     <BrowserRouter>
-      <Header />
-
-      <Routes>
-      </Routes>
-
-      <Footer />
+      <AppLayout />
     </BrowserRouter>
-
   );
 }
 
