@@ -154,7 +154,7 @@ function Header() {
                             </div>
                             <div className={styles.miniCartActions}>
                                 <Link to="/cart" className={styles.viewCartBtn}>View Cart</Link>
-                                <button className={styles.checkoutBtn}>Checkout</button>
+                                <Link to="/checkout" className={styles.checkoutBtn}>Checkout</Link>
                             </div>
                         </div>
                     </div>
