@@ -9,33 +9,40 @@ function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(''); // Để hiển thị lỗi từ server
 
+
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError(''); // Reset lỗi mỗi khi thử đăng nhập
+    setError('');
+    setIsLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:8080/api/auth/login', {
+      // Delay tối thiểu 2 giây để hiển thị hiệu ứng loader
+      const minLoadTime = new Promise(resolve => setTimeout(resolve, 2000));
+
+      const apiCall = axios.post('http://localhost:8080/api/auth/login', {
         email: email,
         password: password
       });
 
-      // Kiểm tra nếu API trả về token thành công
+      // Chạy song song API call và delay
+      const [response] = await Promise.all([apiCall, minLoadTime]);
+
       if (response.data && response.data.token) {
-        localStorage.setItem('token', response.data.token); // Lưu token vào localStorage
-        alert('Đăng nhập thành công!');
-        navigate('/'); // Chuyển hướng về trang chủ
+        localStorage.setItem('token', response.data.token);
+        navigate('/');
       } else {
-        // Trường hợp API không trả về token mà không báo lỗi
+        setIsLoading(false);
         setError('Đăng nhập thất bại: Không nhận được token.');
       }
-      
+
     } catch (err) {
-      // Xử lý lỗi từ server (ví dụ: 401 Unauthorized)
+      setIsLoading(false);
       console.error('Lỗi đăng nhập:', err);
       if (err.response && err.response.data) {
-        // Nếu server có gửi kèm thông báo lỗi
         setError(err.response.data.message || 'Email hoặc mật khẩu không đúng!');
       } else {
         setError('Có lỗi xảy ra khi kết nối đến server.');
@@ -45,6 +52,21 @@ function Login() {
 
   return (
     <div className={styles.loginWrapper}>
+      {/* Loader Overlay */}
+      {isLoading && (
+        <div className={styles.loaderOverlay}>
+          <div className={styles.loaderContainer}>
+            <div className={`${styles.loaderDot} ${styles.dot1}`}></div>
+            <div className={`${styles.loaderDot} ${styles.dot2}`}></div>
+            <div className={`${styles.loaderDot} ${styles.dot3}`}></div>
+            <div className={`${styles.loaderDot} ${styles.dot4}`}></div>
+          </div>
+        </div>
+      )}
+
+      {/* Success Message Overlay */}
+
+
       {/* Phần bên trái: Hình ảnh */}
       <div className={styles.loginLeft}>
         <img src={loginBg} alt="Fashion Model" className={styles.backgroundImage} />
@@ -75,6 +97,7 @@ function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                disabled={isLoading}
               />
             </div>
 
@@ -88,18 +111,21 @@ function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                disabled={isLoading}
               />
             </div>
 
             <div className={styles.optionsGroup}>
               <div className={styles.rememberMe}>
-                <input type="checkbox" id="rememberMe" className={styles.checkbox} />
+                <input type="checkbox" id="rememberMe" className={styles.checkbox} disabled={isLoading} />
                 <label htmlFor="rememberMe" className={styles.checkboxLabel}>Remember Me</label>
               </div>
               <Link to="/forgot-password" className={styles.forgotPassword}>Forgot Password?</Link>
             </div>
 
-            <button type="submit" className={styles.loginButton}>Login</button>
+            <button type="submit" className={styles.loginButton} disabled={isLoading}>
+              {isLoading ? 'Processing...' : 'Login'}
+            </button>
           </form>
 
           <p className={styles.registerLink}>

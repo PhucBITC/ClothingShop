@@ -258,3 +258,150 @@
         max-width: 100%;
     }
 }
+
+/* Loader Styles */
+.loaderOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    flex-direction: column;
+}
+
+.loaderContainer {
+    position: relative;
+    width: 2rem;
+    /* w-8 equivalent */
+    height: 2rem;
+    /* h-8 equivalent */
+    transform: rotate(45deg);
+}
+
+.loaderDot {
+    position: absolute;
+    background-color: #ea580c;
+    /* orange-600 */
+    width: 0.875rem;
+    /* w-3.5 */
+    height: 0.875rem;
+    /* h-3.5 */
+    animation: ping 1.2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* Positioning dots */
+.dot1 {
+    top: 0;
+    left: 0;
+    animation-delay: 0s;
+}
+
+.dot2 {
+    top: 0;
+    right: 0;
+    animation-delay: 0.15s;
+}
+
+.dot3 {
+    bottom: 0;
+    right: 0;
+    animation-delay: 0.3s;
+}
+
+.dot4 {
+    bottom: 0;
+    left: 0;
+    animation-delay: 0.45s;
+}
+
+@keyframes ping {
+
+    75%,
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+/* Success Message Styles */
+.successMessageOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    /* Darker overlay for text contrast */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+    /* Higher than loader if needed, or replace it */
+    animation: fadeIn 0.3s ease-out;
+}
+
+.successContent {
+    background-color: white;
+    padding: 30px 50px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    animation: scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.successIcon {
+    width: 60px;
+    height: 60px;
+    background-color: #4CAF50;
+    /* Green success */
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 30px;
+    margin-bottom: 10px;
+}
+
+.successTitle {
+    color: #333;
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.successText {
+    color: #666;
+    margin: 0;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
