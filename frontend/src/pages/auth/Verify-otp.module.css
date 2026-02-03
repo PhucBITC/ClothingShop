@@ -18,7 +18,8 @@
     flex: 1;
     position: relative;
     background-color: #000;
-    display: none; /* Ẩn trên mobile */
+    display: none;
+    /* Ẩn trên mobile */
 }
 
 @media (min-width: 992px) {
@@ -67,7 +68,8 @@
 
 .formContainer {
     width: 100%;
-    max-width: 450px; /* Rộng hơn chút để chứa đủ 6 ô */
+    max-width: 450px;
+    /* Rộng hơn chút để chứa đủ 6 ô */
     text-align: center;
 }
 
@@ -100,7 +102,8 @@
 /* --- STYLE CHO 6 Ô OTP --- */
 .otpInputsContainer {
     display: flex;
-    justify-content: space-between; /* Căn đều 6 ô */
+    justify-content: space-between;
+    /* Căn đều 6 ô */
     gap: 10px;
     margin-bottom: 30px;
 }
@@ -122,7 +125,7 @@
     border-color: #000;
     background-color: #fff;
     outline: none;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
 }
 
@@ -166,7 +169,8 @@
 }
 
 .resendBtn:hover {
-    color: #3b82f6; /* Màu xanh khi hover */
+    color: #3b82f6;
+    /* Màu xanh khi hover */
 }
 
 /* Responsive cho màn hình nhỏ */
@@ -176,7 +180,79 @@
         height: 40px;
         font-size: 1.2rem;
     }
+
     .otpInputsContainer {
         gap: 5px;
+    }
+}
+
+/* Resend Loader Overlay */
+.resendLoaderOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.svgLoader {
+    width: 3rem;
+    /* w-12 */
+    color: #ea580c;
+    /* text-orange-600 */
+}
+
+/* Notification Overlay (Custom Alert replacement) */
+.resendNotificationOverlay {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1001;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.notificationBox {
+    background: rgba(0, 0, 0, 0.85);
+    /* Darker, more premium background */
+    backdrop-filter: blur(10px);
+    color: white;
+    padding: 20px 40px;
+    border-radius: 12px;
+    font-weight: 600;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    min-width: 300px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    /* Flex to handle spans nicely if needed */
+    justify-content: center;
+}
+
+.slideChar {
+    display: inline-block;
+    opacity: 0;
+    font-size: 1.1rem;
+    color: #4ade80;
+    /* Green text for success */
+    animation: slideIn 0.5s ease-out forwards;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
     }
 }

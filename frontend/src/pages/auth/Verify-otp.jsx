@@ -7,6 +7,8 @@ const VerifyOtp = () => {
     // Tạo mảng 6 phần tử rỗng để chứa từng số OTP
     const [otp, setOtp] = useState(new Array(6).fill(""));
     const [error, setError] = useState('');
+    const [isResending, setIsResending] = useState(false);
+    const [resendMessage, setResendMessage] = useState('');
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -85,29 +87,81 @@ const VerifyOtp = () => {
     };
 
     const handleResend = async () => {
+        setIsResending(true);
+        setResendMessage('');
+        setError('');
+
         try {
+            // Delay tối thiểu 2 giây để hiển thị loader
+            const minLoadTime = new Promise(resolve => setTimeout(resolve, 2000));
+
             // Gọi lại API forgot-password để gửi lại mã
-            const response = await fetch('http://localhost:8080/api/auth/forgot-password', {
+            const apiCall = fetch('http://localhost:8080/api/auth/forgot-password', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email }),
             });
 
+            const [response] = await Promise.all([apiCall, minLoadTime]);
+
             if (response.ok) {
-                alert("Mã OTP mới đã được gửi vào email của bạn!");
+                setResendMessage("OTP đã được gửi lại!");
                 setOtp(new Array(6).fill("")); // Reset ô nhập
                 inputRefs.current[0].focus();
+
+                // Tắt thông báo sau 3 giây
+                setTimeout(() => {
+                    setResendMessage('');
+                }, 3000);
             } else {
-                alert("Gửi lại thất bại. Vui lòng thử lại sau.");
+                setError("Gửi lại thất bại. Vui lòng thử lại sau.");
             }
         } catch (error) {
             console.error(error);
-            alert("Lỗi kết nối Server.");
+            setError("Lỗi kết nối Server.");
+        } finally {
+            setIsResending(false);
         }
     };
 
     return (
         <div className={styles.otpWrapper}>
+            {/* Loader Resend */}
+            {isResending && (
+                <div className={styles.resendLoaderOverlay}>
+                    <div className={styles.svgLoader}>
+                        <svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="4" cy="12" r="3">
+                                <animate id="spinner_qFRN" begin="0;spinner_OcgL.end+0.25s" attributeName="cy" calcMode="spline" dur="0.6s" values="12;6;12" keySplines=".33,.66,.66,1;.33,0,.66,.33"></animate>
+                            </circle>
+                            <circle cx="12" cy="12" r="3">
+                                <animate begin="spinner_qFRN.begin+0.1s" attributeName="cy" calcMode="spline" dur="0.6s" values="12;6;12" keySplines=".33,.66,.66,1;.33,0,.66,.33"></animate>
+                            </circle>
+                            <circle cx="20" cy="12" r="3">
+                                <animate id="spinner_OcgL" begin="spinner_qFRN.begin+0.2s" attributeName="cy" calcMode="spline" dur="0.6s" values="12;6;12" keySplines=".33,.66,.66,1;.33,0,.66,.33"></animate>
+                            </circle>
+                        </svg>
+                    </div>
+                </div>
+            )}
+
+            {/* Notification Success */}
+            {resendMessage && (
+                <div className={styles.resendNotificationOverlay}>
+                    <div className={styles.notificationBox}>
+                        {resendMessage.split('').map((char, index) => (
+                            <span
+                                key={index}
+                                className={styles.slideChar}
+                                style={{ animationDelay: `${index * 0.03}s` }}
+                            >
+                                {char === ' ' ? '\u00A0' : char}
+                            </span>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {/* Cột Trái: Hình ảnh */}
             <div className={styles.otpLeft}>
                 <img src={verifyBg} alt="Verification" className={styles.bgImage} />

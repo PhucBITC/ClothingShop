@@ -9,7 +9,7 @@ const ResetPassword = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const [isSuccess, setIsSuccess] = useState(false);
-    
+
     // Lấy token từ URL (ví dụ: http://localhost:5173/reset-password?token=xyz123)
     const token = searchParams.get('token');
 
@@ -17,7 +17,7 @@ const ResetPassword = () => {
         newPassword: '',
         confirmPassword: ''
     });
-    
+
     const [showPassword, setShowPassword] = useState(false);
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
@@ -111,13 +111,13 @@ const ResetPassword = () => {
                                     id="newPassword"
                                     placeholder="••••••••"
                                     value={passwords.newPassword}
-                                    onChange={(e) => setPasswords({...passwords, newPassword: e.target.value})}
+                                    onChange={(e) => setPasswords({ ...passwords, newPassword: e.target.value })}
                                     required
                                     className={styles.inputField}
                                     disabled={!token}
                                 />
-                                <button 
-                                    type="button" 
+                                <button
+                                    type="button"
                                     className={styles.toggleBtn}
                                     onClick={() => setShowPassword(!showPassword)}
                                 >
@@ -136,7 +136,7 @@ const ResetPassword = () => {
                                     id="confirmPassword"
                                     placeholder="••••••••"
                                     value={passwords.confirmPassword}
-                                    onChange={(e) => setPasswords({...passwords, confirmPassword: e.target.value})}
+                                    onChange={(e) => setPasswords({ ...passwords, confirmPassword: e.target.value })}
                                     required
                                     className={styles.inputField}
                                     disabled={!token}
@@ -144,9 +144,9 @@ const ResetPassword = () => {
                             </div>
                         </div>
 
-                        <button 
-                            type="submit" 
-                            className={styles.submitBtn} 
+                        <button
+                            type="submit"
+                            className={styles.submitBtn}
                             disabled={isLoading || !token}
                         >
                             {isLoading ? 'Updating...' : 'Update Password'}

@@ -17,15 +17,21 @@ const ForgotPassword = () => {
         setError('');
         setIsLoading(true);
 
+
         try {
+            // Delay tối thiểu 2 giây để hiển thị hiệu ứng loader
+            const minLoadTime = new Promise(resolve => setTimeout(resolve, 2000));
+
             // Giả định API Backend là /api/auth/forgot-password
-            const response = await fetch('http://localhost:8080/api/auth/forgot-password', {
+            const apiCall = fetch('http://localhost:8080/api/auth/forgot-password', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ email }),
             });
+
+            const [response] = await Promise.all([apiCall, minLoadTime]);
 
             if (response.ok) {
                 setMessage('Mã OTP đã được gửi đến email của bạn.');
@@ -47,6 +53,17 @@ const ForgotPassword = () => {
 
     return (
         <div className={styles.forgotWrapper}>
+            {/* Loader Overlay */}
+            {isLoading && (
+                <div className={styles.loaderOverlay}>
+                    <div className={styles.loaderContainer}>
+                        <span className={styles.loaderDot}></span>
+                        <span className={`${styles.loaderDot} ${styles.delay1}`}></span>
+                        <span className={`${styles.loaderDot} ${styles.delay2}`}></span>
+                    </div>
+                </div>
+            )}
+
             {/* Cột Trái: Hình ảnh */}
             <div className={styles.forgotLeft}>
                 <img src={forgotBg} alt="Forgot Password Background" className={styles.bgImage} />
