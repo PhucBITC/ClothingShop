@@ -59,22 +59,24 @@ function Home() {
         <div className={styles.productGrid}>
           {bestsellers.map(product => (
             <div key={product.id} className={styles.productCard}>
-              <div className={styles.productImgContainer}>
-                <img src={product.image} alt={product.name} className={styles.productImg} />
-                <div className={styles.productActions}>
-                  <button className={styles.actionBtn}><BiHeart /></button>
-                  <button className={styles.actionBtn}><BiSearch /></button>
-                  <button className={styles.actionBtn}><BiShoppingBag /></button>
+              <Link to={`/products/${product.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <div className={styles.productImgContainer}>
+                  <img src={product.image} alt={product.name} className={styles.productImg} />
+                  <div className={styles.productActions}>
+                    <button className={styles.actionBtn}><BiHeart /></button>
+                    <button className={styles.actionBtn}><BiSearch /></button>
+                    <button className={styles.actionBtn}><BiShoppingBag /></button>
+                  </div>
                 </div>
-              </div>
-              <div className={styles.productInfo}>
-                <h4 className={styles.productName}>{product.name}</h4>
-                <div className={styles.productBrand}>{product.brand}</div>
-                <div className={styles.priceRow}>
-                  <span className={styles.currentPrice}>${product.price.toFixed(2)}</span>
-                  <span className={styles.originalPrice}>${product.originalPrice.toFixed(2)}</span>
+                <div className={styles.productInfo}>
+                  <h4 className={styles.productName}>{product.name}</h4>
+                  <div className={styles.productBrand}>{product.brand}</div>
+                  <div className={styles.priceRow}>
+                    <span className={styles.currentPrice}>${product.price.toFixed(2)}</span>
+                    <span className={styles.originalPrice}>${product.originalPrice.toFixed(2)}</span>
+                  </div>
                 </div>
-              </div>
+              </Link>
             </div>
           ))}
         </div>

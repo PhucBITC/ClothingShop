@@ -168,22 +168,24 @@ function ProductList() {
                     <div className={styles.productGrid}>
                         {displayedProducts.map(product => (
                             <div key={product.id} className={styles.productCard}>
-                                <div className={styles.productImgWrapper}>
-                                    <img src={product.image} alt={product.name} className={styles.productImg} />
-                                    <div className={styles.hoverActions}>
-                                        <button className={styles.actionBtn}><BiHeart /></button>
-                                        <button className={styles.actionBtn}><BiSearch /></button>
-                                        <button className={styles.actionBtn}><BiShoppingBag /></button>
+                                <Link to={`/products/${product.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                                    <div className={styles.productImgWrapper}>
+                                        <img src={product.image} alt={product.name} className={styles.productImg} />
+                                        <div className={styles.hoverActions}>
+                                            <button className={styles.actionBtn}><BiHeart /></button>
+                                            <button className={styles.actionBtn}><BiSearch /></button>
+                                            <button className={styles.actionBtn}><BiShoppingBag /></button>
+                                        </div>
                                     </div>
-                                </div>
-                                <div className={styles.productInfo}>
-                                    <h4>{product.brand}</h4>
-                                    <p style={{ marginBottom: '0.5rem', fontWeight: '500' }}>{product.name}</p>
-                                    <div>
-                                        <span className={styles.price}>${product.price.toFixed(2)}</span>
-                                        <span className={styles.oldPrice}>${product.originalPrice.toFixed(2)}</span>
+                                    <div className={styles.productInfo}>
+                                        <h4>{product.brand}</h4>
+                                        <p style={{ marginBottom: '0.5rem', fontWeight: '500' }}>{product.name}</p>
+                                        <div>
+                                            <span className={styles.price}>${product.price.toFixed(2)}</span>
+                                            <span className={styles.oldPrice}>${product.originalPrice.toFixed(2)}</span>
+                                        </div>
                                     </div>
-                                </div>
+                                </Link>
                             </div>
                         ))}
                     </div>
