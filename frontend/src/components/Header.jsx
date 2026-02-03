@@ -1,13 +1,22 @@
-import React from 'react';
+import { BiSearch, BiShoppingBag, BiChevronDown, BiTrash } from 'react-icons/bi';
 import { Link, NavLink } from 'react-router-dom';
-import { BiSearch, BiShoppingBag, BiChevronDown } from 'react-icons/bi';
-import { FiHeart } from 'react-icons/fi';
+import { products } from '../data/mockData';
 import styles from './Header.module.css';
 import logo from '../assets/logo.png';
+import { FiHeart } from 'react-icons/fi';
 
 function Header() {
     // Helper to check active state for standard links
     const getNavLinkClass = ({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink;
+
+    // Mock cart items for MiniCart preview
+    const miniCartItems = [
+        { ...products[0], quantity: 1, size: 'S' },
+        { ...products[8], quantity: 1, size: 'Regular' },
+        { ...products[11], quantity: 1, size: 'M' }
+    ];
+
+    const subtotal = miniCartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
 
     return (
         <header className={styles.header}>
@@ -30,7 +39,6 @@ function Header() {
 
                     {/* Mega Menu Content */}
                     <div className={styles.megaMenu}>
-                        {/* Column 1: Men */}
                         <div className={styles.menuColumn}>
                             <h4 className={styles.columnTitle}>Men</h4>
                             <ul className={styles.columnLinks}>
@@ -40,15 +48,12 @@ function Header() {
                                 <li><Link to="/shop/men-jackets">Jackets</Link></li>
                                 <li><Link to="/shop/men-blazers">Blazers & Coats</Link></li>
                             </ul>
-
                             <h4 className={styles.columnTitle} style={{ marginTop: '1rem' }}>Indian & Festive Wear</h4>
                             <ul className={styles.columnLinks}>
                                 <li><Link to="/shop/kurtas">Kurtas & Kurta Sets</Link></li>
                                 <li><Link to="/shop/sherwanis">Sherwanis</Link></li>
                             </ul>
                         </div>
-
-                        {/* Column 2: Women */}
                         <div className={styles.menuColumn}>
                             <h4 className={styles.columnTitle}>Women</h4>
                             <ul className={styles.columnLinks}>
@@ -58,15 +63,12 @@ function Header() {
                                 <li><Link to="/shop/lehengas">Lehenga Cholis</Link></li>
                                 <li><Link to="/shop/women-jackets">Jackets</Link></li>
                             </ul>
-
                             <h4 className={styles.columnTitle} style={{ marginTop: '1rem' }}>Western Wear</h4>
                             <ul className={styles.columnLinks}>
                                 <li><Link to="/shop/dresses">Dresses</Link></li>
                                 <li><Link to="/shop/jumpsuits">Jumpsuits</Link></li>
                             </ul>
                         </div>
-
-                        {/* Column 3: Footwear */}
                         <div className={styles.menuColumn}>
                             <h4 className={styles.columnTitle}>Footwear</h4>
                             <ul className={styles.columnLinks}>
@@ -76,15 +78,12 @@ function Header() {
                                 <li><Link to="/shop/boots">Boots</Link></li>
                                 <li><Link to="/shop/sports-shoes">Sports Shoes & Floaters</Link></li>
                             </ul>
-
                             <h4 className={styles.columnTitle} style={{ marginTop: '1rem' }}>Product Features</h4>
                             <ul className={styles.columnLinks}>
                                 <li><Link to="/features/360">360 Product Viewer</Link></li>
                                 <li><Link to="/features/video">Product with Video</Link></li>
                             </ul>
                         </div>
-
-                        {/* Column 4: Kids & Others */}
                         <div className={styles.menuColumn}>
                             <h4 className={styles.columnTitle}>Kids</h4>
                             <ul className={styles.columnLinks}>
@@ -120,9 +119,46 @@ function Header() {
                 <button className={styles.iconBtn} aria-label="Wishlist">
                     <FiHeart />
                 </button>
-                <button className={styles.iconBtn} aria-label="Cart">
-                    <BiShoppingBag />
-                </button>
+
+                {/* Cart with MiniCart Hover */}
+                <div className={styles.cartContainer}>
+                    <Link to="/cart" className={styles.iconBtn} aria-label="Cart">
+                        <BiShoppingBag />
+                        {miniCartItems.length > 0 && <span className={styles.cartBadge}>{miniCartItems.length}</span>}
+                    </Link>
+
+                    {/* MiniCart Dropdown */}
+                    <div className={styles.miniCart}>
+                        <div className={styles.miniCartHeader}>
+                            You have {miniCartItems.length} items in your cart
+                        </div>
+
+                        <div className={styles.miniCartItems}>
+                            {miniCartItems.map((item, idx) => (
+                                <div key={idx} className={styles.miniCartItem}>
+                                    <img src={item.image} alt={item.name} className={styles.miniCartImg} />
+                                    <div className={styles.miniCartInfo}>
+                                        <h4 className={styles.miniCartTitle}>{item.name}</h4>
+                                        <div className={styles.miniCartPrice}>{item.quantity} x ${item.price.toFixed(2)}</div>
+                                        <div className={styles.miniCartSize}>Size: {item.size}</div>
+                                    </div>
+                                    <button className={styles.removeItemBtn}><BiTrash /></button>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className={styles.miniCartFooter}>
+                            <div className={styles.miniCartSubtotal}>
+                                <span>Subtotal</span>
+                                <span>${subtotal.toFixed(2)}</span>
+                            </div>
+                            <div className={styles.miniCartActions}>
+                                <Link to="/cart" className={styles.viewCartBtn}>View Cart</Link>
+                                <button className={styles.checkoutBtn}>Checkout</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <Link to="/login" className={styles.loginBtn}>Login</Link>
             </div>

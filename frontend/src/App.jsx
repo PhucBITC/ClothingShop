@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import ForgotPassword from "./pages/auth/Forgot-password";
@@ -10,6 +9,7 @@ import VerifyOtp from "./pages/auth/Verify-otp";
 import Home from "./pages/Home";
 import ProductList from "./pages/products/ProductList";
 import ProductDetail from "./pages/products/ProductDetail";
+import Cart from "./pages/cart/Cart";
 import OAuth2RedirectHandler from "./pages/auth/OAuth2RedirectHandler";
 
 function AppLayout() {
@@ -24,6 +24,7 @@ function AppLayout() {
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<ProductList />} />
         <Route path="/products/:id" element={<ProductDetail />} />
+        <Route path="/cart" element={<Cart />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />

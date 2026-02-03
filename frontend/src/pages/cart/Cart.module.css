@@ -1,0 +1,202 @@
+.cartContainer {
+    padding: 2rem 5%;
+    font-family: 'Inter', sans-serif;
+    color: #131118;
+    background: #fff;
+    min-height: 80vh;
+}
+
+.breadcrumbs {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 2rem;
+}
+
+.breadcrumbs span {
+    color: #888;
+}
+
+.pageTitle {
+    font-size: 2rem;
+    /* Matches "Checkout" header in image */
+    font-weight: 700;
+    margin-bottom: 3rem;
+    font-family: 'Playfair Display', serif;
+}
+
+.contentWrapper {
+    display: flex;
+    gap: 4rem;
+    align-items: flex-start;
+}
+
+/* --- Cart Table --- */
+.cartTableSection {
+    flex: 2;
+}
+
+.cartTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.cartTable th {
+    text-align: left;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #eee;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.cartTable td {
+    padding: 1.5rem 0;
+    vertical-align: middle;
+    border-bottom: 1px solid #eee;
+}
+
+.productCell {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.productImg {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    background: #f8f8f8;
+    border-radius: 8px;
+    mix-blend-mode: multiply;
+}
+
+.productMeta h4 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+    color: #131118;
+    width: 200px;
+    /* Limit width */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.productMeta p {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.priceCell,
+.subtotalCell {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+/* Quantity Control */
+.quantityControl {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: 100px;
+    height: 40px;
+}
+
+.qtyBtn {
+    width: 30px;
+    height: 100%;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.qtyValue {
+    flex: 1;
+    text-align: center;
+    font-weight: 600;
+}
+
+/* --- Order Summary (Right Side) --- */
+.summarySection {
+    flex: 1;
+    background: #fff;
+    /* Image shows clean background */
+    /* If strict design: styling mimics the right column */
+    padding-top: 2rem;
+    /* Align with table content if needed */
+}
+
+.summaryRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+}
+
+.summaryLabel {
+    font-weight: 600;
+    color: #131118;
+}
+
+.summaryValue {
+    font-weight: 700;
+    color: #131118;
+}
+
+.discountGroup {
+    display: flex;
+    gap: 0;
+    margin: 2rem 0;
+}
+
+.discountInput {
+    flex: 1;
+    padding: 0.8rem 1rem;
+    border: 1px solid #ddd;
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+    outline: none;
+    font-family: inherit;
+}
+
+.applyBtn {
+    background: #131118;
+    color: #fff;
+    border: none;
+    padding: 0 2rem;
+    border-radius: 0 8px 8px 0;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.grandTotalRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    font-size: 1.2rem;
+}
+
+.checkoutBtn {
+    width: 100%;
+    background: #131118;
+    color: #fff;
+    padding: 1rem;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: opacity 0.2s;
+}
+
+.checkoutBtn:hover {
+    opacity: 0.9;
+}
