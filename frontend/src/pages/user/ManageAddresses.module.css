@@ -1,0 +1,129 @@
+.pageContainer {
+    padding: 3rem 5%;
+    font-family: 'Inter', sans-serif;
+    background: #f8f9fb;
+    min-height: 100vh;
+}
+
+.pageTitle {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    font-family: 'Playfair Display', serif;
+    color: #131118;
+}
+
+.contentWrapper {
+    display: flex;
+    gap: 3rem;
+    align-items: flex-start;
+}
+
+.mainContent {
+    flex: 1;
+    background: #fff;
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+}
+
+.addNewBtn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #131118;
+    color: #fff;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 2rem;
+    font-size: 1rem;
+    transition: opacity 0.2s;
+}
+
+.addNewBtn:hover {
+    opacity: 0.9;
+}
+
+/* --- Address List --- */
+.addressList {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.addressCard {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.addressCard:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.addressInfo h4 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    color: #131118;
+}
+
+.addressText {
+    color: #555;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.phoneRow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #555;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.actionBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: background 0.2s;
+    min-width: 90px;
+}
+
+.editBtn {
+    background: #f5f5f5;
+    color: #131118;
+}
+
+.editBtn:hover {
+    background: #e0e0e0;
+}
+
+.deleteBtn {
+    background: #fff0f0;
+    color: #ff6b6b;
+}
+
+.deleteBtn:hover {
+    background: #ffe0e0;
+}

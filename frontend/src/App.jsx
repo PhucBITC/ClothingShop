@@ -16,6 +16,7 @@ import ReviewOrder from "./pages/checkout/ReviewOrder";
 import MyOrders from "./pages/user/MyOrders";
 import UserInfo from "./pages/user/UserInfo";
 import Wishlist from "./pages/user/Wishlist";
+import ManageAddresses from "./pages/user/ManageAddresses";
 import OAuth2RedirectHandler from "./pages/auth/OAuth2RedirectHandler";
 
 function AppLayout() {
@@ -37,6 +38,7 @@ function AppLayout() {
         <Route path="/user/orders" element={<MyOrders />} />
         <Route path="/user/profile" element={<UserInfo />} />
         <Route path="/user/wishlist" element={<Wishlist />} />
+        <Route path="/user/addresses" element={<ManageAddresses />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
