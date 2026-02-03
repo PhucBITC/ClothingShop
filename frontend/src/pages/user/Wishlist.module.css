@@ -1,0 +1,135 @@
+.pageContainer {
+    padding: 3rem 5%;
+    font-family: 'Inter', sans-serif;
+    background: #f8f9fb;
+    min-height: 100vh;
+}
+
+.pageTitle {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    font-family: 'Playfair Display', serif;
+    color: #131118;
+}
+
+.contentWrapper {
+    display: flex;
+    gap: 3rem;
+    align-items: flex-start;
+}
+
+.mainContent {
+    flex: 1;
+    background: #fff;
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+}
+
+/* --- Wishlist Grid --- */
+.wishlistGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 2rem;
+}
+
+.wishlistCard {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.imageWrapper {
+    position: relative;
+    background: #f8f8f8;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.productImg {
+    width: 90%;
+    height: 90%;
+    object-fit: contain;
+    mix-blend-mode: multiply;
+}
+
+.deleteBtn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    background: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ff4d4f;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border: none;
+    transition: transform 0.2s;
+}
+
+.deleteBtn:hover {
+    transform: scale(1.1);
+}
+
+.productInfo h4 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin: 0 0 0.3rem 0;
+    color: #131118;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.productBrand {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.2rem;
+}
+
+.priceRow {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.price {
+    font-weight: 700;
+    color: #131118;
+}
+
+.oldPrice {
+    text-decoration: line-through;
+    color: #888;
+    font-size: 0.9rem;
+}
+
+.moveToCartBtn {
+    width: 100%;
+    padding: 0.8rem;
+    background: #fff;
+    border: 1px solid #131118;
+    color: #131118;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.moveToCartBtn:hover {
+    background: #131118;
+    color: #fff;
+}

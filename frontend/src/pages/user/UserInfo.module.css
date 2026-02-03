@@ -1,0 +1,118 @@
+.pageContainer {
+    padding: 3rem 5%;
+    font-family: 'Inter', sans-serif;
+    background: #f8f9fb;
+    min-height: 100vh;
+}
+
+.pageTitle {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    font-family: 'Playfair Display', serif;
+    color: #131118;
+}
+
+.contentWrapper {
+    display: flex;
+    gap: 3rem;
+    align-items: flex-start;
+}
+
+.mainContent {
+    flex: 1;
+    background: #fff;
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+}
+
+/* --- Profile Header Section --- */
+.profileHeaderSection {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+}
+
+.avatarWrapper {
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+
+.avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.editAvatarBtn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: #131118;
+    color: #fff;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    border: 2px solid #fff;
+    cursor: pointer;
+}
+
+.editProfileBtn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #131118;
+    color: #fff;
+    padding: 0.7rem 1.5rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: none;
+    cursor: pointer;
+}
+
+/* --- Form --- */
+.formGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.input {
+    padding: 0.8rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    outline: none;
+    color: #131118;
+    background: #fff;
+}
+
+.input:focus {
+    border-color: #131118;
+}
+
+.fullWidth {
+    grid-column: span 2;
+}
