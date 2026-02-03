@@ -1,0 +1,264 @@
+.shopContainer {
+    font-family: 'Inter', sans-serif;
+    color: #131118;
+    padding: 0;
+}
+
+.breadcrumbs {
+    padding: 2rem 5%;
+    font-size: 0.9rem;
+    color: #555;
+    background-color: #f8f9fa;
+    margin-bottom: 2rem;
+}
+
+.breadcrumbs span {
+    color: #888;
+}
+
+.contentWrapper {
+    display: flex;
+    gap: 3rem;
+    padding: 0 5% 4rem;
+}
+
+/* --- Sidebar --- */
+.sidebar {
+    width: 250px;
+    flex-shrink: 0;
+}
+
+.filterGroup {
+    margin-bottom: 2.5rem;
+    border-bottom: 1px solid #ebebeb;
+    padding-bottom: 1.5rem;
+}
+
+.filterGroup:last-child {
+    border-bottom: none;
+}
+
+.filterTitle {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1.2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.filterList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.filterItem {
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.95rem;
+    color: #555;
+    cursor: pointer;
+}
+
+.filterItem input[type="checkbox"] {
+    margin-right: 0.8rem;
+    accent-color: #131118;
+    width: 16px;
+    height: 16px;
+}
+
+/* Color Filter */
+.colorList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.colorItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    font-size: 0.95rem;
+    color: #555;
+}
+
+.colorSwatch {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    /* Slightly rounded square as per image */
+    margin-right: 1rem;
+    border: 1px solid #eee;
+}
+
+/* Size Filter */
+.sizeItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    margin-bottom: 0.8rem;
+    font-size: 0.95rem;
+    color: #555;
+}
+
+/* Price Slider Placeholder */
+.priceRange {
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.priceLabel {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* --- Main Content --- */
+.mainContent {
+    flex: 1;
+}
+
+.shopHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.resultsCount {
+    font-weight: 500;
+    color: #333;
+}
+
+.sortSelect {
+    border: none;
+    background: transparent;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+}
+
+.productGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    /* 3 columns as per image */
+    gap: 2rem;
+}
+
+/* Reuse or specifically style product cards here if distinct from Home */
+.productCard {
+    background: #fff;
+    cursor: pointer;
+}
+
+.productImgWrapper {
+    height: 300px;
+    background: #f8f8f8;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.productImg {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+    mix-blend-mode: multiply;
+}
+
+.hoverActions {
+    position: absolute;
+    bottom: 15px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s;
+    display: flex;
+    gap: 0.8rem;
+}
+
+.productCard:hover .hoverActions {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.actionBtn {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: #fff;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.actionBtn:hover {
+    background: #131118;
+    color: #fff;
+}
+
+.productInfo h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+}
+
+.productBrand {
+    font-size: 0.85rem;
+    color: #888;
+    margin-bottom: 0.5rem;
+}
+
+.price {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-right: 0.8rem;
+}
+
+.oldPrice {
+    color: #aaa;
+    text-decoration: line-through;
+    font-size: 0.9rem;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 4rem;
+}
+
+.pageBtn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ebebeb;
+    border-radius: 8px;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.pageBtn:hover,
+.pageBtn.active {
+    background: #131118;
+    color: #fff;
+    border-color: #131118;
+}

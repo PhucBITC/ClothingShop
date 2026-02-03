@@ -24,7 +24,7 @@ function Header() {
 
                 {/* Shop Mega Menu Trigger */}
                 <div className={styles.navItem}>
-                    <NavLink to="/shop" className={`${styles.navLink} ${styles.shopTrigger}`}>
+                    <NavLink to="/products" className={`${styles.navLink} ${styles.shopTrigger}`}>
                         <span title="Shop">Shop</span> <BiChevronDown />
                     </NavLink>
 

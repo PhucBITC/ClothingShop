@@ -8,6 +8,7 @@ import ForgotPassword from "./pages/auth/Forgot-password";
 import ResetPassword from "./pages/auth/Reset-password";
 import VerifyOtp from "./pages/auth/Verify-otp";
 import Home from "./pages/Home";
+import Product from "./pages/products/ProductList";
 import OAuth2RedirectHandler from "./pages/auth/OAuth2RedirectHandler";
 
 function AppLayout() {
@@ -20,6 +21,7 @@ function AppLayout() {
       {!isAuthPage && <Header />}
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/products" element={<Product />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
