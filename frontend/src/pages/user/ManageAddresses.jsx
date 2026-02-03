@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BiPlus, BiPencil, BiTrash, BiPhone } from 'react-icons/bi';
 import UserSidebar from './UserSidebar';
 import styles from './ManageAddresses.module.css';
 
 function ManageAddresses() {
+    const [showModal, setShowModal] = useState(false);
     const addresses = [
         {
             id: 1,
@@ -36,7 +37,7 @@ function ManageAddresses() {
                 {/* Main Content: Addresses */}
                 <div className={styles.mainContent}>
 
-                    <button className={styles.addNewBtn}>
+                    <button className={styles.addNewBtn} onClick={() => setShowModal(true)}>
                         <BiPlus /> Add New Address
                     </button>
 
@@ -65,6 +66,66 @@ function ManageAddresses() {
 
                 </div>
             </div>
+
+            {/* Add Address Modal */}
+            {showModal && (
+                <div className={styles.modalOverlay}>
+                    <div className={styles.modalContent}>
+                        <h3 className={styles.modalHeader}>Add a new address</h3>
+                        <form className={styles.modalForm}>
+                            <div className={styles.formGroup}>
+                                <label className={styles.label}>Name</label>
+                                <input type="text" className={styles.input} placeholder="Enter Name" />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label className={styles.label}>Mobile Number</label>
+                                <input type="text" className={styles.input} placeholder="Enter Mobile Number" />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label className={styles.label}>Flat, House no., Building, Company, Apartment</label>
+                                <input type="text" className={styles.input} />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label className={styles.label}>Area, Colony, Street, Sector, Village</label>
+                                <input type="text" className={styles.input} />
+                            </div>
+
+                            <div className={styles.formGroup}>
+                                <label className={styles.label}>City</label>
+                                <select className={styles.select}>
+                                    <option>Select City</option>
+                                    <option>New York</option>
+                                    <option>Los Angeles</option>
+                                </select>
+                            </div>
+
+                            <div className={styles.formGroup}>
+                                <label className={styles.label}>Pin Code</label>
+                                <input type="text" className={styles.input} placeholder="Enter Pin Code" />
+                            </div>
+
+                            <div className={styles.formGroup}>
+                                <label className={styles.label}>State</label>
+                                <select className={styles.select}>
+                                    <option>Select State</option>
+                                    <option>California</option>
+                                    <option>New York</option>
+                                </select>
+                            </div>
+
+                            <div className={styles.checkboxGroup}>
+                                <input type="checkbox" id="defaultAddr" />
+                                <label htmlFor="defaultAddr">Use as my default address</label>
+                            </div>
+
+                            <div className={styles.modalActions}>
+                                <button type="button" className={styles.cancelBtn} onClick={() => setShowModal(false)}>Cancel</button>
+                                <button type="button" className={styles.submitBtn} onClick={() => setShowModal(false)}>Add New Address</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
