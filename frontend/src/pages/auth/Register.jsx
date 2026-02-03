@@ -1,21 +1,52 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import styles from './Register.module.css'; // Import CSS Module
-import registerBg from '../../assets/register_bg.jpg'; // Bạn nhớ kiếm 1 cái ảnh đặt tên này nhé
+import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaGoogle, FaGithub, FaFacebook } from 'react-icons/fa';
+import styles from './Register.module.css';
+import registerBg from '../../assets/register_bg.jpg';
+
+const FloatingLabelInput = ({ id, type, value, onChange, placeholder, icon, rightIcon, onRightIconClick }) => {
+    return (
+        <div className={styles.inputGroup}>
+            <div className={styles.inputIcon}>{icon}</div>
+            <input
+                id={id}
+                type={type}
+                className={`${styles.input} ${rightIcon ? styles.inputWithRightIcon : ''}`}
+                value={value}
+                onChange={onChange}
+                placeholder=" "
+                required
+            />
+            <label htmlFor={id} className={styles.floatingLabel}>
+                {placeholder}
+            </label>
+            {rightIcon && (
+                <button
+                    type="button"
+                    className={styles.rightIconBtn}
+                    onClick={onRightIconClick}
+                    tabIndex="-1"
+                >
+                    {rightIcon}
+                </button>
+            )}
+        </div>
+    );
+};
 
 const Register = () => {
-    // State lưu trữ dữ liệu nhập vào
     const [formData, setFormData] = useState({
         fullName: '',
         email: '',
         password: '',
         confirmPassword: ''
     });
-    
+
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    // Hàm xử lý khi nhập liệu
     const handleChange = (e) => {
         setFormData({
             ...formData,
@@ -23,19 +54,16 @@ const Register = () => {
         });
     };
 
-    // Hàm xử lý khi bấm Đăng Ký
     const handleRegister = async (e) => {
         e.preventDefault();
         setError('');
 
-        // 1. Kiểm tra mật khẩu nhập lại có khớp không
         if (formData.password !== formData.confirmPassword) {
             setError('Mật khẩu nhập lại không khớp!');
             return;
         }
 
         try {
-            // 2. Gọi API Backend (Java Spring Boot)
             const response = await fetch('http://localhost:8080/api/auth/register', {
                 method: 'POST',
                 headers: {
@@ -45,104 +73,117 @@ const Register = () => {
                     fullName: formData.fullName,
                     email: formData.email,
                     password: formData.password
-                    // Không cần gửi confirmPassword lên server
                 }),
             });
 
-            // 3. Xử lý kết quả trả về
             if (response.ok) {
-                alert('Đăng ký thành công! Vui lòng đăng nhập.');
-                navigate('/login'); // Chuyển hướng sang trang đăng nhập
+                // Có thể hiển thị thông báo đẹp hơn thay vì alert
+                // alert('Đăng ký thành công! Vui lòng đăng nhập.');
+                navigate('/login');
             } else {
-                // Nếu server trả về lỗi (ví dụ: Email đã tồn tại)
                 const errorData = await response.text();
                 setError(errorData || 'Đăng ký thất bại. Vui lòng thử lại.');
             }
 
         } catch (err) {
             console.error("Lỗi kết nối:", err);
-            setError('Không thể kết nối đến server. Hãy kiểm tra lại backend.');
+            setError('Không thể kết nối đến server.');
         }
     };
 
     return (
         <div className={styles.registerWrapper}>
-            {/* Cột Trái: Hình Ảnh */}
+            {/* Left Column - Image */}
             <div className={styles.registerLeft}>
                 <img src={registerBg} alt="Register Background" className={styles.bgImage} />
                 <div className={styles.overlayContent}>
                     <h2 className={styles.overlayTitle}>Join Us Today!</h2>
                     <p className={styles.overlayText}>
-                        Tạo tài khoản để nhận ưu đãi độc quyền và theo dõi đơn hàng dễ dàng hơn.
+                        Create an account to unlock exclusive offers and track your orders easily.
                     </p>
                 </div>
             </div>
 
-            {/* Cột Phải: Form Đăng Ký */}
+            {/* Right Column - Form */}
             <div className={styles.registerRight}>
-                <div className={styles.formContainer}>
-                    <h2 className={styles.title}>Create Account</h2>
-                    <p className={styles.subtitle}>Sign up to get started</p>
+                <div className={styles.registerContainer}>
+                    <div className={styles.header}>
+                        <h1 className={styles.title}>Create an account</h1>
+                        <p className={styles.subtitle}>Enter your details below to create your account</p>
+                    </div>
 
                     {error && <div className={styles.errorMessage}>{error}</div>}
 
-                    <form onSubmit={handleRegister}>
-                        <div className={styles.inputGroup}>
-                            <label htmlFor="fullName">Full Name</label>
-                            <input 
-                                type="text" 
-                                id="fullName" 
-                                placeholder="Nguyen Van A"
-                                value={formData.fullName}
-                                onChange={handleChange}
-                                required 
-                            />
-                        </div>
+                    <form onSubmit={handleRegister} className={styles.formGrid}>
+                        <FloatingLabelInput
+                            id="fullName"
+                            type="text"
+                            value={formData.fullName}
+                            onChange={handleChange}
+                            placeholder="Full Name"
+                            icon={<FaUser />}
+                        />
 
-                        <div className={styles.inputGroup}>
-                            <label htmlFor="email">Email Address</label>
-                            <input 
-                                type="email" 
-                                id="email" 
-                                placeholder="name@example.com"
-                                value={formData.email}
-                                onChange={handleChange}
-                                required 
-                            />
-                        </div>
+                        <FloatingLabelInput
+                            id="email"
+                            type="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            placeholder="Email"
+                            icon={<FaEnvelope />}
+                        />
 
-                        <div className={styles.inputGroup}>
-                            <label htmlFor="password">Password</label>
-                            <input 
-                                type="password" 
-                                id="password" 
-                                placeholder="••••••••"
-                                value={formData.password}
-                                onChange={handleChange}
-                                required 
-                            />
-                        </div>
+                        <FloatingLabelInput
+                            id="password"
+                            type={showPassword ? "text" : "password"}
+                            value={formData.password}
+                            onChange={handleChange}
+                            placeholder="Password"
+                            icon={<FaLock />}
+                            rightIcon={showPassword ? <FaEyeSlash /> : <FaEye />}
+                            onRightIconClick={() => setShowPassword(!showPassword)}
+                        />
 
-                        <div className={styles.inputGroup}>
-                            <label htmlFor="confirmPassword">Confirm Password</label>
-                            <input 
-                                type="password" 
-                                id="confirmPassword" 
-                                placeholder="••••••••"
-                                value={formData.confirmPassword}
-                                onChange={handleChange}
-                                required 
-                            />
-                        </div>
+                        <FloatingLabelInput
+                            id="confirmPassword"
+                            type={showConfirmPassword ? "text" : "password"}
+                            value={formData.confirmPassword}
+                            onChange={handleChange}
+                            placeholder="Confirm Password"
+                            icon={<FaLock />}
+                            rightIcon={showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                            onRightIconClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        />
 
                         <button type="submit" className={styles.submitBtn}>
-                            Register
+                            Create Account
                         </button>
                     </form>
 
-                    <p className={styles.loginLink}>
-                        Already have an account? <Link to="/login">Login here</Link>
-                    </p>
+                    <div className={styles.dividerContainer}>
+                        <div className={styles.dividerLine}>
+                            <span className={styles.dividerSpan}></span>
+                        </div>
+                        <div className={styles.dividerTextWrapper}>
+                            <span className={styles.dividerText}>Or continue with</span>
+                        </div>
+                    </div>
+
+                    <div className={styles.socialGrid}>
+                        <button type="button" className={styles.socialBtn}>
+                            <div className={styles.socialIcon}><FaGoogle /></div> Google
+                        </button>
+                        <button type="button" className={styles.socialBtn}>
+                            <div className={styles.socialIcon}><FaFacebook /></div> Facebook
+                        </button>
+                    </div>
+
+                    <div className={styles.footer}>
+                        Already have an account?{' '}
+                        <Link to="/login" className={styles.loginLink}>
+                            Sign in
+                        </Link>
+                    </div>
                 </div>
             </div>
         </div>

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.scheduling.annotation.Async;
 
 @Service
 public class EmailServiceImpl implements EmailService {
@@ -15,6 +16,7 @@ public class EmailServiceImpl implements EmailService {
     private JavaMailSender emailSender;
 
     @Override
+    @Async
     public void sendHtmlMessage(String to, String subject, String htmlBody) {
         try {
             MimeMessage message = emailSender.createMimeMessage();

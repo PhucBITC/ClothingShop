@@ -1,33 +1,22 @@
-/* Container bao quanh toàn bộ trang */
-*{
-    box-sizing: border-box;
-}
+/* Modern Register Design with Split Screen */
+
 .registerWrapper {
     display: flex;
-    /* Sử dụng fixed để full màn hình, tránh scroll do margin mặc định của body */
-    position: fixed;
-    top: 0;
-    left: 0;
+    min-height: 100vh;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    background-color: #ffffff;
     width: 100%;
-    height: 100%;
-    background-color: #f5f5f5;
-    /* Màu nền tổng thể */
-    font-family: Arial, sans-serif;
-    overflow: hidden;
-    /* Ẩn thanh scroll trên desktop */
 }
 
-/* --- PHẦN BÊN TRÁI (HÌNH ẢNH) --- */
+/* Left Column - Image */
 .registerLeft {
-    flex: 1; /* Chiếm 50% chiều rộng */
+    display: none;
+    flex: 1;
     position: relative;
-    overflow: hidden;
     background-color: #000;
-    display: none; /* Mặc định ẩn trên mobile */
 }
 
-/* Hiển thị cột trái khi màn hình lớn hơn 768px */
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
     .registerLeft {
         display: flex;
         justify-content: center;
@@ -40,7 +29,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    opacity: 0.6; /* Làm tối ảnh nền */
+    opacity: 0.6;
 }
 
 .overlayContent {
@@ -54,117 +43,266 @@
 
 .overlayTitle {
     font-size: 2.5rem;
-    font-weight: bold;
+    font-weight: 700;
     margin-bottom: 1rem;
+    line-height: 1.2;
 }
 
 .overlayText {
-    font-size: 1.1rem;
+    font-size: 1.125rem;
+    opacity: 0.9;
     line-height: 1.6;
 }
 
-/* --- PHẦN BÊN PHẢI (FORM) --- */
+/* Right Column - Form */
 .registerRight {
-    flex: 1; /* Chiếm 50% chiều rộng */
+    flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 2rem;
-    background-color: #fff;
+    background-color: #ffffff;
 }
 
-.formContainer {
+.registerContainer {
     width: 100%;
-    max-width: 400px;
+    max-width: 420px;
+    padding: 2rem;
+    /* No border or shadow needed in split view */
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    position: relative;
+}
+
+.header {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
 }
 
 .title {
-    font-size: 2rem;
+    font-size: 1.875rem;
     font-weight: 700;
-    color: #333;
-    margin-bottom: 0.5rem;
-    text-align: center;
+    letter-spacing: -0.025em;
+    color: #09090b;
 }
 
 .subtitle {
-    text-align: center;
-    color: #666;
-    margin-bottom: 2rem;
-}
-
-.errorMessage {
-    background-color: #ffebee;
-    color: #c62828;
-    padding: 0.75rem;
-    border-radius: 4px;
-    margin-bottom: 1.5rem;
-    font-size: 0.9rem;
-    text-align: center;
-    border: 1px solid #ef9a9a;
-}
-
-/* Style cho các ô input */
-.inputGroup {
-    margin-bottom: 1.25rem;
-}
-
-.inputGroup label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: #444;
-    font-weight: 500;
     font-size: 0.95rem;
+    color: #71717a;
 }
 
-.inputGroup input {
+.formGrid {
+    display: grid;
+    gap: 1.25rem;
+}
+
+/* Floating Label Styles */
+.inputGroup {
+    position: relative;
     width: 100%;
-    padding: 12px 15px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    box-sizing: border-box; /* Quan trọng để padding không làm vỡ layout */
 }
 
-.inputGroup input:focus {
-    border-color: #000;
+.inputIcon {
+    position: absolute;
+    top: 50%;
+    left: 0.875rem;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+    color: #71717a;
+    transition: color 0.2s;
+    z-index: 1;
+}
+
+.inputGroup:focus-within .inputIcon {
+    color: #09090b;
+}
+
+.input {
+    display: flex;
+    height: 3rem;
+    /* Slightly taller for modern feel */
+    width: 100%;
+    border-radius: 0.5rem;
+    border: 1px solid #e4e4e7;
+    background-color: #ffffff;
+    padding-left: 2.75rem;
+    padding-right: 2.75rem;
+    /* Space for both left and right icons */
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    font-size: 0.95rem;
+    color: #09090b;
+    transition: all 0.2s;
+}
+
+.input:focus {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(0,0,0,0.1);
+    border-color: #09090b;
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
 }
 
-/* Nút Đăng Ký */
-.submitBtn {
-    width: 100%;
-    padding: 14px;
-    background-color: #000;
-    color: white;
+.input::placeholder {
+    color: transparent;
+}
+
+.floatingLabel {
+    position: absolute;
+    left: 2.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.95rem;
+    color: #71717a;
+    pointer-events: none;
+    transition: all 0.2s;
+    background-color: transparent;
+    padding: 0 0.25rem;
+}
+
+/* Floating logic */
+.input:focus~.floatingLabel,
+.input:not(:placeholder-shown)~.floatingLabel {
+    top: 0;
+    left: 2.75rem;
+    transform: translateY(-50%);
+    font-size: 0.75rem;
+    color: #09090b;
+    background-color: #ffffff;
+    padding: 0 0.25rem;
+    z-index: 2;
+}
+
+.rightIconBtn {
+    position: absolute;
+    top: 50%;
+    right: 0.875rem;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    color: #71717a;
+    background: none;
     border: none;
-    border-radius: 8px;
+    cursor: pointer;
+    transition: color 0.2s;
+    z-index: 1;
+}
+
+.rightIconBtn:hover {
+    color: #09090b;
+}
+
+.inputWithRightIcon {
+    padding-right: 2.75rem;
+}
+
+.submitBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
     font-size: 1rem;
     font-weight: 600;
+    height: 3rem;
+    width: 100%;
+    background-color: #09090b;
+    color: #ffffff;
+    border: none;
     cursor: pointer;
-    transition: background-color 0.3s;
-    margin-top: 1rem;
+    transition: background-color 0.2s;
+    margin-top: 0.5rem;
 }
 
 .submitBtn:hover {
-    background-color: #333;
+    background-color: rgba(9, 9, 11, 0.9);
 }
 
-/* Link chuyển qua trang Login */
-.loginLink {
+/* Divider */
+.dividerContainer {
+    position: relative;
     text-align: center;
-    margin-top: 1.5rem;
+    margin: 1rem 0;
+    font-size: 0.75rem;
+}
+
+.dividerLine {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+}
+
+.dividerSpan {
+    width: 100%;
+    border-top: 1px solid #e4e4e7;
+}
+
+.dividerTextWrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    text-transform: uppercase;
+}
+
+.dividerText {
+    background-color: #ffffff;
+    padding: 0 0.5rem;
+    color: #71717a;
+}
+
+/* Social Buttons */
+.socialGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.socialBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
     font-size: 0.9rem;
-    color: #666;
+    font-weight: 500;
+    height: 2.75rem;
+    width: 100%;
+    border: 1px solid #e4e4e7;
+    background-color: #ffffff;
+    color: #09090b;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    gap: 0.5rem;
 }
 
-.loginLink a {
-    color: #000;
-    font-weight: bold;
-    text-decoration: none;
+.socialBtn:hover {
+    background-color: #f4f4f5;
 }
 
-.loginLink a:hover {
+.footer {
+    text-align: center;
+    font-size: 0.875rem;
+    color: #71717a;
+    margin-top: 1rem;
+}
+
+.loginLink {
     text-decoration: underline;
+    text-underline-offset: 4px;
+    color: #09090b;
+    font-weight: 500;
+}
+
+.loginLink:hover {
+    color: #000;
+}
+
+.errorMessage {
+    color: #ef4444;
+    font-size: 0.875rem;
+    text-align: center;
+    margin-bottom: 1rem;
 }

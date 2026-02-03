@@ -48,12 +48,76 @@ public class AuthController {
 
         User user = userRepository.findByEmail(email).orElse(null);
         if (user != null && passwordEncoder.matches(password, user.getPassword())) {
-            String token = jwtService.generateToken(user);
-            Map<String, String> response = new HashMap<>();
-            response.put("token", token);
+            // Thay vì trả về token ngay, ta tạo OTP và gửi qua email
+            String otp = String.valueOf((int) (Math.random() * 900000) + 100000);
+            user.setResetPasswordToken(otp); // Tạm thời dùng lại field này để lưu OTP login
+            user.setResetPasswordTokenExpiry(LocalDateTime.now().plusMinutes(5));
+            userRepository.save(user);
+
+            // Gửi OTP qua email
+            // Template HTML cho Login OTP
+            String htmlContent = """
+                    <div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
+                      <div style="margin:50px auto;width:70%;padding:20px 0">
+                        <div style="border-bottom:1px solid #eee">
+                          <a href="" style="font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600">Clothing Shop</a>
+                        </div>
+                        <p style="font-size:1.1em">Xin chào,</p>
+                        <p>Hệ thống phát hiện yêu cầu đăng nhập mới. Đây là mã xác thực 2 bước (2FA) của bạn.</p>
+                        <h2 style="background: #00466a;margin: 0 auto;width: max-content;padding: 0 10px;color: #fff;border-radius: 4px;">"""
+                    + otp
+                    + """
+                                </h2>
+                                <p style="font-size:0.9em;">Cảm ơn,<br />Clothing Shop Team</p>
+                                <hr style="border:none;border-top:1px solid #eee" />
+                                <div style="float:right;padding:8px 0;color:#aaa;font-size:0.8em;line-height:1;font-weight:300">
+                                  <p>Clothing Shop Inc</p>
+                                  <p>1600 Amphitheatre Parkway</p>
+                                  <p>California</p>
+                                </div>
+                              </div>
+                            </div>
+                            """;
+            emailService.sendHtmlMessage(email, "Mã xác thực đăng nhập (2FA)", htmlContent);
+            System.out.println("LOGIN OTP FOR " + email + ": " + otp);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Mã xác thực đã được gửi đến email.");
+            response.put("require2fa", true);
             return ResponseEntity.ok(response);
         }
         return ResponseEntity.status(401).body("Sai email hoặc mật khẩu!");
+    }
+
+    @PostMapping("/verify-login")
+    public ResponseEntity<?> verifyLogin(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        String otp = request.get("otp");
+
+        User user = userRepository.findByEmail(email).orElse(null);
+        if (user == null) {
+            return ResponseEntity.badRequest().body("Email không tồn tại.");
+        }
+
+        if (user.getResetPasswordToken() == null || !user.getResetPasswordToken().equals(otp)) {
+            return ResponseEntity.badRequest().body("Mã OTP không chính xác.");
+        }
+
+        if (user.getResetPasswordTokenExpiry().isBefore(LocalDateTime.now())) {
+            return ResponseEntity.badRequest().body("Mã OTP đã hết hạn.");
+        }
+
+        // OTP đúng -> Sinh JWT Token
+        String token = jwtService.generateToken(user);
+
+        // Xóa OTP sau khi dùng xong
+        user.setResetPasswordToken(null);
+        user.setResetPasswordTokenExpiry(null);
+        userRepository.save(user);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("token", token);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/forgot-password")
