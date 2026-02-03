@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { BiHome, BiCreditCard, BiListCheck } from 'react-icons/bi';
 import styles from './PaymentMethod.module.css';
 
 function PaymentMethod() {
+    const navigate = useNavigate();
     const [selectedMethod, setSelectedMethod] = useState('card');
 
     // Mock calculations
@@ -16,11 +18,11 @@ function PaymentMethod() {
 
             {/* Timeline */}
             <div className={styles.timeline}>
-                <div className={`${styles.step} ${styles.active}`}>
+                <div className={`${ styles.step } ${ styles.active } `}>
                     <div className={styles.stepIcon}><BiHome /></div>
                     <span className={styles.stepLabel}>Address</span>
                 </div>
-                <div className={`${styles.step} ${styles.active}`}>
+                <div className={`${ styles.step } ${ styles.active } `}>
                     <div className={styles.stepIcon}><BiCreditCard /></div>
                     <span className={styles.stepLabel}>Payment Method</span>
                 </div>
@@ -41,7 +43,7 @@ function PaymentMethod() {
                         {/* Debit/Credit Card */}
                         <div className={styles.paymentOption}>
                             <div className={styles.optionHeader} onClick={() => setSelectedMethod('card')}>
-                                <div className={`${styles.radioCircle} ${selectedMethod === 'card' ? styles.selected : ''}`}>
+                                <div className={`${ styles.radioCircle } ${ selectedMethod === 'card' ? styles.selected : '' } `}>
                                     {selectedMethod === 'card' && <div className={styles.innerCircle} />}
                                 </div>
                                 <span>Debit/Credit Card</span>
@@ -75,7 +77,7 @@ function PaymentMethod() {
                         {/* Google Pay */}
                         <div className={styles.paymentOption}>
                             <div className={styles.optionHeader} onClick={() => setSelectedMethod('googlepay')}>
-                                <div className={`${styles.radioCircle} ${selectedMethod === 'googlepay' ? styles.selected : ''}`}>
+                                <div className={`${ styles.radioCircle } ${ selectedMethod === 'googlepay' ? styles.selected : '' } `}>
                                     {selectedMethod === 'googlepay' && <div className={styles.innerCircle} />}
                                 </div>
                                 <span>Google Pay</span>
@@ -85,7 +87,7 @@ function PaymentMethod() {
                         {/* Paypal */}
                         <div className={styles.paymentOption}>
                             <div className={styles.optionHeader} onClick={() => setSelectedMethod('paypal')}>
-                                <div className={`${styles.radioCircle} ${selectedMethod === 'paypal' ? styles.selected : ''}`}>
+                                <div className={`${ styles.radioCircle } ${ selectedMethod === 'paypal' ? styles.selected : '' } `}>
                                     {selectedMethod === 'paypal' && <div className={styles.innerCircle} />}
                                 </div>
                                 <span>Paypal</span>
@@ -95,7 +97,7 @@ function PaymentMethod() {
                         {/* Cash on Delivery */}
                         <div className={styles.paymentOption}>
                             <div className={styles.optionHeader} onClick={() => setSelectedMethod('cod')}>
-                                <div className={`${styles.radioCircle} ${selectedMethod === 'cod' ? styles.selected : ''}`}>
+                                <div className={`${ styles.radioCircle } ${ selectedMethod === 'cod' ? styles.selected : '' } `}>
                                     {selectedMethod === 'cod' && <div className={styles.innerCircle} />}
                                 </div>
                                 <span>Cash on Delivery</span>
