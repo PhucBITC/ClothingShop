@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { BiHome, BiCreditCard, BiListCheck, BiCheckSquare, BiSquare, BiEdit, BiTrash } from 'react-icons/bi';
 import styles from './ShippingAddress.module.css';
 
 function ShippingAddress() {
+    const navigate = useNavigate();
     const [selectedAddress, setSelectedAddress] = useState(1);
 
     const addresses = [
@@ -31,7 +33,7 @@ function ShippingAddress() {
 
             {/* Timeline */}
             <div className={styles.timeline}>
-                <div className={`${styles.step} ${styles.active}`}>
+                <div className={`${ styles.step } ${ styles.active } `}>
                     <div className={styles.stepIcon}><BiHome /></div>
                     <span className={styles.stepLabel}>Address</span>
                 </div>
@@ -57,7 +59,7 @@ function ShippingAddress() {
                         {addresses.map(addr => (
                             <div
                                 key={addr.id}
-                                className={`${styles.addressCard} ${selectedAddress === addr.id ? styles.selected : ''}`}
+                                className={`${ styles.addressCard } ${ selectedAddress === addr.id ? styles.selected : '' } `}
                                 onClick={() => setSelectedAddress(addr.id)}
                             >
                                 <div className={styles.cardHeader}>
@@ -69,7 +71,7 @@ function ShippingAddress() {
                                 <p className={styles.addressText}>{addr.address}</p>
                                 <div className={styles.cardActions}>
                                     <button className={styles.actionBtn}><BiEdit /> Edit</button>
-                                    <button className={`${styles.actionBtn} ${styles.delete}`}><BiTrash /> Delete</button>
+                                    <button className={`${ styles.actionBtn } ${ styles.delete } `}><BiTrash /> Delete</button>
                                 </div>
                             </div>
                         ))}

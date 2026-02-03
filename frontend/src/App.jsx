@@ -11,6 +11,7 @@ import ProductList from "./pages/products/ProductList";
 import ProductDetail from "./pages/products/ProductDetail";
 import Cart from "./pages/cart/Cart";
 import ShippingAddress from "./pages/checkout/ShippingAddress";
+import PaymentMethod from "./pages/checkout/PaymentMethod";
 import OAuth2RedirectHandler from "./pages/auth/OAuth2RedirectHandler";
 
 function AppLayout() {
@@ -27,6 +28,8 @@ function AppLayout() {
         <Route path="/products/:id" element={<ProductDetail />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<ShippingAddress />} />
+        <Route path="/checkout/payment" element={<PaymentMethod />} />
+        
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />

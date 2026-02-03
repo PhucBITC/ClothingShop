@@ -1,0 +1,248 @@
+.checkoutContainer {
+    padding: 2rem 5%;
+    font-family: 'Inter', sans-serif;
+    color: #131118;
+    background: #fff;
+    min-height: 100vh;
+}
+
+.pageTitle {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    font-family: 'Playfair Display', serif;
+}
+
+/* --- Timeline --- */
+.timeline {
+    display: flex;
+    justify-content: space-between;
+    max-width: 600px;
+    margin-bottom: 3rem;
+    position: relative;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: #eee;
+    z-index: 1;
+}
+
+.step {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    background: #fff;
+    padding: 0 1rem;
+}
+
+.stepIcon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: #888;
+    transition: all 0.3s;
+}
+
+.step.active .stepIcon {
+    background: #131118;
+    color: #fff;
+}
+
+.stepLabel {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #888;
+}
+
+.step.active .stepLabel {
+    color: #131118;
+}
+
+/* --- Main Layout --- */
+.contentWrapper {
+    display: flex;
+    gap: 4rem;
+    align-items: flex-start;
+}
+
+.leftColumn {
+    flex: 2;
+}
+
+.sectionHeader {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+/* --- Payment Options --- */
+.paymentOptions {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.paymentOption {
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 1.5rem;
+}
+
+.optionHeader {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.radioCircle {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ccc;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.radioCircle.selected {
+    border-color: #131118;
+}
+
+.innerCircle {
+    width: 10px;
+    height: 10px;
+    background: #131118;
+    border-radius: 50%;
+}
+
+/* --- Credit Card Form --- */
+.cardForm {
+    margin-top: 1.5rem;
+    margin-left: 2rem;
+    /* Indent to align with text */
+    max-width: 500px;
+}
+
+.formGroup {
+    margin-bottom: 1rem;
+}
+
+.label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    outline: none;
+}
+
+.input:focus {
+    border-color: #131118;
+}
+
+.row {
+    display: flex;
+    gap: 1rem;
+}
+
+.addCardBtn {
+    background: #131118;
+    color: #fff;
+    border: none;
+    padding: 0.9rem 2rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 0.5rem;
+}
+
+.continueBtn {
+    background: #131118;
+    color: #fff;
+    border: none;
+    padding: 1rem 3rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+/* --- Summary Right Side --- */
+.summaryColumn {
+    flex: 1;
+    background: #fff;
+    padding-left: 2rem;
+    border-left: 1px solid #f0f0f0;
+}
+
+.summaryRow {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+}
+
+.summaryLabel {
+    font-weight: 600;
+    color: #131118;
+}
+
+.discountGroup {
+    display: flex;
+    gap: 0;
+    margin: 2rem 0;
+}
+
+.discountInput {
+    flex: 1;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-right: none;
+    border-radius: 6px 0 0 6px;
+    outline: none;
+}
+
+.applyBtn {
+    background: #131118;
+    color: #fff;
+    border: none;
+    padding: 0 1.5rem;
+    border-radius: 0 6px 6px 0;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.grandTotal {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+}
