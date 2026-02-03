@@ -1,0 +1,117 @@
+.footer {
+    background-color: #131118;
+    color: #fff;
+    padding: 4rem 4rem 2rem;
+    margin-top: auto;
+}
+
+.topSection {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 2fr;
+    gap: 3rem;
+    margin-bottom: 3rem;
+}
+
+.brandCol .logo {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    display: inline-block;
+    font-family: 'Playfair Display', serif;
+}
+
+.contactInfo h5,
+.columnTitle {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #fff;
+}
+
+.contactInfo p {
+    color: #d0d0d0;
+    margin-bottom: 0.8rem;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.contactInfo strong {
+    color: #fff;
+    font-weight: 600;
+}
+
+.linkList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.linkList li {
+    margin-bottom: 0.8rem;
+}
+
+.linkList a {
+    color: #d0d0d0;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.3s;
+}
+
+.linkList a:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.subscribeForm {
+    display: flex;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    padding-bottom: 0.5rem;
+}
+
+.emailInput {
+    background: transparent;
+    border: none;
+    color: #fff;
+    flex: 1;
+    padding: 0.5rem 0;
+    font-size: 0.95rem;
+    outline: none;
+}
+
+.emailInput::placeholder {
+    color: #888;
+}
+
+.subscribeBtn {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.bottomSection {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.copyright {
+    color: #888;
+    font-size: 0.9rem;
+}
+
+.paymentIcons {
+    display: flex;
+    gap: 1rem;
+    font-size: 1.5rem;
+    color: #fff;
+}
