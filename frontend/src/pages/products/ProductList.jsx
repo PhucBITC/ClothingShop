@@ -1,11 +1,45 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BiChevronDown, BiChevronRight, BiShoppingBag, BiSearch, BiHeart, BiGridAlt, BiListUl } from 'react-icons/bi';
+import { BiChevronDown, BiChevronUp, BiChevronRight, BiShoppingBag, BiSearch, BiHeart, BiGridAlt, BiListUl, BiCheck } from 'react-icons/bi';
 import styles from './ProductList.module.css';
-import { products, productCategories, colors, sizes } from '../../data/mockData';
+import { products, productCategories, colors, sizes, services } from '../../data/mockData';
 
 function ProductList() {
     const [priceRange, setPriceRange] = useState(500);
+    const [sortOption, setSortOption] = useState('latest');
+    const [selectedColors, setSelectedColors] = useState([]);
+
+    // State for collapsible sections (true = collapsed)
+    const [collapsed, setCollapsed] = useState({
+        categories: false,
+        price: false,
+        color: false,
+        size: false
+    });
+
+    const toggleSection = (section) => {
+        setCollapsed(prev => ({ ...prev, [section]: !prev[section] }));
+    };
+
+    const toggleColor = (color) => {
+        setSelectedColors(prev =>
+            prev.includes(color) ? prev.filter(c => c !== color) : [...prev, color]
+        );
+    };
+
+    // Sorting Logic
+    const getSortedProducts = () => {
+        let sorted = [...products];
+        if (sortOption === 'price-low-high') {
+            sorted.sort((a, b) => a.price - b.price);
+        } else if (sortOption === 'price-high-low') {
+            sorted.sort((a, b) => b.price - a.price);
+        }
+        // 'latest' default (as is in mockData)
+        return sorted;
+    };
+
+    const displayedProducts = getSortedProducts();
 
     return (
         <div className={styles.shopContainer}>
@@ -20,70 +54,88 @@ function ProductList() {
 
                     {/* Categories */}
                     <div className={styles.filterGroup}>
-                        <div className={styles.filterTitle}>
-                            Product Categories <BiChevronDown />
+                        <div className={styles.filterTitle} onClick={() => toggleSection('categories')}>
+                            Product Categories {collapsed.categories ? <BiChevronRight /> : <BiChevronDown />}
                         </div>
-                        <ul className={styles.filterList}>
-                            {productCategories.map((cat, idx) => (
-                                <li key={idx} className={styles.filterItem}>
-                                    <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-                                        <input type="checkbox" /> {cat}
-                                    </label>
-                                    <span style={{ fontSize: '1.2rem' }}>+</span>
-                                </li>
-                            ))}
-                        </ul>
+                        {!collapsed.categories && (
+                            <ul className={styles.filterList}>
+                                {productCategories.map((cat, idx) => (
+                                    <li key={idx} className={styles.filterItem}>
+                                        <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                                            <input type="checkbox" /> {cat}
+                                        </label>
+                                        <span style={{ fontSize: '1.2rem' }}>+</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
                     </div>
 
                     {/* Price */}
                     <div className={styles.filterGroup}>
-                        <div className={styles.filterTitle}>
-                            Filter by Price <BiChevronDown />
+                        <div className={styles.filterTitle} onClick={() => toggleSection('price')}>
+                            Filter by Price {collapsed.price ? <BiChevronRight /> : <BiChevronDown />}
                         </div>
-                        <input
-                            type="range"
-                            min="0"
-                            max="2000"
-                            value={priceRange}
-                            onChange={(e) => setPriceRange(e.target.value)}
-                            className={styles.priceRange}
-                        />
-                        <div className={styles.priceLabel}>Price: $0 - ${priceRange}</div>
+                        {!collapsed.price && (
+                            <>
+                                <input
+                                    type="range"
+                                    min="0"
+                                    max="2000"
+                                    value={priceRange}
+                                    onChange={(e) => setPriceRange(e.target.value)}
+                                    className={styles.priceRange}
+                                />
+                                <div className={styles.priceLabel}>Price: $0 - ${priceRange}</div>
+                            </>
+                        )}
                     </div>
 
                     {/* Color */}
                     <div className={styles.filterGroup}>
-                        <div className={styles.filterTitle}>
-                            Filter by Color <BiChevronDown />
+                        <div className={styles.filterTitle} onClick={() => toggleSection('color')}>
+                            Filter by Color {collapsed.color ? <BiChevronRight /> : <BiChevronDown />}
                         </div>
-                        <div className={styles.colorList}>
-                            {colors.map((col, idx) => (
-                                <div key={idx} className={styles.colorItem}>
-                                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                                        <span className={styles.colorSwatch} style={{ backgroundColor: col.hex }}></span>
-                                        {col.name}
-                                    </div>
-                                    <span>({col.count})</span>
-                                </div>
-                            ))}
-                        </div>
+                        {!collapsed.color && (
+                            <div className={styles.colorList}>
+                                {colors.map((col, idx) => {
+                                    const isSelected = selectedColors.includes(col.name);
+                                    return (
+                                        <div key={idx} className={styles.colorItem} onClick={() => toggleColor(col.name)}>
+                                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                <span
+                                                    className={`${styles.colorSwatch} ${isSelected ? styles.selectedSwatch : ''}`}
+                                                    style={{ backgroundColor: col.hex }}
+                                                >
+                                                    {isSelected && <BiCheck color={col.name === 'White' || col.name === 'Yellow' ? '#000' : '#fff'} />}
+                                                </span>
+                                                {col.name}
+                                            </div>
+                                            <span>({col.count})</span>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
                     </div>
 
                     {/* Size */}
                     <div className={styles.filterGroup}>
-                        <div className={styles.filterTitle}>
-                            Filter by Size <BiChevronDown />
+                        <div className={styles.filterTitle} onClick={() => toggleSection('size')}>
+                            Filter by Size {collapsed.size ? <BiChevronRight /> : <BiChevronDown />}
                         </div>
-                        <ul className={styles.filterList}>
-                            {sizes.map((size, idx) => (
-                                <li key={idx} className={styles.sizeItem}>
-                                    <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-                                        <input type="checkbox" /> {size.name}
-                                    </label>
-                                    <span>({size.count})</span>
-                                </li>
-                            ))}
-                        </ul>
+                        {!collapsed.size && (
+                            <ul className={styles.filterList}>
+                                {sizes.map((size, idx) => (
+                                    <li key={idx} className={styles.sizeItem}>
+                                        <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                                            <input type="checkbox" /> {size.name}
+                                        </label>
+                                        <span>({size.count})</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
                     </div>
 
                 </aside>
@@ -96,16 +148,25 @@ function ProductList() {
                         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                             <BiGridAlt size={24} />
                             <BiListUl size={24} color="#ccc" />
-                            <span className={styles.resultsCount}>Showing 1–{products.length} of 72 results</span>
+                            <span className={styles.resultsCount}>Showing 1–{displayedProducts.length} of 72 results</span>
                         </div>
-                        <div>
-                            Sort by calm <BiChevronDown />
+                        <div className={styles.sortWrapper}>
+                            Sort by
+                            <select
+                                className={styles.sortSelect}
+                                value={sortOption}
+                                onChange={(e) => setSortOption(e.target.value)}
+                            >
+                                <option value="latest">Latest</option>
+                                <option value="price-low-high">Price: Low to High</option>
+                                <option value="price-high-low">Price: High to Low</option>
+                            </select>
                         </div>
                     </div>
 
                     {/* Product Grid */}
                     <div className={styles.productGrid}>
-                        {products.map(product => (
+                        {displayedProducts.map(product => (
                             <div key={product.id} className={styles.productCard}>
                                 <div className={styles.productImgWrapper}>
                                     <img src={product.image} alt={product.name} className={styles.productImg} />
@@ -140,6 +201,20 @@ function ProductList() {
 
                 </main>
             </div>
+
+            {/* --- Services Section --- */}
+            <section className={styles.featuresSection}>
+                {services.map(service => (
+                    <div key={service.id} className={styles.featureItem}>
+                        <service.icon className={styles.featureIcon} />
+                        <div>
+                            <h4 className={styles.featureTitle}>{service.title}</h4>
+                            <p className={styles.featureDesc}>{service.desc}</p>
+                        </div>
+                    </div>
+                ))}
+            </section>
+
         </div>
     );
 }

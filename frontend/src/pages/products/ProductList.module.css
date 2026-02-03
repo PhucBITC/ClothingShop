@@ -46,12 +46,26 @@
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
+    user-select: none;
 }
 
 .filterList {
     list-style: none;
     padding: 0;
     margin: 0;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .filterItem {
@@ -76,6 +90,7 @@
     display: flex;
     flex-direction: column;
     gap: 0.8rem;
+    animation: fadeIn 0.3s ease;
 }
 
 .colorItem {
@@ -91,9 +106,17 @@
     width: 20px;
     height: 20px;
     border-radius: 4px;
-    /* Slightly rounded square as per image */
     margin-right: 1rem;
     border: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+}
+
+.selectedSwatch {
+    border-color: #131118;
+    box-shadow: 0 0 0 1px #131118 inset;
 }
 
 /* Size Filter */
@@ -111,6 +134,7 @@
 .priceRange {
     width: 100%;
     margin-bottom: 1rem;
+    accent-color: #131118;
 }
 
 .priceLabel {
@@ -135,6 +159,13 @@
     color: #333;
 }
 
+.sortWrapper {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
 .sortSelect {
     border: none;
     background: transparent;
@@ -142,16 +173,17 @@
     font-weight: 600;
     cursor: pointer;
     outline: none;
+    margin-left: 0.5rem;
+    color: #131118;
+    font-family: inherit;
 }
 
 .productGrid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    /* 3 columns as per image */
     gap: 2rem;
 }
 
-/* Reuse or specifically style product cards here if distinct from Home */
 .productCard {
     background: #fff;
     cursor: pointer;
@@ -261,4 +293,41 @@
     background: #131118;
     color: #fff;
     border-color: #131118;
+}
+
+/* --- Features Section (Bottom) --- */
+.featuresSection {
+    display: flex;
+    justify-content: space-around;
+    padding: 4rem 10%;
+    flex-wrap: wrap;
+    gap: 2rem;
+    background-color: #fff;
+    /* Ensure it separates from footer/content */
+    margin-top: 2rem;
+}
+
+.featureItem {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    width: 250px;
+}
+
+.featureIcon {
+    font-size: 2.5rem;
+    color: #131118;
+}
+
+.featureTitle {
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 0.3rem;
+}
+
+.featureDesc {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.4;
 }
