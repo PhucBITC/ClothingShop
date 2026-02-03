@@ -19,6 +19,7 @@ import Wishlist from "./pages/user/Wishlist";
 import ManageAddresses from "./pages/user/ManageAddresses";
 import SavedCards from "./pages/user/SavedCards";
 import Notifications from "./pages/user/Notifications";
+import Settings from "./pages/user/Settings";
 import OAuth2RedirectHandler from "./pages/auth/OAuth2RedirectHandler";
 
 function AppLayout() {
@@ -30,19 +31,31 @@ function AppLayout() {
     <>
       {!isAuthPage && <Header />}
       <Routes>
+        {/* home */}
         <Route path="/" element={<Home />} />
+
+        {/* products */}
         <Route path="/products" element={<ProductList />} />
         <Route path="/products/:id" element={<ProductDetail />} />
+
+        {/* cart */}
         <Route path="/cart" element={<Cart />} />
+
+        {/* checkout */}
         <Route path="/checkout" element={<ShippingAddress />} />
         <Route path="/checkout/payment" element={<PaymentMethod />} />
         <Route path="/checkout/review" element={<ReviewOrder />} />
+
+        {/* user */}
         <Route path="/user/orders" element={<MyOrders />} />
         <Route path="/user/profile" element={<UserInfo />} />
         <Route path="/user/wishlist" element={<Wishlist />} />
         <Route path="/user/addresses" element={<ManageAddresses />} />
         <Route path="/user/saved-cards" element={<SavedCards />} />
         <Route path="/user/notifications" element={<Notifications />} />
+        <Route path="/user/settings" element={<Settings />} />
+        
+        {/* auth */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
