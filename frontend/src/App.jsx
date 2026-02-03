@@ -13,6 +13,7 @@ import Cart from "./pages/cart/Cart";
 import ShippingAddress from "./pages/checkout/ShippingAddress";
 import PaymentMethod from "./pages/checkout/PaymentMethod";
 import ReviewOrder from "./pages/checkout/ReviewOrder";
+import MyOrders from "./pages/user/MyOrders";
 import OAuth2RedirectHandler from "./pages/auth/OAuth2RedirectHandler";
 
 function AppLayout() {
@@ -31,6 +32,7 @@ function AppLayout() {
         <Route path="/checkout" element={<ShippingAddress />} />
         <Route path="/checkout/payment" element={<PaymentMethod />} />
         <Route path="/checkout/review" element={<ReviewOrder />} />
+        <Route path="/user/orders" element={<MyOrders />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />

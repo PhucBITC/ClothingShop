@@ -242,3 +242,95 @@
 .placeOrderBtn:hover {
     opacity: 0.9;
 }
+
+/* --- Success Modal --- */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    /* Semi-transparent black */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modalContent {
+    background: #fff;
+    padding: 3rem;
+    border-radius: 12px;
+    width: 500px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.modalIcon {
+    width: 80px;
+    height: 80px;
+    background: #131118;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: #fff;
+    margin-bottom: 2rem;
+    position: relative;
+    box-shadow: 0 0 0 10px #f0f0f0;
+    /* Outer ring effect */
+}
+
+.modalTitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    font-family: 'Playfair Display', serif;
+}
+
+.modalText {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 2.5rem;
+    font-size: 0.95rem;
+}
+
+.viewOrderBtn {
+    width: 100%;
+    background: #131118;
+    color: #fff;
+    padding: 1rem;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    transition: opacity 0.2s;
+}
+
+.viewOrderBtn:hover {
+    opacity: 0.9;
+}
+
+.homeBtn {
+    width: 100%;
+    background: #fff;
+    color: #131118;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #131118;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.2s;
+}
+
+.homeBtn:hover {
+    background: #f9f9f9;
+}

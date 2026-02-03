@@ -1,9 +1,13 @@
-import React from 'react';
-import { BiHome, BiCreditCard, BiListCheck, BiEdit } from 'react-icons/bi';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { BiHome, BiCreditCard, BiListCheck, BiEdit, BiShoppingBag } from 'react-icons/bi';
 import styles from './ReviewOrder.module.css';
 import { products } from '../../data/mockData';
 
 function ReviewOrder() {
+    const navigate = useNavigate();
+    const [showSuccess, setShowSuccess] = useState(false);
+
     // Mock items based on image
     const orderItems = [
         { ...products[0], quantity: 1, size: 'S' }, // Girls Pink Moana
@@ -14,6 +18,10 @@ function ReviewOrder() {
     const subtotal = 200.00;
     const delivery = 5.00;
     const total = 205.00;
+
+    const handlePlaceOrder = () => {
+        setShowSuccess(true);
+    };
 
     return (
         <div className={styles.checkoutContainer}>
@@ -102,10 +110,26 @@ function ReviewOrder() {
                         <span>${total.toFixed(2)}</span>
                     </div>
 
-                    <button className={styles.placeOrderBtn}>Place Order</button>
+                    <button className={styles.placeOrderBtn} onClick={handlePlaceOrder}>Place Order</button>
                 </div>
 
             </div>
+
+            {/* Success Modal */}
+            {showSuccess && (
+                <div className={styles.modalOverlay}>
+                    <div className={styles.modalContent}>
+                        <div className={styles.modalIcon}>
+                            <BiShoppingBag />
+                        </div>
+                        <h2 className={styles.modalTitle}>Your order is confirmed</h2>
+                        <p className={styles.modalText}>Thanks for shopping! your order hasn't shipped yet, but we will send you and email when it done.</p>
+
+                        <button className={styles.viewOrderBtn} onClick={() => alert('View Order feature coming soon!')}>View Order</button>
+                        <button className={styles.homeBtn} onClick={() => navigate('/')}>Back to Home</button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
