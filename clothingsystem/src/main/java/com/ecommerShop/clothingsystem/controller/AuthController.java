@@ -1,5 +1,6 @@
 package com.ecommerShop.clothingsystem.controller;
 
+import com.ecommerShop.clothingsystem.model.AuthProvider;
 import com.ecommerShop.clothingsystem.model.Role;
 import com.ecommerShop.clothingsystem.model.User;
 import com.ecommerShop.clothingsystem.repository.UserRepository;
@@ -37,6 +38,7 @@ public class AuthController {
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(Role.CUSTOMER);
+        user.setAuthProvider(AuthProvider.LOCAL);
         userRepository.save(user);
         return ResponseEntity.ok("Đăng ký thành công!");
     }

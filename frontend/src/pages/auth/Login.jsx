@@ -229,10 +229,18 @@ const Login = () => {
           </div>
 
           <div className={styles.socialGrid}>
-            <button type="button" className={styles.socialBtn}>
+            <button
+              type="button"
+              className={styles.socialBtn}
+              onClick={() => window.location.href = 'http://localhost:8080/oauth2/authorization/google'}
+            >
               <FaGoogle /> Google
             </button>
-            <button type="button" className={styles.socialBtn}>
+            <button
+              type="button"
+              className={styles.socialBtn}
+              onClick={() => window.location.href = 'http://localhost:8080/oauth2/authorization/facebook'}
+            >
               <FaFacebook /> Facebook
             </button>
           </div>
