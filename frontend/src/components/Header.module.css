@@ -1,8 +1,8 @@
 .header {
     display: flex;
-    justify_content: space-between;
+    justify-content: space-between;
     align-items: center;
-    padding: 1.5rem 4rem;
+    padding: 0rem 2rem;
     background-color: #fff;
     position: sticky;
     top: 0;
@@ -17,6 +17,11 @@
     text-decoration: none;
     font-family: 'Playfair Display', serif;
     /* Or similar elegant font */
+}
+
+.logoImg {
+    height: 90px;
+    object-fit: contain;
 }
 
 .nav {

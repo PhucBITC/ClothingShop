@@ -3,12 +3,15 @@ import { Link, NavLink } from 'react-router-dom';
 import { BiSearch, BiShoppingBag } from 'react-icons/bi';
 import { FiHeart } from 'react-icons/fi';
 import styles from './Header.module.css';
+import logo from '../assets/logo.png';
 
 function Header() {
     return (
         <header className={styles.header}>
             {/* Logo */}
-            <Link to="/" className={styles.logo}>Krist</Link>
+            <Link to="/" className={styles.logo}>
+                <img src={logo} alt="Lighter & Princess" className={styles.logoImg} />
+            </Link>
 
             {/* Navigation */}
             <nav className={styles.nav}>
