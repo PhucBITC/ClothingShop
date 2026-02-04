@@ -77,3 +77,45 @@
 .navIcon {
     font-size: 1.2rem;
 }
+
+/* --- Responsive Design --- */
+@media (max-width: 992px) {
+    .sidebar {
+        width: 100%;
+        margin-bottom: 2rem;
+    }
+
+    .naxList {
+        display: flex;
+        overflow-x: auto;
+        padding-bottom: 1rem;
+    }
+
+    .navItem {
+        white-space: nowrap;
+        border-right: 1px solid #f0f0f0;
+    }
+
+    .active {
+        border-left: none;
+        border-bottom: 4px solid #131118;
+    }
+}
+
+@media (max-width: 576px) {
+    .naxList {
+        flex-direction: column;
+        overflow-x: hidden;
+    }
+
+    .navItem {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .active {
+        border-bottom: none;
+        border-left: 4px solid #131118;
+    }
+}

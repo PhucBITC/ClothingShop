@@ -338,3 +338,77 @@
 .checkoutBtn:hover {
     opacity: 0.9;
 }
+
+/* --- Responsive Design --- */
+.mobileMenuBtn {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #131118;
+    z-index: 1100;
+}
+
+@media (max-width: 992px) {
+    .header {
+        padding: 1rem;
+        justify-content: space-between;
+    }
+
+    .mobileMenuBtn {
+        display: block;
+    }
+
+    .logoImg {
+        height: 40px;
+        /* Smaller logo on mobile */
+    }
+
+    /* Fixed Sidebar Navigation for Mobile */
+    .nav {
+        position: fixed;
+        top: 0;
+        left: -100%;
+        width: 80%;
+        max-width: 300px;
+        height: 100vh;
+        background: #fff;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 5rem 2rem 2rem;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        transition: left 0.3s ease;
+        z-index: 1050;
+        overflow-y: auto;
+    }
+
+    .nav.navOpen {
+        left: 0;
+    }
+
+    .navItem {
+        width: 100%;
+        padding: 1rem 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    /* Hide Mega Menu on Mobile for simplicity or adjust */
+    .megaMenu {
+        display: none;
+        /* For now, hide mega menu on mobile to avoid clutter */
+    }
+
+    .actions {
+        gap: 0.8rem;
+    }
+
+    .loginBtn {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+    }
+
+    .iconBtn {
+        font-size: 1.1rem;
+    }
+}

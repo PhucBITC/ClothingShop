@@ -115,3 +115,32 @@
     font-size: 1.5rem;
     color: #fff;
 }
+
+/* --- Responsive Design --- */
+@media (max-width: 992px) {
+    .footer {
+        padding: 4rem 2rem 2rem;
+    }
+
+    .topSection {
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .topSection {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .subscribeForm {
+        margin: 0 auto 1.5rem;
+    }
+
+    .bottomSection {
+        flex-direction: column;
+        text-align: center;
+        gap: 1.5rem;
+    }
+}

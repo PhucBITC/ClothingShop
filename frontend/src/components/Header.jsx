@@ -1,4 +1,5 @@
-import { BiSearch, BiShoppingBag, BiChevronDown, BiTrash } from 'react-icons/bi';
+import React, { useState } from 'react';
+import { BiSearch, BiShoppingBag, BiChevronDown, BiTrash, BiMenu, BiX } from 'react-icons/bi';
 import { Link, NavLink } from 'react-router-dom';
 import { products } from '../data/mockData';
 import styles from './Header.module.css';
@@ -6,8 +7,13 @@ import logo from '../assets/logo.png';
 import { FiHeart } from 'react-icons/fi';
 
 function Header() {
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
     // Helper to check active state for standard links
     const getNavLinkClass = ({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink;
+
+    const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+    const closeMenu = () => setIsMenuOpen(false);
 
     // Mock cart items for MiniCart preview
     const miniCartItems = [
@@ -20,13 +26,18 @@ function Header() {
 
     return (
         <header className={styles.header}>
+            {/* Hamburger Menu (Mobile) */}
+            <button className={styles.mobileMenuBtn} onClick={toggleMenu} aria-label="Toggle Menu">
+                {isMenuOpen ? <BiX /> : <BiMenu />}
+            </button>
+
             {/* Logo */}
-            <Link to="/" className={styles.logo}>
+            <Link to="/" className={styles.logo} onClick={closeMenu}>
                 <img src={logo} alt="Lighter & Princess" className={styles.logoImg} />
             </Link>
 
             {/* Navigation */}
-            <nav className={styles.nav}>
+            <nav className={`${styles.nav} ${isMenuOpen ? styles.navOpen : ''}`}>
                 <div className={styles.navItem}>
                     <NavLink to="/" className={getNavLinkClass}><span title="Home">Home</span></NavLink>
                 </div>

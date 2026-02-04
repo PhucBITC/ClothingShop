@@ -383,3 +383,89 @@
     font-size: 0.9rem;
     line-height: 1.4;
 }
+
+/* --- Responsive Design --- */
+@media (max-width: 992px) {
+    .heroSection {
+        flex-direction: column-reverse;
+        padding-top: 2rem;
+        min-height: auto;
+        text-align: center;
+    }
+
+    .heroContent {
+        padding-left: 0;
+        padding-bottom: 3rem;
+    }
+
+    .heroTitle {
+        font-size: 3rem;
+    }
+
+    .heroImageWrapper {
+        height: 50vh;
+        width: 100%;
+    }
+
+    .heroBgText {
+        font-size: 10rem;
+        top: 20%;
+    }
+
+    .dealSection {
+        flex-direction: column;
+        padding: 0;
+    }
+
+    .dealContent {
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .dealImageWrapper {
+        width: 100%;
+        height: 400px;
+    }
+
+    .countdown {
+        justify-content: center;
+    }
+
+    .sectionHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .sectionTitle {
+        font-size: 2rem;
+    }
+
+    .heroTitle {
+        font-size: 2.5rem;
+    }
+
+    .categoryGrid,
+    .productGrid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 1rem;
+    }
+
+    .productImgContainer {
+        height: 200px;
+    }
+
+    .actionBtn {
+        width: 35px;
+        height: 35px;
+        font-size: 1rem;
+    }
+
+    .featureItem {
+        width: 100%;
+        align-items: center;
+        text-align: center;
+    }
+}
