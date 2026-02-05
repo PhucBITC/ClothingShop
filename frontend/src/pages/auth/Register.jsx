@@ -170,11 +170,19 @@ const Register = () => {
                     </div>
 
                     <div className={styles.socialGrid}>
-                        <button type="button" className={styles.socialBtn}>
-                            <div className={styles.socialIcon}><FaGoogle /></div> Google
+                        <button
+                            type="button"
+                            className={styles.socialBtn}
+                            onClick={() => window.location.href = 'http://localhost:8080/oauth2/authorization/google'}
+                        >
+                            <FaGoogle /> Google
                         </button>
-                        <button type="button" className={styles.socialBtn}>
-                            <div className={styles.socialIcon}><FaFacebook /></div> Facebook
+                        <button
+                            type="button"
+                            className={styles.socialBtn}
+                            onClick={() => window.location.href = 'http://localhost:8080/oauth2/authorization/facebook'}
+                        >
+                            <FaFacebook /> Facebook
                         </button>
                     </div>
 

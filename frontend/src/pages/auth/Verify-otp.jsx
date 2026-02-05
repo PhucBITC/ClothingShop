@@ -73,9 +73,17 @@ const VerifyOtp = () => {
 
             if (response.ok) {
                 const data = await response.json();
-                // data.token là UUID để reset password
-                // Chuyển sang trang Reset Password kèm token trên URL
-                navigate(`/reset-password?token=${data.token}`);
+
+                // Lưu token và role vào localStorage
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('role', data.role);
+
+                // Điều hướng dựa trên role
+                if (data.role === 'ADMIN') {
+                    navigate('/admin');
+                } else {
+                    navigate('/');
+                }
             } else {
                 const errData = await response.text();
                 setError(errData || 'Mã OTP không hợp lệ hoặc đã hết hạn.');

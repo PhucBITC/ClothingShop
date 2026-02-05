@@ -23,6 +23,8 @@ import Settings from "./pages/user/Settings";
 import OAuth2RedirectHandler from "./pages/auth/OAuth2RedirectHandler";
 import AdminLayout from "./admin/layouts/AdminLayout";
 import Dashboard from "./admin/pages/Dashboard";
+import AdminProductList from "./admin/pages/products/ProductList";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function AppLayout() {
   const location = useLocation();
@@ -60,8 +62,11 @@ function AppLayout() {
         <Route path="/user/settings" element={<Settings />} />
 
         {/* admin */}
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<Dashboard />} />
+        <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="products" element={<AdminProductList />} />
+          </Route>
         </Route>
 
         {/* auth */}

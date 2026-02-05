@@ -15,11 +15,20 @@ const OAuth2RedirectHandler = () => {
         };
 
         const token = getUrlParameter('token');
+        const role = getUrlParameter('role');
         const error = getUrlParameter('error');
 
         if (token) {
             localStorage.setItem('token', token);
-            navigate('/');
+            if (role) {
+                localStorage.setItem('role', role);
+            }
+
+            if (role === 'ADMIN') {
+                navigate('/admin');
+            } else {
+                navigate('/');
+            }
         } else {
             navigate('/login', { state: { error: error } });
         }

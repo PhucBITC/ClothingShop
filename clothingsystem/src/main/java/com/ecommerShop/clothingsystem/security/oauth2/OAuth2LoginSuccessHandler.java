@@ -37,6 +37,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         // Frontend redirect URL
         String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:5173/oauth2/redirect")
                 .queryParam("token", token)
+                .queryParam("role", user.getRole().name())
                 .build().toUriString();
 
         getRedirectStrategy().sendRedirect(request, response, targetUrl);

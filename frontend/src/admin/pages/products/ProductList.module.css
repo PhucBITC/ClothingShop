@@ -1,0 +1,165 @@
+/* ProductList.module.css */
+.container {
+    padding: 0;
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1A1A1A;
+}
+
+.addButton {
+    background-color: #FF8800;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.addButton:hover {
+    background-color: #e07800;
+}
+
+.tableContainer {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+    overflow: hidden;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th {
+    text-align: left;
+    padding: 16px 24px;
+    background-color: #F9FAFB;
+    color: #6B7280;
+    font-weight: 600;
+    font-size: 14px;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.table td {
+    padding: 16px 24px;
+    border-bottom: 1px solid #F3F4F6;
+    color: #374151;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+.table tr:hover {
+    background-color: #F9FAFB;
+}
+
+.productInfo {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.productImage {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    object-fit: cover;
+    background-color: #F3F4F6;
+}
+
+.productName {
+    font-weight: 500;
+    color: #111827;
+}
+
+.price {
+    font-weight: 600;
+    color: #111827;
+}
+
+.stockBadge {
+    padding: 4px 10px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 500;
+    display: inline-block;
+}
+
+.inStock {
+    background-color: #DEF7EC;
+    color: #03543F;
+}
+
+.lowStock {
+    background-color: #FEF3C7;
+    color: #92400E;
+}
+
+.outOfStock {
+    background-color: #FDE8E8;
+    color: #9B1C1C;
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
+}
+
+.actionButton {
+    padding: 6px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    background: transparent;
+    color: #6B7280;
+    transition: all 0.2s;
+}
+
+.editBtn:hover {
+    background-color: #EFF6FF;
+    color: #2563EB;
+}
+
+.deleteBtn:hover {
+    background-color: #FEF2F2;
+    color: #DC2626;
+}
+
+.loading,
+.error {
+    padding: 40px;
+    text-align: center;
+    color: #6B7280;
+}
+
+.error {
+    color: #DC2626;
+}

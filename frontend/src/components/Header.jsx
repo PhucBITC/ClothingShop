@@ -9,6 +9,10 @@ import { FiHeart } from 'react-icons/fi';
 function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+    // Check for admin role
+    const role = localStorage.getItem('role');
+    const isAdmin = role === 'ADMIN';
+
     // Helper to check active state for standard links
     const getNavLinkClass = ({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink;
 
@@ -120,6 +124,13 @@ function Header() {
                 <div className={styles.navItem}>
                     <NavLink to="/contact" className={getNavLinkClass}><span title="Contact Us">Contact Us</span></NavLink>
                 </div>
+                {isAdmin && (
+                    <div className={styles.navItem}>
+                        <Link to="/admin" className={styles.navLink} style={{ color: '#FF8800', fontWeight: 'bold' }}>
+                            <span title="System Management">System Management</span>
+                        </Link>
+                    </div>
+                )}
             </nav>
 
             {/* Actions */}
