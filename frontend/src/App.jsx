@@ -24,6 +24,7 @@ import OAuth2RedirectHandler from "./pages/auth/OAuth2RedirectHandler";
 import AdminLayout from "./admin/layouts/AdminLayout";
 import Dashboard from "./admin/pages/Dashboard";
 import AdminProductList from "./admin/pages/products/ProductList";
+import ProductForm from "./admin/pages/products/ProductForm";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function AppLayout() {
@@ -66,6 +67,8 @@ function AppLayout() {
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="products" element={<AdminProductList />} />
+            <Route path="products/add" element={<ProductForm />} />
+            <Route path="products/edit/:id" element={<ProductForm />} />
           </Route>
         </Route>
 

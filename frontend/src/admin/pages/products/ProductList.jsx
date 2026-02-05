@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from '../../../api/axios';
 import { BiPlus, BiPencil, BiTrash, BiError } from 'react-icons/bi';
 import styles from './ProductList.module.css';
@@ -7,6 +8,7 @@ const ProductList = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchProducts();
@@ -56,7 +58,7 @@ const ProductList = () => {
         <div className={styles.container}>
             <div className={styles.header}>
                 <h2 className={styles.title}>Products</h2>
-                <button className={styles.addButton}>
+                <button className={styles.addButton} onClick={() => navigate('/admin/products/add')}>
                     <BiPlus size={20} />
                     Add Product
                 </button>
@@ -96,7 +98,11 @@ const ProductList = () => {
                                         </td>
                                         <td>
                                             <div className={styles.actions}>
-                                                <button className={`${styles.actionButton} ${styles.editBtn}`} title="Edit">
+                                                <button
+                                                    className={`${styles.actionButton} ${styles.editBtn}`}
+                                                    title="Edit"
+                                                    onClick={() => navigate(`/admin/products/edit/${product.id}`)}
+                                                >
                                                     <BiPencil size={18} />
                                                 </button>
                                                 <button
