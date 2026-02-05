@@ -21,15 +21,19 @@ import SavedCards from "./pages/user/SavedCards";
 import Notifications from "./pages/user/Notifications";
 import Settings from "./pages/user/Settings";
 import OAuth2RedirectHandler from "./pages/auth/OAuth2RedirectHandler";
+import AdminLayout from "./admin/layouts/AdminLayout";
+import Dashboard from "./admin/pages/Dashboard";
 
 function AppLayout() {
   const location = useLocation();
   const isAuthPage = location.pathname === "/login" || location.pathname === "/register" || location.pathname === "/forgot-password"
     || location.pathname === "/reset-password" || location.pathname === "/verify-otp" || location.pathname === "/oauth2/redirect";
 
+  const isAdminPage = location.pathname.startsWith("/admin");
+
   return (
     <>
-      {!isAuthPage && <Header />}
+      {!isAuthPage && !isAdminPage && <Header />}
       <Routes>
         {/* home */}
         <Route path="/" element={<Home />} />
@@ -54,7 +58,12 @@ function AppLayout() {
         <Route path="/user/saved-cards" element={<SavedCards />} />
         <Route path="/user/notifications" element={<Notifications />} />
         <Route path="/user/settings" element={<Settings />} />
-        
+
+        {/* admin */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<Dashboard />} />
+        </Route>
+
         {/* auth */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -64,7 +73,7 @@ function AppLayout() {
         <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
         <Route path="*" element={<h2 className="text-center mt-5">404 - Không tìm thấy trang</h2>} />
       </Routes>
-      {!isAuthPage && <Footer />}
+      {!isAuthPage && !isAdminPage && <Footer />}
     </>
   );
 }

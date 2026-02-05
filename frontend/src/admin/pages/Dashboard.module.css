@@ -1,0 +1,178 @@
+/* Dashboard.module.css */
+.dashboardContainer {
+    display: flex;
+    gap: 24px;
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.leftColumn {
+    flex: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.rightColumn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    min-width: 300px;
+}
+
+/* Row 1: Stats Cards */
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    color: var(--text-gray);
+    font-size: 14px;
+}
+
+.iconCircle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+}
+
+.statsValue {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.statsChange {
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.textGreen {
+    color: #27AE60;
+}
+
+.textRed {
+    color: #EB5757;
+}
+
+.bgOrange {
+    background: #FFF0E0;
+    color: var(--primary-orange);
+}
+
+.bgGray {
+    background: #F5F6FA;
+    color: var(--text-gray);
+}
+
+/* Row 2: Charts */
+.chartsRow {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+}
+
+.chartCard {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+}
+
+.chartHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.cardTitle {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.timeFilter {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid #E0E0E0;
+    font-size: 12px;
+    background: #fff;
+    cursor: pointer;
+}
+
+.timeFilter.active {
+    background: var(--primary-orange);
+    color: var(--white);
+    border-color: var(--primary-orange);
+}
+
+/* Bottom Row */
+.bottomRow {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 24px;
+}
+
+/* Helper for Conversion Rate Card to make it flex bars */
+.conversionContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    height: 150px;
+    margin-top: 20px;
+}
+
+.barGroup {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.bar {
+    width: 40px;
+    background: #FFE0B2;
+    border-radius: 8px 8px 0 0;
+    transition: height 1s ease-out;
+}

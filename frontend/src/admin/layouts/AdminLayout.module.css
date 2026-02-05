@@ -1,0 +1,196 @@
+/* AdminLayout.module.css */
+
+/* Variables matching the "EzMart" theme */
+.adminContainer {
+    --primary-orange: #FF8800;
+    --secondary-bg: #F5F6FA;
+    --white: #FFFFFF;
+    --text-dark: #1A1A1A;
+    --text-gray: #7A7A7A;
+    --sidebar-width: 260px;
+    --topbar-height: 70px;
+
+    display: flex;
+    min-height: 100vh;
+    background-color: var(--secondary-bg);
+    color: var(--text-dark);
+    font-family: 'Inter', sans-serif;
+}
+
+/* Sidebar */
+.sidebar {
+    width: var(--sidebar-width);
+    background: var(--white);
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #E0E0E0;
+    z-index: 100;
+}
+
+.logoContainer {
+    height: var(--topbar-height);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    border-bottom: 1px solid transparent;
+    /* Optional */
+}
+
+.logo {
+    height: 90px;
+    object-fit: contain;
+}
+
+.brandName {
+    font-size: 20px;
+    font-weight: 700;
+    margin-left: 10px;
+    color: var(--text-dark);
+}
+
+.nav {
+    flex: 1;
+    padding: 24px 16px;
+    overflow-y: auto;
+}
+
+.navItem {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    margin-bottom: 4px;
+    border-radius: 8px;
+    color: var(--text-gray);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.navItem:hover {
+    background-color: #FFF0E0;
+    /* Light orange hover */
+    color: var(--primary-orange);
+}
+
+.navItem.active {
+    background-color: var(--primary-orange);
+    color: var(--white);
+}
+
+.navIcon {
+    font-size: 20px;
+    margin-right: 12px;
+}
+
+.bottomNav {
+    padding: 16px;
+    border-top: 1px solid #F0F0F0;
+}
+
+/* Main Content Area */
+.mainContent {
+    margin-left: var(--sidebar-width);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Topbar */
+.topbar {
+    height: var(--topbar-height);
+    background: var(--secondary-bg);
+    /* Or white if preferred, designs usually transparent or white */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    position: sticky;
+    top: 0;
+    z-index: 99;
+}
+
+.pageTitle {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.topbarActions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.searchBar {
+    background: var(--white);
+    border-radius: 8px;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    width: 300px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+}
+
+.searchInput {
+    border: none;
+    outline: none;
+    flex: 1;
+    margin-left: 10px;
+    font-size: 14px;
+}
+
+.actionIcon {
+    font-size: 22px;
+    color: var(--text-gray);
+    cursor: pointer;
+    position: relative;
+}
+
+.notificationBadge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: red;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.userProfile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.userInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.userName {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.userRole {
+    font-size: 12px;
+    color: var(--text-gray);
+}
+
+/* Content wrapper */
+.content {
+    padding: 32px;
+    width: 100%;
+}
