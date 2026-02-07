@@ -33,37 +33,39 @@ public class ProductController {
         if (product.getCategory() == null || product.getCategory().getId() == null) {
             return ResponseEntity.badRequest().build();
         }
-        
+
         return categoryRepository.findById(product.getCategory().getId())
-            .map(category -> {
-                product.setCategory(category);
-                Product savedProduct = productRepository.save(product);
-                return ResponseEntity.ok(savedProduct);
-            })
-            .orElse(ResponseEntity.badRequest().build());
+                .map(category -> {
+                    product.setCategory(category);
+                    Product savedProduct = productRepository.save(product);
+                    return ResponseEntity.ok(savedProduct);
+                })
+                .orElse(ResponseEntity.badRequest().build());
     }
 
-    // 3. Cập nhật sản phẩm
     @PutMapping("/{id}")
     public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product productDetails) {
         return productRepository.findById(id)
-            .map(product -> {
-                product.setName(productDetails.getName());
-                product.setPrice(productDetails.getPrice());
-                product.setDescription(productDetails.getDescription());
-                product.setStock(productDetails.getStock());
-                // Nếu muốn đổi category thì xử lý thêm ở đây
-                return ResponseEntity.ok(productRepository.save(product));
-            }).orElse(ResponseEntity.notFound().build());
+                .map(product -> {
+                    product.setName(productDetails.getName());
+                    product.setBasePrice(productDetails.getBasePrice());
+                    product.setDescription(productDetails.getDescription());
+                    // Stock is now managed via ProductVariant
+                    // product.setStock(productDetails.getStock());
+
+                    // Variants and Images update logic would go here or in separate endpoints
+
+                    return ResponseEntity.ok(productRepository.save(product));
+                }).orElse(ResponseEntity.notFound().build());
     }
 
     // 4. Xóa sản phẩm
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable Long id) {
         return productRepository.findById(id)
-            .map(product -> {
-                productRepository.delete(product);
-                return ResponseEntity.ok().build();
-            }).orElse(ResponseEntity.notFound().build());
+                .map(product -> {
+                    productRepository.delete(product);
+                    return ResponseEntity.ok().build();
+                }).orElse(ResponseEntity.notFound().build());
     }
 }

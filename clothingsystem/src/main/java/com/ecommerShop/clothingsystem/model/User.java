@@ -40,6 +40,15 @@ public class User implements UserDetails {
     @Column(name = "auth_provider")
     private AuthProvider authProvider;
 
+    @Column(name = "status")
+    private String status;
+
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
     // Constructors
     public User() {
     }
@@ -49,6 +58,18 @@ public class User implements UserDetails {
         this.password = password;
         this.fullName = fullName;
         this.role = role;
+        this.status = "ACTIVE"; // Default status
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.status = (this.status == null) ? "ACTIVE" : this.status;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 
     // Getters and Setters
@@ -94,6 +115,30 @@ public class User implements UserDetails {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public String getResetPasswordToken() {
@@ -145,7 +190,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return "ACTIVE".equals(status);
     }
 
     @Override
@@ -155,6 +200,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return "ACTIVE".equals(status);
     }
 }
