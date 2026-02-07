@@ -162,7 +162,8 @@
         grid-template-columns: 1fr;
     }
 
-    .fullWidth {
+    .fullWidth,
+    .imagePreviewContainer {
         grid-column: span 1;
     }
 

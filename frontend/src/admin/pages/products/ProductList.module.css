@@ -21,6 +21,9 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 24px;
+    flex-wrap: wrap;
+    /* Allow wrapping on small screens */
+    gap: 12px;
 }
 
 .title {
@@ -52,11 +55,15 @@
     border-radius: 12px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
     overflow: hidden;
+    overflow-x: auto;
+    /* Enable horizontal scroll */
 }
 
 .table {
     width: 100%;
     border-collapse: collapse;
+    min-width: 600px;
+    /* Force scroll on small screens if content is squeezed */
 }
 
 .table th {
@@ -67,6 +74,8 @@
     font-weight: 600;
     font-size: 14px;
     border-bottom: 1px solid #E5E7EB;
+    white-space: nowrap;
+    /* Prevent headers from breaking awkwardly */
 }
 
 .table td {
@@ -85,6 +94,8 @@
     display: flex;
     align-items: center;
     gap: 16px;
+    min-width: 200px;
+    /* Ensure name/image have space */
 }
 
 .productImage {
@@ -111,6 +122,7 @@
     font-size: 12px;
     font-weight: 500;
     display: inline-block;
+    white-space: nowrap;
 }
 
 .inStock {
@@ -162,4 +174,22 @@
 
 .error {
     color: #DC2626;
+}
+
+/* Page specific responsive tweaks */
+@media (max-width: 640px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .addButton {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .table th,
+    .table td {
+        padding: 12px 16px;
+    }
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import {
     BiGridAlt, BiCart, BiPackage, BiUser,
@@ -9,7 +9,14 @@ import styles from './AdminLayout.module.css';
 import logo from '../../assets/logo.png'; // Updated relative path
 
 const AdminLayout = () => {
-    const location = useLocation();
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+    // Close sidebar when navigating on mobile
+    useEffect(() => {
+        setIsSidebarOpen(false);
+    }, [location.pathname]);
+
+    // Request full screen for mobile (optional, but good for admin apps)
 
     // Mapping paths to titles for the topbar
     const getPageTitle = (pathname) => {
@@ -36,11 +43,25 @@ const AdminLayout = () => {
 
     return (
         <div className={styles.adminContainer}>
+            {/* Mobile Overlay */}
+            {isSidebarOpen && (
+                <div
+                    className={styles.overlay}
+                    onClick={() => setIsSidebarOpen(false)}
+                />
+            )}
+
             {/* Sidebar */}
-            <aside className={styles.sidebar}>
+            <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.showSidebar : ''}`}>
                 <div className={styles.logoContainer}>
                     <img src={logo} alt="Logo" className={styles.logo} />
                     {/* <span className={styles.brandName}>EzMart</span> User wants the real logo, text might be in logo */}
+                    <button
+                        className={styles.closeSidebarBtn}
+                        onClick={() => setIsSidebarOpen(false)}
+                    >
+                        &times;
+                    </button>
                 </div>
 
                 <nav className={styles.nav}>
@@ -64,11 +85,20 @@ const AdminLayout = () => {
             <main className={styles.mainContent}>
                 {/* Topbar */}
                 <header className={styles.topbar}>
-                    <h1 className={styles.pageTitle}>{currentTitle}</h1>
+                    <div className={styles.leftSection}>
+                        <button
+                            className={styles.menuBtn}
+                            onClick={() => setIsSidebarOpen(true)}
+                        >
+                            <BiSearch size={24} style={{ display: 'none' }} /> {/* Wrong icon place holder, fixing below */}
+                            <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"></path></svg>
+                        </button>
+                        <h1 className={styles.pageTitle}>{currentTitle}</h1>
+                    </div>
 
                     <div className={styles.searchBar}>
                         <BiSearch color="#999" size={20} />
-                        <input type="text" placeholder="Search stock, order, etc" className={styles.searchInput} />
+                        <input type="text" placeholder="Search..." className={styles.searchInput} />
                     </div>
 
                     <div className={styles.topbarActions}>

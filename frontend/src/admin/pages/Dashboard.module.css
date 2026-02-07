@@ -176,3 +176,36 @@
     border-radius: 8px 8px 0 0;
     transition: height 1s ease-out;
 }
+
+/* RESPONSIVE QUERIES */
+
+/* Tablet & Mobile */
+@media (max-width: 1024px) {
+    .dashboardContainer {
+        flex-direction: column;
+    }
+
+    .rightColumn {
+        min-width: auto;
+    }
+
+    .statsGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .chartsRow,
+    .bottomRow {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Small Mobile */
+@media (max-width: 640px) {
+    .statsGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .card {
+        padding: 16px;
+    }
+}
