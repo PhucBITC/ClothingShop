@@ -12,4 +12,11 @@ public class ClothingsystemApplication {
 		SpringApplication.run(ClothingsystemApplication.class, args);
 	}
 
+	@org.springframework.context.annotation.Bean
+	org.springframework.boot.CommandLineRunner init(
+			com.ecommerShop.clothingsystem.service.FileStorageService storageService) {
+		return (args) -> {
+			storageService.init();
+		};
+	}
 }
