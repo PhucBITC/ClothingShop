@@ -73,7 +73,7 @@ const ProductList = () => {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h2 className={styles.title}>Products</h2>
+                <h2 className={styles.title}>All Products</h2>
                 <button className={styles.addButton} onClick={() => navigate('/admin/products/add')}>
                     <BiPlus size={20} />
                     Add Product
@@ -86,8 +86,8 @@ const ProductList = () => {
                         <tr>
                             <th>Product</th>
                             <th>Category</th>
-                            <th>Price</th>
-                            <th>Stock</th>
+                            <th>Base Price</th>
+                            <th>Total Stock</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -109,9 +109,9 @@ const ProductList = () => {
                                             />
                                             <span className={styles.productName}>{product.name}</span>
                                         </td>
-                                        <td>{product.category?.name || 'N/A'}</td>
+                                        <td>{product.category?.name || 'Uncategorized'}</td>
                                         <td className={styles.price}>
-                                            {product.basePrice ? product.basePrice.toLocaleString() : '0'} VND
+                                            ${product.basePrice ? product.basePrice.toLocaleString() : '0.00'}
                                         </td>
                                         <td>
                                             <span className={`${styles.stockBadge} ${stockStatus.class}`}>

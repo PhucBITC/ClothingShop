@@ -20,6 +20,8 @@ public class ProductController {
     // 1. Lấy tất cả sản phẩm
     @GetMapping
     public List<Product> getAllProducts() {
+        // Hibernate Initialize or use DTO mapping is better, but for now let's rely on
+        // Service transaction
         return productService.getAllProducts();
     }
 

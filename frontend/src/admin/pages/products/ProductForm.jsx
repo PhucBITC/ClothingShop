@@ -28,6 +28,10 @@ const ProductForm = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
+    // Initial Data for Dropdowns
+    const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'One Size'];
+    const COLORS = ['Black', 'White', 'Blue', 'Red', 'Green', 'Yellow', 'Gray', 'Pink', 'Purple', 'Orange', 'Brown', 'Beige'];
+
     // Fetch Initial Data
     useEffect(() => {
         const fetchData = async () => {
@@ -113,7 +117,7 @@ const ProductForm = () => {
         setError(null);
 
         if (!formData.name || !formData.basePrice || !formData.categoryId) {
-            setError("Vui lòng điền các trường bắt buộc.");
+            setError("Please fill in all required fields.");
             setLoading(false);
             return;
         }
@@ -149,7 +153,7 @@ const ProductForm = () => {
             navigate('/admin/products');
         } catch (err) {
             console.error("Error saving product:", err);
-            setError("Lỗi khi lưu sản phẩm.");
+            setError("Error saving product. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -159,53 +163,62 @@ const ProductForm = () => {
 
     return (
         <motion.div className={styles.container} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <h2 className={styles.title}>{isEditMode ? 'Chỉnh Sửa Sản Phẩm' : 'Thêm Sản Phẩm Mới'}</h2>
+            <h2 className={styles.title}>{isEditMode ? 'Edit Product' : 'Add New Product'}</h2>
             {error && <div className={styles.errorMsg}>{error}</div>}
 
             <form onSubmit={handleSubmit} className={styles.formGrid}>
                 {/* Basic Info */}
                 <div className={styles.section}>
-                    <h3>Thông Tin Cơ Bản</h3>
+                    <h3>Basic Information</h3>
                     <div className={styles.formGroup}>
-                        <label>Tên Sản Phẩm *</label>
-                        <input name="name" value={formData.name} onChange={handleInputChange} required className={styles.input} />
+                        <label className={styles.label}>Product Name *</label>
+                        <input name="name" value={formData.name} onChange={handleInputChange} required className={styles.input} placeholder="e.g. Premium T-Shirt" />
                     </div>
                     <div className={styles.formGroup}>
-                        <label>Giá Cơ Bản (VND) *</label>
-                        <input type="number" name="basePrice" value={formData.basePrice} onChange={handleInputChange} required className={styles.input} />
+                        <label className={styles.label}>Base Price ($) *</label>
+                        <input type="number" name="basePrice" value={formData.basePrice} onChange={handleInputChange} required className={styles.input} placeholder="0.00" min="0" step="0.01" />
                     </div>
                     <div className={styles.formGroup}>
-                        <label>Danh Mục *</label>
+                        <label className={styles.label}>Category *</label>
                         <select name="categoryId" value={formData.categoryId} onChange={handleInputChange} required className={styles.select}>
-                            <option value="">-- Chọn Danh Mục --</option>
+                            <option value="">-- Select Category --</option>
                             {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                         </select>
                     </div>
                     <div className={styles.formGroup}>
-                        <label>Mô Tả</label>
-                        <textarea name="description" value={formData.description} onChange={handleInputChange} className={styles.textarea} />
+                        <label className={styles.label}>Description</label>
+                        <textarea name="description" value={formData.description} onChange={handleInputChange} className={styles.textarea} placeholder="Product details..." />
                     </div>
                 </div>
 
                 {/* Variants */}
                 <div className={styles.section}>
-                    <h3>Biến Thể (Size/Màu)</h3>
+                    <h3>Product Options (Size & Color)</h3>
                     {variants.map((variant, index) => (
                         <div key={index} className={styles.variantRow}>
-                            <input placeholder="Size (VD: M, L)" value={variant.size} onChange={e => handleVariantChange(index, 'size', e.target.value)} required />
-                            <input placeholder="Màu (VD: Đen, Trắng)" value={variant.color} onChange={e => handleVariantChange(index, 'color', e.target.value)} required />
-                            <input type="number" placeholder="Tồn kho" value={variant.stock} onChange={e => handleVariantChange(index, 'stock', e.target.value)} required />
-                            <input type="number" placeholder="Giá riêng (tùy chọn)" value={variant.price} onChange={e => handleVariantChange(index, 'price', e.target.value)} />
-                            <button type="button" onClick={() => removeVariant(index)} className={styles.btnDanger}>Xóa</button>
+                            <select value={variant.size} onChange={e => handleVariantChange(index, 'size', e.target.value)} required className={styles.select}>
+                                <option value="">Select Size</option>
+                                {SIZES.map(s => <option key={s} value={s}>{s}</option>)}
+                            </select>
+
+                            <select value={variant.color} onChange={e => handleVariantChange(index, 'color', e.target.value)} required className={styles.select}>
+                                <option value="">Select Color</option>
+                                {COLORS.map(c => <option key={c} value={c}>{c}</option>)}
+                            </select>
+
+                            <input type="number" placeholder="Stock" value={variant.stock} onChange={e => handleVariantChange(index, 'stock', e.target.value)} required className={styles.input} min="0" />
+                            <input type="number" placeholder="Price Override ($)" value={variant.price} onChange={e => handleVariantChange(index, 'price', e.target.value)} className={styles.input} min="0" step="0.01" />
+
+                            <button type="button" onClick={() => removeVariant(index)} className={styles.btnDanger}>Remove</button>
                         </div>
                     ))}
-                    <button type="button" onClick={addVariant} className={styles.btnAdd}>+ Thêm Biến Thể</button>
+                    <button type="button" onClick={addVariant} className={styles.btnAdd}>+ Add Option</button>
                 </div>
 
                 {/* Images */}
                 <div className={styles.section}>
-                    <h3>Hình Ảnh</h3>
-                    <input type="file" multiple onChange={handleFileChange} className={styles.fileInput} />
+                    <h3>Product Images</h3>
+                    <input type="file" multiple onChange={handleFileChange} className={styles.fileInput} accept="image/*" />
                     <div className={styles.previewContainer}>
                         {existingImages.map((img, idx) => (
                             <img key={idx} src={img.imageUrl} alt="Existing" className={styles.previewImg} />
@@ -220,8 +233,8 @@ const ProductForm = () => {
                 </div>
 
                 <div className={styles.actions}>
-                    <button type="button" onClick={() => navigate('/admin/products')} className={styles.btnSecondary}>Hủy</button>
-                    <button type="submit" className={styles.btnPrimary} disabled={loading}>{loading ? 'Đang Lưu...' : 'Lưu Sản Phẩm'}</button>
+                    <button type="button" onClick={() => navigate('/admin/products')} className={styles.btnSecondary}>Cancel</button>
+                    <button type="submit" className={styles.btnPrimary} disabled={loading}>{loading ? 'Saving...' : 'Save Product'}</button>
                 </div>
             </form>
         </motion.div>
