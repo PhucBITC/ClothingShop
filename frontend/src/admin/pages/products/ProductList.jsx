@@ -45,6 +45,22 @@ const ProductList = () => {
         }
     };
 
+    const getProductImage = (product) => {
+        if (product.images && product.images.length > 0) {
+            const primary = product.images.find(img => img.primary);
+            return primary ? primary.imageUrl : product.images[0].imageUrl;
+        }
+        return product.image || 'https://via.placeholder.com/48';
+    };
+
+    const getStockInfo = (product) => {
+        if (product.variants && product.variants.length > 0) {
+            const totalStock = product.variants.reduce((sum, v) => sum + (v.stock || 0), 0);
+            return totalStock;
+        }
+        return product.stock || 0;
+    };
+
     const getStockStatus = (stock) => {
         if (stock === 0) return { label: 'Out of Stock', class: styles.outOfStock };
         if (stock < 10) return { label: 'Low Stock', class: styles.lowStock };
@@ -78,22 +94,28 @@ const ProductList = () => {
                     <tbody>
                         {products.length > 0 ? (
                             products.map((product) => {
-                                const stockStatus = getStockStatus(product.stock);
+                                const stock = getStockInfo(product);
+                                const stockStatus = getStockStatus(stock);
+                                const imageUrl = getProductImage(product);
+
                                 return (
                                     <tr key={product.id}>
                                         <td className={styles.productInfo}>
                                             <img
-                                                src={product.image || product.imageUrl || 'https://via.placeholder.com/48'}
+                                                src={imageUrl}
                                                 alt={product.name}
                                                 className={styles.productImage}
+                                                onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/48' }}
                                             />
                                             <span className={styles.productName}>{product.name}</span>
                                         </td>
                                         <td>{product.category?.name || 'N/A'}</td>
-                                        <td className={styles.price}>${product.price ? product.price.toLocaleString() : '0'}</td>
+                                        <td className={styles.price}>
+                                            {product.basePrice ? product.basePrice.toLocaleString() : '0'} VND
+                                        </td>
                                         <td>
                                             <span className={`${styles.stockBadge} ${stockStatus.class}`}>
-                                                {product.stock} - {stockStatus.label}
+                                                {stock} - {stockStatus.label}
                                             </span>
                                         </td>
                                         <td>

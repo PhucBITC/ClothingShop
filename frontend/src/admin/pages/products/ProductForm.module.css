@@ -1,59 +1,85 @@
 /* ProductForm.module.css */
 .container {
-    padding: 2rem;
-    background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    max-width: 800px;
-    margin: 0 auto;
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 2.5rem;
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    font-family: 'Inter', sans-serif;
 }
 
 .title {
-    font-size: 1.8rem;
+    font-size: 1.75rem;
     font-weight: 700;
-    color: #333;
-    margin-bottom: 2rem;
+    color: #1a1a1a;
+    margin-bottom: 2.5rem;
     text-align: center;
+    position: relative;
+    padding-bottom: 1rem;
+}
+
+.title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(90deg, #ff8800, #ff5500);
+    border-radius: 2px;
 }
 
 .formGrid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1.5rem;
+}
+
+.section {
+    grid-column: 1 / -1;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.section h3 {
+    font-size: 1.25rem;
+    color: #333;
+    margin-bottom: 1.25rem;
+    font-weight: 600;
 }
 
 .formGroup {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    margin-bottom: 1rem;
 }
 
 .fullWidth {
-    grid-column: span 2;
+    grid-column: 1 / -1;
 }
 
 .label {
-    font-weight: 600;
-    font-size: 0.95rem;
-    color: #555;
-    margin-left: 4px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: #4a5568;
+    margin-left: 2px;
 }
 
 .input,
 .select,
 .textarea {
     width: 100%;
-    padding: 0.8rem 1rem;
-    border: 1px solid #e0e0e0;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e2e8f0;
     border-radius: 8px;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    background-color: #fafafa;
-}
-
-.textarea {
-    resize: vertical;
-    min-height: 120px;
+    font-size: 0.95rem;
+    color: #2d3748;
+    background-color: #f7fafc;
+    transition: all 0.2s ease;
 }
 
 .input:focus,
@@ -62,48 +88,146 @@
     outline: none;
     border-color: #ff8800;
     background-color: #fff;
-    box-shadow: 0 0 0 4px rgba(255, 136, 0, 0.1);
+    box-shadow: 0 0 0 3px rgba(255, 136, 0, 0.15);
 }
 
-.imagePreviewContainer {
-    grid-column: span 2;
-    display: flex;
-    justify-content: center;
-    margin: 1rem 0;
+.textarea {
+    resize: vertical;
+    min-height: 120px;
 }
 
-.imagePreview {
-    width: 200px;
-    height: 200px;
-    object-fit: contain;
-    border-radius: 8px;
-    border: 2px dashed #e0e0e0;
+/* Variants Styling */
+.variantRow {
     display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
     align-items: center;
-    justify-content: center;
-    color: #999;
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #eee;
 }
 
-.imagePreview img {
+.variantRow input {
+    flex: 1;
+    min-width: 120px;
+    padding: 0.6rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.btnAdd {
+    background-color: #e2e8f0;
+    color: #4a5568;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btnAdd:hover {
+    background-color: #cbd5e0;
+    color: #2d3748;
+}
+
+.btnDanger {
+    background-color: #fff5f5;
+    color: #e53e3e;
+    border: 1px solid #feb2b2;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.btnDanger:hover {
+    background-color: #fed7d7;
+}
+
+/* Image Upload & Preview */
+.fileInput {
+    display: block;
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px dashed #cbd5e0;
+    border-radius: 8px;
+    cursor: pointer;
+    background: #fafafa;
+}
+
+.fileInput:hover {
+    border-color: #a0aec0;
+}
+
+.previewContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.previewWrapper {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.previewImg {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 8px;
 }
 
-.actions {
-    grid-column: span 2;
+.btnRemoveImg {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    font-size: 10px;
+    cursor: pointer;
     display: flex;
+    align-items: center;
     justify-content: center;
+    transition: background 0.2s;
+}
+
+.btnRemoveImg:hover {
+    background: rgba(220, 38, 38, 0.9);
+}
+
+/* Actions */
+.actions {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-end;
     gap: 1rem;
     margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #f0f0f0;
 }
 
 .btn {
-    padding: 0.8rem 2rem;
-    border-radius: 30px;
+    padding: 0.75rem 2rem;
+    border-radius: 8px;
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 0.95rem;
     cursor: pointer;
     transition: all 0.2s ease;
     border: none;
@@ -112,29 +236,45 @@
 .btnPrimary {
     background: linear-gradient(135deg, #ff8800 0%, #ff5500 100%);
     color: white;
-    box-shadow: 0 4px 15px rgba(255, 136, 0, 0.3);
+    padding: 0.75rem;
+    border: 1px solid #ff8800;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(255, 136, 0, 0.25);
 }
 
 .btnPrimary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 136, 0, 0.4);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 12px rgba(255, 136, 0, 0.3);
+}
+
+.btnPrimary:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
 }
 
 .btnSecondary {
-    background-color: #f5f5f5;
-    color: #666;
+    background-color: white;
+    border-radius: 15px;
+    padding: 0.75rem;
+    color: #4a5568;
+    border: 1px solid #e2e8f0;
 }
 
 .btnSecondary:hover {
-    background-color: #eee;
-    color: #333;
+    background-color: #f7fafc;
+    border-color: #cbd5e0;
+    color: #2d3748;
 }
 
 .errorMsg {
-    color: #ff4444;
-    font-size: 0.85rem;
-    margin-top: 0.2rem;
-    margin-left: 4px;
+    background-color: #fff5f5;
+    color: #c53030;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    border: 1px solid #feb2b2;
+    text-align: center;
 }
 
 .loadingOverlay {
@@ -143,33 +283,47 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.9);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1000;
-    font-size: 1.2rem;
+    flex-direction: column;
+    gap: 1rem;
     color: #ff8800;
     font-weight: 600;
 }
 
-@media (max-width: 768px) {
+/* Responsive */
+@media (max-width: 640px) {
     .container {
         padding: 1.5rem;
+        margin: 1rem;
     }
 
     .formGrid {
         grid-template-columns: 1fr;
     }
 
-    .fullWidth,
-    .imagePreviewContainer {
-        grid-column: span 1;
+    .variantRow {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+
+    .variantRow input {
+        width: 100%;
+        min-width: auto;
+    }
+
+    .btnRemoveImg {
+        width: 28px;
+        height: 28px;
+        font-size: 14px;
     }
 
     .actions {
-        flex-direction: column;
-        grid-column: span 1;
+        flex-direction: column-reverse;
     }
 
     .btn {

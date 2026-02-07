@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from '../../../api/axios'; // Use configured instance
+import axios from '../../../api/axios';
 import styles from './ProductForm.module.css';
 import { motion } from 'framer-motion';
 
@@ -12,60 +12,99 @@ const ProductForm = () => {
     const [formData, setFormData] = useState({
         name: '',
         description: '',
-        price: '',
-        stockQuantity: '',
-        categoryId: '',
-        image: ''
+        basePrice: '',
+        categoryId: ''
     });
+
+    const [variants, setVariants] = useState([
+        { size: '', color: '', stock: '', price: '' }
+    ]);
+
+    const [selectedFiles, setSelectedFiles] = useState([]);
+    const [previewImages, setPreviewImages] = useState([]);
+    const [existingImages, setExistingImages] = useState([]);
 
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    // Fetch Categories and Product Data (if edit mode)
+    // Fetch Initial Data
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
             try {
-                // Fetch Categories
                 const catResponse = await axios.get('/categories');
-                if (Array.isArray(catResponse.data)) {
-                    setCategories(catResponse.data);
-                } else {
-                    console.error("Categories API response is not an array:", catResponse.data);
-                    setCategories([]);
-                }
+                setCategories(Array.isArray(catResponse.data) ? catResponse.data : []);
 
-                // If Edit Mode, Fetch Product
                 if (isEditMode) {
                     const productResponse = await axios.get(`/products/${id}`);
                     const product = productResponse.data;
+
                     setFormData({
                         name: product.name,
                         description: product.description,
-                        price: product.price,
-                        stockQuantity: product.stockQuantity,
-                        categoryId: product.category ? product.category.id : '',
-                        image: product.image
+                        basePrice: product.basePrice,
+                        categoryId: product.category?.id || ''
                     });
+
+                    // Load Variants
+                    if (product.variants && product.variants.length > 0) {
+                        setVariants(product.variants.map(v => ({
+                            size: v.size,
+                            color: v.color,
+                            stock: v.stock,
+                            price: v.price
+                        })));
+                    }
+
+                    // Load Images
+                    if (product.images && product.images.length > 0) {
+                        setExistingImages(product.images);
+                    }
                 }
             } catch (err) {
                 console.error("Error fetching data:", err);
-                setError("Failed to load data. Please try again.");
+                setError("Failed to load data.");
             } finally {
                 setLoading(false);
             }
         };
-
         fetchData();
     }, [id, isEditMode]);
 
-    const handleChange = (e) => {
+    const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    // Variant Handlers
+    const handleVariantChange = (index, field, value) => {
+        const newVariants = [...variants];
+        newVariants[index][field] = value;
+        setVariants(newVariants);
+    };
+
+    const addVariant = () => {
+        setVariants([...variants, { size: '', color: '', stock: '', price: '' }]);
+    };
+
+    const removeVariant = (index) => {
+        const newVariants = variants.filter((_, i) => i !== index);
+        setVariants(newVariants);
+    };
+
+    // File Handlers
+    const handleFileChange = (e) => {
+        const files = Array.from(e.target.files);
+        setSelectedFiles(prev => [...prev, ...files]);
+
+        const newPreviews = files.map(file => URL.createObjectURL(file));
+        setPreviewImages(prev => [...prev, ...newPreviews]);
+    };
+
+    const removeSelectedFile = (index) => {
+        setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+        setPreviewImages(prev => prev.filter((_, i) => i !== index));
     };
 
     const handleSubmit = async (e) => {
@@ -73,35 +112,44 @@ const ProductForm = () => {
         setLoading(true);
         setError(null);
 
-        // Basic Validation
-        if (!formData.name || !formData.price || !formData.categoryId) {
-            setError("Vui lòng điền đầy đủ các trường bắt buộc.");
+        if (!formData.name || !formData.basePrice || !formData.categoryId) {
+            setError("Vui lòng điền các trường bắt buộc.");
             setLoading(false);
             return;
         }
 
         try {
-            const payload = {
+            const productData = {
                 ...formData,
-                price: parseFloat(formData.price),
-                stockQuantity: parseInt(formData.stockQuantity, 10),
-                category: { id: parseInt(formData.categoryId, 10) } // Backend expects object with ID
+                basePrice: parseFloat(formData.basePrice),
+                categoryId: parseInt(formData.categoryId, 10),
+                variants: variants.map(v => ({
+                    ...v,
+                    stock: parseInt(v.stock, 10),
+                    price: v.price ? parseFloat(v.price) : null
+                }))
             };
 
-            // Remove flat categoryId from payload to match Entity structure if needed, 
-            // but usually sending the object is safer for specific mapping.
-            // Let's stick to the structure the backend likely expects based on typical Spring Boot User/Product models.
-            // If the backend uses DTOs, this might need adjustment, but standard Entities often accept this.
+            const data = new FormData();
+            data.append("product", new Blob([JSON.stringify(productData)], { type: "application/json" }));
+
+            selectedFiles.forEach(file => {
+                data.append("files", file);
+            });
 
             if (isEditMode) {
-                await axios.put(`/products/${id}`, payload);
+                await axios.put(`/products/${id}`, data, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
             } else {
-                await axios.post('/products', payload);
+                await axios.post('/products', data, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
             }
             navigate('/admin/products');
         } catch (err) {
             console.error("Error saving product:", err);
-            setError("Lỗi khi lưu sản phẩm. Vui lòng kiểm tra lại.");
+            setError("Lỗi khi lưu sản phẩm.");
         } finally {
             setLoading(false);
         }
@@ -110,122 +158,70 @@ const ProductForm = () => {
     if (loading && !formData.name) return <div className={styles.loadingOverlay}>Loading...</div>;
 
     return (
-        <motion.div
-            className={styles.container}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-        >
+        <motion.div className={styles.container} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <h2 className={styles.title}>{isEditMode ? 'Chỉnh Sửa Sản Phẩm' : 'Thêm Sản Phẩm Mới'}</h2>
-
-            {error && <div className={styles.errorMsg} style={{ textAlign: 'center', marginBottom: '1rem' }}>{error}</div>}
+            {error && <div className={styles.errorMsg}>{error}</div>}
 
             <form onSubmit={handleSubmit} className={styles.formGrid}>
-                {/* Name */}
-                <div className={`${styles.formGroup} ${styles.fullWidth}`}>
-                    <label className={styles.label}>Tên Sản Phẩm *</label>
-                    <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        className={styles.input}
-                        placeholder="Nhập tên sản phẩm"
-                        required
-                    />
-                </div>
-
-                {/* Price */}
-                <div className={styles.formGroup}>
-                    <label className={styles.label}>Giá (VND) *</label>
-                    <input
-                        type="number"
-                        name="price"
-                        value={formData.price}
-                        onChange={handleChange}
-                        className={styles.input}
-                        placeholder="0"
-                        min="0"
-                        required
-                    />
-                </div>
-
-                {/* Stock */}
-                <div className={styles.formGroup}>
-                    <label className={styles.label}>Số Lượng Tồn Kho *</label>
-                    <input
-                        type="number"
-                        name="stockQuantity"
-                        value={formData.stockQuantity}
-                        onChange={handleChange}
-                        className={styles.input}
-                        placeholder="0"
-                        min="0"
-                        required
-                    />
-                </div>
-
-                {/* Category */}
-                <div className={styles.formGroup}>
-                    <label className={styles.label}>Danh Mục *</label>
-                    <select
-                        name="categoryId"
-                        value={formData.categoryId}
-                        onChange={handleChange}
-                        className={styles.select}
-                        required
-                    >
-                        <option value="">-- Chọn Danh Mục --</option>
-                        {categories.map(cat => (
-                            <option key={cat.id} value={cat.id}>{cat.name}</option>
-                        ))}
-                    </select>
-                </div>
-
-                {/* Image URL */}
-                <div className={styles.formGroup}>
-                    <label className={styles.label}>URL Hình Ảnh (Link)</label>
-                    <input
-                        type="text"
-                        name="image"
-                        value={formData.image}
-                        onChange={handleChange}
-                        className={styles.input}
-                        placeholder="https://example.com/image.jpg"
-                    />
-                </div>
-
-                {/* Image Preview */}
-                <div className={styles.imagePreviewContainer}>
-                    <div className={styles.imagePreview}>
-                        {formData.image ? (
-                            <img src={formData.image} alt="Preview" onError={(e) => e.target.style.display = 'none'} />
-                        ) : (
-                            <span>No Image Preview</span>
-                        )}
+                {/* Basic Info */}
+                <div className={styles.section}>
+                    <h3>Thông Tin Cơ Bản</h3>
+                    <div className={styles.formGroup}>
+                        <label>Tên Sản Phẩm *</label>
+                        <input name="name" value={formData.name} onChange={handleInputChange} required className={styles.input} />
+                    </div>
+                    <div className={styles.formGroup}>
+                        <label>Giá Cơ Bản (VND) *</label>
+                        <input type="number" name="basePrice" value={formData.basePrice} onChange={handleInputChange} required className={styles.input} />
+                    </div>
+                    <div className={styles.formGroup}>
+                        <label>Danh Mục *</label>
+                        <select name="categoryId" value={formData.categoryId} onChange={handleInputChange} required className={styles.select}>
+                            <option value="">-- Chọn Danh Mục --</option>
+                            {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                        </select>
+                    </div>
+                    <div className={styles.formGroup}>
+                        <label>Mô Tả</label>
+                        <textarea name="description" value={formData.description} onChange={handleInputChange} className={styles.textarea} />
                     </div>
                 </div>
 
-                {/* Description */}
-                <div className={`${styles.formGroup} ${styles.fullWidth}`}>
-                    <label className={styles.label}>Mô Tả</label>
-                    <textarea
-                        name="description"
-                        value={formData.description}
-                        onChange={handleChange}
-                        className={styles.textarea}
-                        placeholder="Mô tả chi tiết sản phẩm..."
-                    />
+                {/* Variants */}
+                <div className={styles.section}>
+                    <h3>Biến Thể (Size/Màu)</h3>
+                    {variants.map((variant, index) => (
+                        <div key={index} className={styles.variantRow}>
+                            <input placeholder="Size (VD: M, L)" value={variant.size} onChange={e => handleVariantChange(index, 'size', e.target.value)} required />
+                            <input placeholder="Màu (VD: Đen, Trắng)" value={variant.color} onChange={e => handleVariantChange(index, 'color', e.target.value)} required />
+                            <input type="number" placeholder="Tồn kho" value={variant.stock} onChange={e => handleVariantChange(index, 'stock', e.target.value)} required />
+                            <input type="number" placeholder="Giá riêng (tùy chọn)" value={variant.price} onChange={e => handleVariantChange(index, 'price', e.target.value)} />
+                            <button type="button" onClick={() => removeVariant(index)} className={styles.btnDanger}>Xóa</button>
+                        </div>
+                    ))}
+                    <button type="button" onClick={addVariant} className={styles.btnAdd}>+ Thêm Biến Thể</button>
                 </div>
 
-                {/* Actions */}
+                {/* Images */}
+                <div className={styles.section}>
+                    <h3>Hình Ảnh</h3>
+                    <input type="file" multiple onChange={handleFileChange} className={styles.fileInput} />
+                    <div className={styles.previewContainer}>
+                        {existingImages.map((img, idx) => (
+                            <img key={idx} src={img.imageUrl} alt="Existing" className={styles.previewImg} />
+                        ))}
+                        {previewImages.map((src, idx) => (
+                            <div key={idx} className={styles.previewWrapper}>
+                                <img src={src} alt="Preview" className={styles.previewImg} />
+                                <button type="button" onClick={() => removeSelectedFile(idx)} className={styles.btnRemoveImg}>X</button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
                 <div className={styles.actions}>
-                    <button type="button" onClick={() => navigate('/admin/products')} className={`${styles.btn} ${styles.btnSecondary}`}>
-                        Hủy Bỏ
-                    </button>
-                    <button type="submit" className={`${styles.btn} ${styles.btnPrimary}`} disabled={loading}>
-                        {loading ? 'Đang Lưu...' : (isEditMode ? 'Cập Nhật' : 'Tạo Mới')}
-                    </button>
+                    <button type="button" onClick={() => navigate('/admin/products')} className={styles.btnSecondary}>Hủy</button>
+                    <button type="submit" className={styles.btnPrimary} disabled={loading}>{loading ? 'Đang Lưu...' : 'Lưu Sản Phẩm'}</button>
                 </div>
             </form>
         </motion.div>
