@@ -8,6 +8,11 @@ const ProductList = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    // Modal state
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [productToDelete, setProductToDelete] = useState(null);
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -34,15 +39,27 @@ const ProductList = () => {
         }
     };
 
-    const handleDelete = async (id) => {
-        if (window.confirm("Are you sure you want to delete this product?")) {
-            try {
-                await axios.delete(`/products/${id}`);
-                setProducts(products.filter(p => p.id !== id));
-            } catch (err) {
-                alert("Failed to delete product");
-            }
+    const confirmDelete = (product) => {
+        setProductToDelete(product);
+        setShowDeleteModal(true);
+    };
+
+    const handleDelete = async () => {
+        if (!productToDelete) return;
+
+        try {
+            await axios.delete(`/products/${productToDelete.id}`);
+            setProducts(products.filter(p => p.id !== productToDelete.id));
+            setShowDeleteModal(false);
+            setProductToDelete(null);
+        } catch (err) {
+            alert("Failed to delete product");
         }
+    };
+
+    const cancelDelete = () => {
+        setShowDeleteModal(false);
+        setProductToDelete(null);
     };
 
     const getProductImage = (product) => {
@@ -130,7 +147,7 @@ const ProductList = () => {
                                                 <button
                                                     className={`${styles.actionButton} ${styles.deleteBtn}`}
                                                     title="Delete"
-                                                    onClick={() => handleDelete(product.id)}
+                                                    onClick={() => confirmDelete(product)}
                                                 >
                                                     <BiTrash size={18} />
                                                 </button>
@@ -149,6 +166,20 @@ const ProductList = () => {
                     </tbody>
                 </table>
             </div>
+
+            {/* Custom Delete Modal */}
+            {showDeleteModal && (
+                <div className={styles.modalOverlay}>
+                    <div className={styles.modalContent}>
+                        <h3>Confirm Delete</h3>
+                        <p>Are you sure you want to delete <strong>{productToDelete?.name}</strong>?</p>
+                        <div className={styles.modalActions}>
+                            <button className={styles.cancelBtn} onClick={cancelDelete}>Cancel</button>
+                            <button className={styles.confirmBtn} onClick={handleDelete}>Delete</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

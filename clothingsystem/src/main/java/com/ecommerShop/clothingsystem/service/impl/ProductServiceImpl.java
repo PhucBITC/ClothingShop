@@ -116,9 +116,8 @@ public class ProductServiceImpl implements ProductService {
         }
 
         // Update Variants
-        productVariantRepository.deleteByProduct(product);
         if (request.getVariants() != null) {
-            List<ProductVariant> variants = new ArrayList<>();
+            product.getVariants().clear();
             for (ProductRequest.VariantDTO vDto : request.getVariants()) {
                 ProductVariant variant = new ProductVariant();
                 variant.setProduct(product);
@@ -126,10 +125,8 @@ public class ProductServiceImpl implements ProductService {
                 variant.setColor(vDto.getColor());
                 variant.setStock(vDto.getStock());
                 variant.setPrice(vDto.getPrice() != null ? vDto.getPrice() : product.getBasePrice());
-                variants.add(variant);
+                product.getVariants().add(variant);
             }
-            productVariantRepository.saveAll(variants);
-            product.setVariants(variants);
         }
 
         // Update Images: Append new images if uploaded
@@ -142,8 +139,10 @@ public class ProductServiceImpl implements ProductService {
             // productImageRepository.deleteByProduct(product);
 
             List<ProductImage> images = product.getImages(); // Keep existing
-            if (images == null)
+            if (images == null) {
                 images = new ArrayList<>();
+                product.setImages(images);
+            }
 
             for (MultipartFile file : files) {
                 String filename = fileStorageService.save(file);

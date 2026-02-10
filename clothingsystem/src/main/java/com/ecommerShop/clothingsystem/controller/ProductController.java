@@ -62,4 +62,15 @@ public class ProductController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    // 5. Lấy sản phẩm theo ID
+    @GetMapping("/{id}")
+    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+        try {
+            Product product = productService.getProductById(id);
+            return ResponseEntity.ok(product);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

@@ -20,8 +20,16 @@ public class FilesController {
     @GetMapping("/{filename:.+}")
     public ResponseEntity<Resource> getFile(@PathVariable String filename) {
         Resource file = storageService.load(filename);
+        String contentType = "application/octet-stream";
+        try {
+            contentType = java.nio.file.Files.probeContentType(file.getFile().toPath());
+        } catch (Exception e) {
+            // fallback to default
+        }
+
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + file.getFilename() + "\"")
+                .header(HttpHeaders.CONTENT_TYPE, contentType)
                 .body(file);
     }
 }
