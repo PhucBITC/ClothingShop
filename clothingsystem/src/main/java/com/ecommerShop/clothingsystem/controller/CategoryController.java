@@ -27,6 +27,26 @@ public class CategoryController {
         return categoryRepository.save(category);
     }
 
+    // 3. Lấy danh mục theo ID
+    @GetMapping("/{id}")
+    public ResponseEntity<Category> getCategoryById(@PathVariable Long id) {
+        return categoryRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // 4. Cập nhật danh mục
+    @PutMapping("/{id}")
+    public ResponseEntity<Category> updateCategory(@PathVariable Long id, @RequestBody Category categoryDetails) {
+        return categoryRepository.findById(id)
+                .map(category -> {
+                    category.setName(categoryDetails.getName());
+                    category.setDescription(categoryDetails.getDescription());
+                    category.setCategoryType(categoryDetails.getCategoryType());
+                    return ResponseEntity.ok(categoryRepository.save(category));
+                }).orElse(ResponseEntity.notFound().build());
+    }
+
     // 3. Xóa một danh mục theo ID
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCategory(@PathVariable Long id) {

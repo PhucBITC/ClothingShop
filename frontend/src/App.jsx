@@ -25,6 +25,8 @@ import AdminLayout from "./admin/layouts/AdminLayout";
 import Dashboard from "./admin/pages/Dashboard";
 import AdminProductList from "./admin/pages/products/ProductList";
 import ProductForm from "./admin/pages/products/ProductForm";
+import CategoryList from "./admin/pages/categories/CategoryList";
+import CategoryForm from "./admin/pages/categories/CategoryForm";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function AppLayout() {
@@ -69,6 +71,9 @@ function AppLayout() {
             <Route path="products" element={<AdminProductList />} />
             <Route path="products/add" element={<ProductForm />} />
             <Route path="products/edit/:id" element={<ProductForm />} />
+            <Route path="categories" element={<CategoryList />} />
+            <Route path="categories/add" element={<CategoryForm />} />
+            <Route path="categories/edit/:id" element={<CategoryForm />} />
           </Route>
         </Route>
 

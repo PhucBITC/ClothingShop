@@ -22,6 +22,7 @@ const AdminLayout = () => {
     const getPageTitle = (pathname) => {
         if (pathname.includes('/admin/orders')) return 'Orders';
         if (pathname.includes('/admin/products')) return 'Products';
+        if (pathname.includes('/admin/categories')) return 'Categories';
         if (pathname.includes('/admin/customers')) return 'Customers';
         if (pathname === '/admin') return 'Dashboard';
         return 'Dashboard';
@@ -33,6 +34,7 @@ const AdminLayout = () => {
         { name: 'Dashboard', path: '/admin', icon: <BiGridAlt />, end: true },
         { name: 'Orders', path: '/admin/orders', icon: <BiCart /> },
         { name: 'Products', path: '/admin/products', icon: <BiPackage /> },
+        { name: 'Categories', path: '/admin/categories', icon: <BiGridAlt /> },
         { name: 'Customers', path: '/admin/customers', icon: <BiUser /> },
         { name: 'Reports', path: '/admin/reports', icon: <BiFile /> },
         { name: 'Discounts', path: '/admin/discounts', icon: <BiPurchaseTag /> },

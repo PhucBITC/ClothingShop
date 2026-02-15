@@ -28,7 +28,20 @@ const ProductForm = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    // Initial Data for Dropdowns
+    // Two-step category selection state
+    const [selectedType, setSelectedType] = useState('');
+    const [filteredCategories, setFilteredCategories] = useState([]);
+
+    const CATEGORY_TYPES = [
+        'MEN',
+        'WOMEN',
+        'KIDS',
+        'FOOTWEAR',
+        'ACCESSORIES',
+        'TRADITIONAL_WEAR',
+        'NEW_ARRIVALS'
+    ];
+
     const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'One Size'];
     const COLORS = ['Black', 'White', 'Blue', 'Red', 'Green', 'Yellow', 'Gray', 'Pink', 'Purple', 'Orange', 'Brown', 'Beige'];
 
@@ -45,19 +58,19 @@ const ProductForm = () => {
                     const product = productResponse.data;
 
                     setFormData({
-                        name: product.name,
-                        description: product.description,
-                        basePrice: product.basePrice,
+                        name: product.name || '',
+                        description: product.description || '',
+                        basePrice: product.basePrice || '',
                         categoryId: product.category?.id || ''
                     });
 
                     // Load Variants
                     if (product.variants && product.variants.length > 0) {
                         setVariants(product.variants.map(v => ({
-                            size: v.size,
-                            color: v.color,
-                            stock: v.stock,
-                            price: v.price
+                            size: v.size || '',
+                            color: v.color || '',
+                            stock: v.stock || '',
+                            price: v.price || ''
                         })));
                     }
 
@@ -76,9 +89,34 @@ const ProductForm = () => {
         fetchData();
     }, [id, isEditMode]);
 
+    // Filter categories when Type changes
+    useEffect(() => {
+        if (selectedType) {
+            const filtered = categories.filter(c => c.categoryType === selectedType);
+            setFilteredCategories(filtered);
+        } else {
+            setFilteredCategories([]);
+        }
+    }, [selectedType, categories]);
+
+    // Set initial Type when editing or when categoryId changes
+    useEffect(() => {
+        if (formData.categoryId && categories.length > 0) {
+            const selectedCat = categories.find(c => c.id === parseInt(formData.categoryId));
+            if (selectedCat && selectedCat.categoryType !== selectedType) {
+                setSelectedType(selectedCat.categoryType);
+            }
+        }
+    }, [formData.categoryId, categories]);
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleTypeChange = (e) => {
+        setSelectedType(e.target.value);
+        setFormData(prev => ({ ...prev, categoryId: '' })); // Reset category when type changes
     };
 
     // Variant Handlers
@@ -178,13 +216,40 @@ const ProductForm = () => {
                         <label className={styles.label}>Base Price ($) *</label>
                         <input type="number" name="basePrice" value={formData.basePrice} onChange={handleInputChange} required className={styles.input} placeholder="0.00" min="0" step="0.01" />
                     </div>
+
                     <div className={styles.formGroup}>
-                        <label className={styles.label}>Category *</label>
-                        <select name="categoryId" value={formData.categoryId} onChange={handleInputChange} required className={styles.select}>
-                            <option value="">-- Select Category --</option>
-                            {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                        <label className={styles.label}>Category Type *</label>
+                        <select
+                            value={selectedType}
+                            onChange={handleTypeChange}
+                            className={styles.select}
+                        >
+                            <option value="">-- Select Type --</option>
+                            {CATEGORY_TYPES.map(type => (
+                                <option key={type} value={type}>{type.replace('_', ' ')}</option>
+                            ))}
                         </select>
                     </div>
+
+                    <div className={styles.formGroup}>
+                        <label className={styles.label}>Category Name *</label>
+                        <select
+                            name="categoryId"
+                            value={formData.categoryId}
+                            onChange={handleInputChange}
+                            required
+                            className={styles.select}
+                            disabled={!selectedType}
+                        >
+                            <option value="">-- Select Category --</option>
+                            {filteredCategories.map(c => (
+                                <option key={c.id} value={c.id}>
+                                    {c.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
                     <div className={styles.formGroup}>
                         <label className={styles.label}>Description</label>
                         <textarea name="description" value={formData.description} onChange={handleInputChange} className={styles.textarea} placeholder="Product details..." />
