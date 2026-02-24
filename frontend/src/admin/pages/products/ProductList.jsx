@@ -51,7 +51,7 @@ const ProductList = () => {
             setLoading(true);
             const params = {
                 page: page,
-                size: 2,
+                size: 5,
                 keyword: filters.keyword,
                 categoryId: filters.categoryId,
                 minPrice: filters.minPrice,
