@@ -7,6 +7,16 @@ public class ProductRequest {
     private String description;
     private Double basePrice;
     private Long categoryId;
+
+    // New Fields
+    private String metaTitle;
+    private String metaDescription;
+    private String tags;
+    private Double weight;
+    private Double length;
+    private Double width;
+    private Double height;
+
     private List<VariantDTO> variants;
     private List<ImageDTO> images;
 
@@ -51,6 +61,67 @@ public class ProductRequest {
         this.variants = variants;
     }
 
+    public void setContents(String name) { // Placeholder to avoid breaking format, but I'll add the new getters/setters
+                                           // here
+        this.name = name;
+    }
+
+    public String getMetaTitle() {
+        return metaTitle;
+    }
+
+    public void setMetaTitle(String metaTitle) {
+        this.metaTitle = metaTitle;
+    }
+
+    public String getMetaDescription() {
+        return metaDescription;
+    }
+
+    public void setMetaDescription(String metaDescription) {
+        this.metaDescription = metaDescription;
+    }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
+    }
+
+    public Double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(Double weight) {
+        this.weight = weight;
+    }
+
+    public Double getLength() {
+        return length;
+    }
+
+    public void setLength(Double length) {
+        this.length = length;
+    }
+
+    public Double getWidth() {
+        return width;
+    }
+
+    public void setWidth(Double width) {
+        this.width = width;
+    }
+
+    public Double getHeight() {
+        return height;
+    }
+
+    public void setHeight(Double height) {
+        this.height = height;
+    }
+
     public List<ImageDTO> getImages() {
         return images;
     }
@@ -64,6 +135,7 @@ public class ProductRequest {
         private String size;
         private String color;
         private Double price; // Optional override
+        private Double salePrice;
         private Integer stock;
 
         // Getters and Setters
@@ -97,6 +169,14 @@ public class ProductRequest {
 
         public void setStock(Integer stock) {
             this.stock = stock;
+        }
+
+        public Double getSalePrice() {
+            return salePrice;
+        }
+
+        public void setSalePrice(Double salePrice) {
+            this.salePrice = salePrice;
         }
     }
 

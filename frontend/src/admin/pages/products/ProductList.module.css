@@ -16,6 +16,119 @@
     }
 }
 
+.layout {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+}
+
+.sidebar {
+    width: 260px;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+    flex-shrink: 0;
+}
+
+.content {
+    flex: 1;
+    min-width: 0;
+}
+
+.filterGroup {
+    margin-bottom: 20px;
+}
+
+.filterLabel {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 8px;
+}
+
+.filterInput,
+.filterSelect {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #E5E7EB;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #1F2937;
+    margin-bottom: 8px;
+}
+
+.filterInput:focus,
+.filterSelect:focus {
+    outline: none;
+    border-color: #FF8800;
+    box-shadow: 0 0 0 2px rgba(255, 136, 0, 0.1);
+}
+
+.btnApply {
+    width: 100%;
+    background-color: #FF8800;
+    color: white;
+    padding: 8px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.btnReset {
+    width: 100%;
+    background-color: #F3F4F6;
+    color: #374151;
+    padding: 8px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 8px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 24px;
+}
+
+.pageBtn {
+    padding: 6px 12px;
+    border: 1px solid #E5E7EB;
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #374151;
+}
+
+.pageBtn.active {
+    background: #FF8800;
+    color: white;
+    border-color: #FF8800;
+}
+
+.pageBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Responsive Sidebar */
+@media (max-width: 900px) {
+    .layout {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+    }
+}
+
 .header {
     display: flex;
     justify-content: space-between;
@@ -192,7 +305,9 @@
     .table td {
         padding: 12px 16px;
     }
-}.modalOverlay {
+}
+
+.modalOverlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -222,6 +337,7 @@
         opacity: 0;
         transform: scale(0.95);
     }
+
     to {
         opacity: 1;
         transform: scale(1);
@@ -244,7 +360,8 @@
 
 .modalActions {
     display: flex;
-    justify-content: flex-end; /* Or center/space-between based on preference */
+    justify-content: flex-end;
+    /* Or center/space-between based on preference */
     gap: 12px;
 }
 

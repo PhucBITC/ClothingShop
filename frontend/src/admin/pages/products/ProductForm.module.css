@@ -1,178 +1,228 @@
 /* ProductForm.module.css */
 .container {
-    max-width: 900px;
-    margin: 2rem auto;
-    padding: 2.5rem;
-    background-color: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    margin: 0;
+    padding: 1.5rem;
+    background-color: transparent;
     font-family: 'Inter', sans-serif;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .title {
-    font-size: 1.75rem;
+    font-size: 1.8rem;
     font-weight: 700;
-    color: #1a1a1a;
-    margin-bottom: 2.5rem;
-    text-align: center;
-    position: relative;
-    padding-bottom: 1rem;
+    color: #111827;
+    margin-bottom: 2rem;
+    text-align: left;
 }
 
-.title::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 4px;
-    background: linear-gradient(90deg, #ff8800, #ff5500);
-    border-radius: 2px;
-}
-
+/* 2-Column Grid: Main Content (70%) - Sidebar (30%) */
 .formGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: 2.5fr 1fr;
+    gap: 24px;
+    align-items: start;
 }
 
+/* Card Styling */
 .section {
-    grid-column: 1 / -1;
-    margin-bottom: 2rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid #f0f0f0;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    /* Softer shadow */
+    margin-bottom: 24px;
+    border: 1px solid #e5e7eb;
 }
 
 .section h3 {
-    font-size: 1.25rem;
-    color: #333;
-    margin-bottom: 1.25rem;
+    font-size: 1.1rem;
+    color: #111827;
+    margin-bottom: 1.5rem;
     font-weight: 600;
+    border-bottom: 1px solid #f3f4f6;
+    padding-bottom: 12px;
 }
 
+/* Form Elements */
 .formGroup {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-}
-
-.fullWidth {
-    grid-column: 1 / -1;
+    margin-bottom: 1.25rem;
 }
 
 .label {
+    display: block;
     font-weight: 500;
     font-size: 0.9rem;
-    color: #4a5568;
-    margin-left: 2px;
+    color: #374151;
+    margin-bottom: 6px;
 }
 
 .input,
 .select,
 .textarea {
     width: 100%;
-    padding: 0.75rem 1rem;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
     font-size: 0.95rem;
-    color: #2d3748;
-    background-color: #f7fafc;
-    transition: all 0.2s ease;
+    color: #111827;
+    background-color: #fff;
+    transition: all 0.2s;
 }
 
 .input:focus,
 .select:focus,
 .textarea:focus {
     outline: none;
-    border-color: #ff8800;
-    background-color: #fff;
-    box-shadow: 0 0 0 3px rgba(255, 136, 0, 0.15);
+    border-color: #FF8800;
+    box-shadow: 0 0 0 3px rgba(255, 136, 0, 0.1);
 }
 
 .textarea {
-    resize: vertical;
     min-height: 120px;
+    resize: vertical;
 }
 
-/* Variants Styling */
-.variantRow {
+/* Variants Table Grid System */
+/* Columns: Size(1fr) Color(1fr) Stock(80px) Price(100px) Sale(100px) Action(40px) */
+.variantTable {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.variantHeader {
+    display: grid;
+    grid-template-columns: 1fr 1fr 100px 120px 120px 50px;
+    gap: 12px;
+    padding: 0 12px;
+    margin-bottom: 4px;
+}
+
+.variantLabel {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.variantRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr 100px 120px 120px 50px;
+    gap: 12px;
     align-items: center;
-    background: #f8f9fa;
-    padding: 1rem;
+    background: #f9fafb;
+    padding: 12px;
     border-radius: 8px;
-    border: 1px solid #eee;
+    border: 1px solid #e5e7eb;
+    transition: background 0.2s;
 }
 
-.variantRow input {
-    flex: 1;
-    min-width: 120px;
-    padding: 0.6rem;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 0.9rem;
+.variantRow:hover {
+    background: #f3f4f6;
 }
 
+.variantRow .input,
+.variantRow .select {
+    margin: 0;
+    /* Override default margins */
+}
+
+/* Buttons */
 .btnAdd {
-    background-color: #e2e8f0;
-    color: #4a5568;
-    border: none;
-    padding: 0.6rem 1.2rem;
+    background-color: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    padding: 8px 16px;
     border-radius: 6px;
     cursor: pointer;
-    font-weight: 600;
+    font-weight: 500;
     font-size: 0.9rem;
     transition: all 0.2s;
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 6px;
 }
 
 .btnAdd:hover {
-    background-color: #cbd5e0;
-    color: #2d3748;
+    background-color: #e5e7eb;
+    color: #111827;
 }
 
 .btnDanger {
-    background-color: #fff5f5;
-    color: #e53e3e;
-    border: 1px solid #feb2b2;
-    padding: 0.5rem 1rem;
+    width: 36px;
+    height: 36px;
     border-radius: 6px;
+    border: 1px solid #fee2e2;
+    background: white;
+    color: #ef4444;
     cursor: pointer;
-    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: all 0.2s;
 }
 
 .btnDanger:hover {
-    background-color: #fed7d7;
+    background: #fee2e2;
+    color: #dc2626;
 }
 
-/* Image Upload & Preview */
-.fileInput {
-    display: block;
-    width: 100%;
-    padding: 0.5rem;
-    border: 1px dashed #cbd5e0;
+/* Bulk Update Box */
+.bulkUpdate {
+    background: #eff6ff;
+    border: 1px solid #dbeafe;
     border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 24px;
+}
+
+.bulkHeader {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #1e40af;
+    margin-bottom: 12px;
+}
+
+.bulkControls {
+    display: flex;
+    gap: 12px;
+}
+
+/* Image Upload */
+.fileInput {
+    padding: 40px;
+    border: 2px dashed #d1d5db;
+    border-radius: 8px;
+    background: #f9fafb;
+    text-align: center;
     cursor: pointer;
-    background: #fafafa;
+    transition: all 0.2s;
 }
 
 .fileInput:hover {
-    border-color: #a0aec0;
+    border-color: #FF8800;
+    background: #fff;
 }
 
 .previewContainer {
     display: flex;
     flex-wrap: wrap;
-    gap: 1rem;
-    margin-top: 1.5rem;
+    gap: 12px;
+    margin-top: 20px;
 }
 
 .previewWrapper {
@@ -181,7 +231,7 @@
     height: 100px;
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
 }
 
 .previewImg {
@@ -196,85 +246,70 @@
     right: 4px;
     background: rgba(0, 0, 0, 0.6);
     color: white;
-    border: none;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
-    width: 22px;
-    height: 22px;
-    font-size: 10px;
+    border: none;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.2s;
+    font-size: 10px;
 }
 
-.btnRemoveImg:hover {
-    background: rgba(220, 38, 38, 0.9);
-}
-
-/* Actions */
+/* Action Buttons */
 .actions {
-    grid-column: 1 / -1;
     display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
-    margin-top: 2rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid #f0f0f0;
-}
-
-.btn {
-    padding: 0.75rem 2rem;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    border: none;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .btnPrimary {
-    background: linear-gradient(135deg, #ff8800 0%, #ff5500 100%);
+    width: 100%;
+    padding: 12px;
+    background: #FF8800;
     color: white;
-    padding: 0.75rem;
-    border: 1px solid #ff8800;
-    border-radius: 15px;
-    box-shadow: 0 4px 6px rgba(255, 136, 0, 0.25);
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(255, 136, 0, 0.2);
+    transition: all 0.2s;
 }
 
 .btnPrimary:hover {
+    background: #e07800;
     transform: translateY(-1px);
-    box-shadow: 0 6px 12px rgba(255, 136, 0, 0.3);
 }
 
 .btnPrimary:disabled {
     opacity: 0.7;
     cursor: not-allowed;
-    transform: none;
 }
 
 .btnSecondary {
-    background-color: white;
-    border-radius: 15px;
-    padding: 0.75rem;
-    color: #4a5568;
-    border: 1px solid #e2e8f0;
+    width: 100%;
+    padding: 12px;
+    background: white;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
 }
 
 .btnSecondary:hover {
-    background-color: #f7fafc;
-    border-color: #cbd5e0;
-    color: #2d3748;
+    background: #f3f4f6;
 }
 
 .errorMsg {
-    background-color: #fff5f5;
-    color: #c53030;
-    padding: 1rem;
+    background: #fef2f2;
+    color: #ef4444;
+    padding: 12px;
     border-radius: 8px;
-    margin-bottom: 1.5rem;
-    border: 1px solid #feb2b2;
-    text-align: center;
+    margin-bottom: 20px;
+    border: 1px solid #fee2e2;
 }
 
 .loadingOverlay {
@@ -283,50 +318,36 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.8);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
-    flex-direction: column;
-    gap: 1rem;
-    color: #ff8800;
+    z-index: 50;
+    color: #FF8800;
     font-weight: 600;
 }
 
 /* Responsive */
-@media (max-width: 640px) {
-    .container {
-        padding: 1.5rem;
-        margin: 1rem;
-    }
-
+@media (max-width: 1024px) {
     .formGrid {
         grid-template-columns: 1fr;
     }
 
+    .variantHeader {
+        display: none;
+    }
+
     .variantRow {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 0.5rem;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
     }
 
-    .variantRow input {
+    .variantRow input[type="number"] {
         width: 100%;
-        min-width: auto;
     }
 
-    .btnRemoveImg {
-        width: 28px;
-        height: 28px;
-        font-size: 14px;
-    }
-
-    .actions {
-        flex-direction: column-reverse;
-    }
-
-    .btn {
+    .variantRow .btnDanger {
+        grid-column: span 2;
         width: 100%;
     }
 }

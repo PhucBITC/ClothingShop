@@ -18,7 +18,15 @@ import java.util.stream.Stream;
 @Service
 public class FileStorageServiceImpl implements FileStorageService {
 
-    private final Path root = Paths.get("uploads");
+    private final Path root;
+
+    public FileStorageServiceImpl() {
+        if (Files.exists(Paths.get("clothingsystem/uploads"))) {
+            this.root = Paths.get("clothingsystem/uploads");
+        } else {
+            this.root = Paths.get("uploads");
+        }
+    }
 
     @Override
     public void init() {
@@ -52,7 +60,8 @@ public class FileStorageServiceImpl implements FileStorageService {
             if (resource.exists() || resource.isReadable()) {
                 return resource;
             } else {
-                throw new RuntimeException("Could not read the file!");
+                throw new RuntimeException(
+                        "Could not read the file: " + filename + ". Absolute path: " + file.toAbsolutePath());
             }
         } catch (MalformedURLException e) {
             throw new RuntimeException("Error: " + e.getMessage());

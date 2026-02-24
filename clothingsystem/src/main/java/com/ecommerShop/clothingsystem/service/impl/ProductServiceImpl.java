@@ -11,14 +11,21 @@ import com.ecommerShop.clothingsystem.repository.ProductRepository;
 import com.ecommerShop.clothingsystem.repository.ProductVariantRepository;
 import com.ecommerShop.clothingsystem.service.FileStorageService;
 import com.ecommerShop.clothingsystem.service.ProductService;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -53,6 +60,18 @@ public class ProductServiceImpl implements ProductService {
         product.setCategory(category);
         product.setStatus("ACTIVE");
 
+        // Generate Slug
+        product.setSlug(generateUniqueSlug(request.getName()));
+
+        // Set New Fields
+        product.setMetaTitle(request.getMetaTitle());
+        product.setMetaDescription(request.getMetaDescription());
+        product.setTags(request.getTags());
+        product.setWeight(request.getWeight());
+        product.setLength(request.getLength());
+        product.setWidth(request.getWidth());
+        product.setHeight(request.getHeight());
+
         Product savedProduct = productRepository.save(product);
 
         // 3. Save Variants
@@ -65,35 +84,19 @@ public class ProductServiceImpl implements ProductService {
                 variant.setColor(vDto.getColor());
                 variant.setStock(vDto.getStock());
                 variant.setPrice(vDto.getPrice() != null ? vDto.getPrice() : savedProduct.getBasePrice());
+                variant.setSalePrice(vDto.getSalePrice());
+
+                // Generate SKU
+                variant.setSku(generateSku(savedProduct.getSlug(), vDto.getColor(), vDto.getSize()));
+
                 variants.add(variant);
             }
             productVariantRepository.saveAll(variants);
             savedProduct.setVariants(variants);
         }
 
-        // 4. Save Images (Uploaded Files)
-        if (files != null && files.length > 0) {
-            List<ProductImage> images = new ArrayList<>();
-            boolean isFirst = true;
-            for (MultipartFile file : files) {
-                String filename = fileStorageService.save(file);
-                String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                        .path("/api/files/")
-                        .path(filename)
-                        .toUriString();
-
-                ProductImage image = new ProductImage();
-                image.setProduct(savedProduct);
-                image.setImageUrl(fileDownloadUri);
-                image.setPrimary(isFirst); // First image is primary by default
-                if (isFirst)
-                    isFirst = false;
-
-                images.add(image);
-            }
-            productImageRepository.saveAll(images);
-            savedProduct.setImages(images);
-        }
+        // 4. Save Images
+        saveImages(files, savedProduct, true);
 
         return savedProduct;
     }
@@ -115,8 +118,27 @@ public class ProductServiceImpl implements ProductService {
             product.setCategory(category);
         }
 
+        // Update New Fields
+        product.setMetaTitle(request.getMetaTitle());
+        product.setMetaDescription(request.getMetaDescription());
+        product.setTags(request.getTags());
+        product.setWeight(request.getWeight());
+        product.setLength(request.getLength());
+        product.setWidth(request.getWidth());
+        product.setHeight(request.getHeight());
+
         // Update Variants
         if (request.getVariants() != null) {
+            // Keep track of existing variants to update or delete?
+            // Simple approach: Delete old and re-create? NO, ID reference might be
+            // important.
+            // Better: Clear list and re-add (logic from original code), but this deletes
+            // old IDs.
+            // Given "Simple Code": clear and re-add is acceptable, but let's try to be
+            // consistent with original logic which did:
+            // product.getVariants().clear(); ... add new.
+            // This works because of orphanRemoval = true in Entity.
+
             product.getVariants().clear();
             for (ProductRequest.VariantDTO vDto : request.getVariants()) {
                 ProductVariant variant = new ProductVariant();
@@ -125,43 +147,55 @@ public class ProductServiceImpl implements ProductService {
                 variant.setColor(vDto.getColor());
                 variant.setStock(vDto.getStock());
                 variant.setPrice(vDto.getPrice() != null ? vDto.getPrice() : product.getBasePrice());
+                variant.setSalePrice(vDto.getSalePrice());
+
+                // Regenerate SKU or keep? If we clear, we regenerate.
+                variant.setSku(generateSku(product.getSlug(), vDto.getColor(), vDto.getSize()));
+
                 product.getVariants().add(variant);
             }
         }
 
-        // Update Images: Append new images if uploaded
-        // Note: For true update (replace/delete specific images), we need more complex
-        // logic on frontend.
-        // Here we just append new files. To clear old images, validation logic or a
-        // separate endpoint is needed.
+        // Update Images
         if (files != null && files.length > 0) {
-            // Optional: clear old images if that's the desired behavior for "update"
-            // productImageRepository.deleteByProduct(product);
-
-            List<ProductImage> images = product.getImages(); // Keep existing
-            if (images == null) {
-                images = new ArrayList<>();
-                product.setImages(images);
-            }
-
-            for (MultipartFile file : files) {
-                String filename = fileStorageService.save(file);
-                String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                        .path("/api/files/")
-                        .path(filename)
-                        .toUriString();
-
-                ProductImage image = new ProductImage();
-                image.setProduct(product);
-                image.setImageUrl(fileDownloadUri);
-                image.setPrimary(images.isEmpty()); // If no images existed, this is primary
-                images.add(image);
-            }
-            productImageRepository.saveAll(images);
-            product.setImages(images);
+            saveImages(files, product, false);
         }
 
         return productRepository.save(product);
+    }
+
+    private void saveImages(MultipartFile[] files, Product product, boolean isNewProduct) {
+        if (files == null || files.length == 0)
+            return;
+
+        List<ProductImage> images = product.getImages();
+        if (images == null) {
+            images = new ArrayList<>();
+            product.setImages(images);
+        }
+
+        boolean hasPrimary = images.stream().anyMatch(ProductImage::isPrimary);
+
+        for (MultipartFile file : files) {
+            String filename = fileStorageService.save(file);
+            String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/api/files/")
+                    .path(filename)
+                    .toUriString();
+
+            ProductImage image = new ProductImage();
+            image.setProduct(product);
+            image.setImageUrl(fileDownloadUri);
+
+            if (!hasPrimary) {
+                image.setPrimary(true);
+                hasPrimary = true;
+            } else {
+                image.setPrimary(false);
+            }
+            images.add(image);
+        }
+        productImageRepository.saveAll(images);
     }
 
     @Override
@@ -178,5 +212,128 @@ public class ProductServiceImpl implements ProductService {
     public Product getProductById(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
+    }
+
+    @Override
+    @Transactional
+    public Product duplicateProduct(Long originalId) {
+        Product original = getProductById(originalId);
+
+        Product copy = new Product();
+        copy.setName(original.getName() + " (Copy)");
+        copy.setDescription(original.getDescription());
+        copy.setBasePrice(original.getBasePrice());
+        copy.setCategory(original.getCategory());
+        copy.setStatus("DRAFT");
+
+        // Copy New Fields
+        copy.setMetaTitle(original.getMetaTitle());
+        copy.setMetaDescription(original.getMetaDescription());
+        copy.setTags(original.getTags());
+        copy.setWeight(original.getWeight());
+        copy.setLength(original.getLength());
+        copy.setWidth(original.getWidth());
+        copy.setHeight(original.getHeight());
+
+        copy.setSlug(generateUniqueSlug(copy.getName()));
+
+        Product savedCopy = productRepository.save(copy);
+
+        // Copy Variants
+        List<ProductVariant> newVariants = new ArrayList<>();
+        if (original.getVariants() != null) {
+            for (ProductVariant v : original.getVariants()) {
+                ProductVariant newV = new ProductVariant();
+                newV.setProduct(savedCopy);
+                newV.setSize(v.getSize());
+                newV.setColor(v.getColor());
+                newV.setStock(v.getStock());
+                newV.setPrice(v.getPrice());
+                newV.setSalePrice(v.getSalePrice());
+                newV.setSku(generateSku(savedCopy.getSlug(), v.getColor(), v.getSize()));
+                newVariants.add(newV);
+            }
+            productVariantRepository.saveAll(newVariants);
+            savedCopy.setVariants(newVariants);
+        }
+
+        // Copy Images
+        List<ProductImage> newImages = new ArrayList<>();
+        if (original.getImages() != null) {
+            for (ProductImage img : original.getImages()) {
+                ProductImage newImg = new ProductImage();
+                newImg.setProduct(savedCopy);
+                newImg.setImageUrl(img.getImageUrl());
+                newImg.setPrimary(img.isPrimary());
+                newImages.add(newImg);
+            }
+            productImageRepository.saveAll(newImages);
+            savedCopy.setImages(newImages);
+        }
+
+        return savedCopy;
+    }
+
+    @Override
+    public Page<Product> searchProducts(String keyword, Long categoryId, Double minPrice, Double maxPrice, String tag,
+            Pageable pageable) {
+        Specification<Product> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (StringUtils.hasText(keyword)) {
+                String likePattern = "%" + keyword.toLowerCase() + "%";
+                predicates.add(cb.or(
+                        cb.like(cb.lower(root.get("name")), likePattern),
+                        cb.like(cb.lower(root.get("description")), likePattern)));
+            }
+
+            if (categoryId != null) {
+                predicates.add(cb.equal(root.get("category").get("id"), categoryId));
+            }
+
+            if (minPrice != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("basePrice"), minPrice));
+            }
+
+            if (maxPrice != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("basePrice"), maxPrice));
+            }
+
+            if (StringUtils.hasText(tag)) {
+                predicates.add(cb.like(cb.lower(root.get("tags")), "%" + tag.toLowerCase() + "%"));
+            }
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        return productRepository.findAll(spec, pageable);
+    }
+
+    // --- Helpers ---
+
+    private String generateUniqueSlug(String name) {
+        if (name == null)
+            return "";
+        String slug = Normalizer.normalize(name, Normalizer.Form.NFD);
+        slug = Pattern.compile("\\p{InCombiningDiacriticalMarks}+").matcher(slug).replaceAll("");
+        slug = slug.toLowerCase().replaceAll("[^a-z0-9\\s-]", "").replaceAll("\\s+", "-");
+
+        String originalSlug = slug;
+        int counter = 1;
+        while (productRepository.existsBySlug(slug)) {
+            slug = originalSlug + "-" + counter;
+            counter++;
+        }
+        return slug;
+    }
+
+    private String generateSku(String productSlug, String color, String size) {
+        // Simple generation: SLUG-COLOR-SIZE (uppercased)
+        // Ensure no nulls
+        String c = color != null ? color : "NA";
+        String s = size != null ? size : "NA";
+        String part1 = productSlug != null ? productSlug : "PROD";
+
+        return (part1 + "-" + c + "-" + s).toUpperCase();
     }
 }

@@ -12,4 +12,6 @@ public interface ProductVariantRepository extends JpaRepository<ProductVariant, 
     List<ProductVariant> findByProductId(Long productId);
 
     void deleteByProduct(Product product);
+
+    boolean existsBySku(String sku);
 }

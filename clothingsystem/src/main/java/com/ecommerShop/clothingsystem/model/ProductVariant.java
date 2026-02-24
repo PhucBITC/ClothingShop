@@ -27,15 +27,24 @@ public class ProductVariant {
     @Column(nullable = false)
     private Integer stock;
 
+    @Column(unique = true)
+    private String sku;
+
+    @Column(name = "sale_price")
+    private Double salePrice;
+
     public ProductVariant() {
     }
 
-    public ProductVariant(Product product, String size, String color, Double price, Integer stock) {
+    public ProductVariant(Product product, String size, String color, Double price, Integer stock, String sku,
+            Double salePrice) {
         this.product = product;
         this.size = size;
         this.color = color;
         this.price = price;
         this.stock = stock;
+        this.sku = sku;
+        this.salePrice = salePrice;
     }
 
     // Getters and Setters
@@ -79,11 +88,27 @@ public class ProductVariant {
         this.price = price;
     }
 
+    public Double getSalePrice() {
+        return salePrice;
+    }
+
+    public void setSalePrice(Double salePrice) {
+        this.salePrice = salePrice;
+    }
+
     public Integer getStock() {
         return stock;
     }
 
     public void setStock(Integer stock) {
         this.stock = stock;
+    }
+
+    public String getSku() {
+        return sku;
+    }
+
+    public void setSku(String sku) {
+        this.sku = sku;
     }
 }
