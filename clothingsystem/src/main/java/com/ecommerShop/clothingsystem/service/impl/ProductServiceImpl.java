@@ -276,7 +276,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Page<Product> searchProducts(String keyword, Long categoryId, Double minPrice, Double maxPrice, String tag,
-            Pageable pageable) {
+            List<String> colors, List<String> sizes, Pageable pageable) {
         Specification<Product> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -301,6 +301,22 @@ public class ProductServiceImpl implements ProductService {
 
             if (StringUtils.hasText(tag)) {
                 predicates.add(cb.like(cb.lower(root.get("tags")), "%" + tag.toLowerCase() + "%"));
+            }
+
+            // JOIN with Variants for Color and Size filtering
+            if ((colors != null && !colors.isEmpty()) || (sizes != null && !sizes.isEmpty())) {
+                jakarta.persistence.criteria.Join<Product, ProductVariant> variants = root.join("variants");
+
+                if (colors != null && !colors.isEmpty()) {
+                    predicates.add(variants.get("color").in(colors));
+                }
+
+                if (sizes != null && !sizes.isEmpty()) {
+                    predicates.add(variants.get("size").in(sizes));
+                }
+
+                // Ensure distinct products when joining
+                query.distinct(true);
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));

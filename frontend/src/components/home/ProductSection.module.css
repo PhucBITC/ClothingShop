@@ -1,0 +1,118 @@
+.section {
+    padding: 4rem 5%;
+    background: #fff;
+}
+
+.sectionHeader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.sectionTitle {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.tabs {
+    display: flex;
+    gap: 2rem;
+    border-bottom: 1px solid #eee;
+    width: 100%;
+    justify-content: center;
+}
+
+.tabBtn {
+    background: none;
+    border: none;
+    padding: 10px 0;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #888;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.3s;
+}
+
+.tabBtn:hover {
+    color: #000;
+}
+
+.activeTab {
+    color: #000;
+}
+
+.activeTab::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: #000;
+}
+
+.productGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+}
+
+.viewAllWrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 3rem;
+}
+
+.viewAllBtn {
+    padding: 10px 40px;
+    border: 1px solid #000;
+    background: #fff;
+    color: #000;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.viewAllBtn:hover {
+    background: #000;
+    color: #fff;
+}
+
+@media (max-width: 1024px) {
+    .productGrid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .productGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .tabs {
+        gap: 1rem;
+    }
+
+    .tabBtn {
+        font-size: 0.8rem;
+    }
+}
+
+.noProducts {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem 0;
+    color: #999;
+    font-style: italic;
+    background: transparent;
+    border-radius: 8px;
+    border: 1px dashed #eee;
+}

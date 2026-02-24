@@ -46,7 +46,7 @@ const ProductForm = () => {
         'MEN', 'WOMEN', 'KIDS', 'FOOTWEAR', 'ACCESSORIES', 'TRADITIONAL_WEAR', 'NEW_ARRIVALS'
     ];
 
-    const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'One Size'];
+    const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
     const COLORS = ['Black', 'White', 'Blue', 'Red', 'Green', 'Yellow', 'Gray', 'Pink', 'Purple', 'Orange', 'Brown', 'Beige', 'Navy', 'Maroon', 'Charcoal'];
 
     // Bulk Update State

@@ -91,10 +91,14 @@ function AppLayout() {
   );
 }
 
+import { WishlistProvider } from "./context/WishlistContext";
+
 function App() {
   return (
     <BrowserRouter>
-      <AppLayout />
+      <WishlistProvider>
+        <AppLayout />
+      </WishlistProvider>
     </BrowserRouter>
   );
 }

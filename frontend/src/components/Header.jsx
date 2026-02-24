@@ -5,9 +5,11 @@ import { products } from '../data/mockData';
 import styles from './Header.module.css';
 import logo from '../assets/logo.png';
 import { FiHeart } from 'react-icons/fi';
+import { useWishlist } from '../context/WishlistContext';
 
 function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const { wishlistItems } = useWishlist();
 
     // Check for admin role
     const role = localStorage.getItem('role');
@@ -138,9 +140,10 @@ function Header() {
                 <button className={styles.iconBtn} aria-label="Search">
                     <BiSearch />
                 </button>
-                <button className={styles.iconBtn} aria-label="Wishlist">
+                <Link to="/user/wishlist" className={styles.iconBtn} aria-label="Wishlist">
                     <FiHeart />
-                </button>
+                    {wishlistItems.length > 0 && <span className={styles.cartBadge}>{wishlistItems.length}</span>}
+                </Link>
 
                 {/* Cart with MiniCart Hover */}
                 <div className={styles.cartContainer}>

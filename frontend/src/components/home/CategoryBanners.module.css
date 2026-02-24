@@ -1,0 +1,115 @@
+.container {
+    padding: 2rem 5%;
+    background: #fff;
+    overflow: hidden;
+}
+
+.sliderWrapper {
+    position: relative;
+    width: 100%;
+}
+
+.sliderGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    height: 500px;
+    width: 100%;
+}
+
+.banner {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.bannerLink {
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+}
+
+.image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1.2s ease;
+}
+
+.banner:hover .image {
+    transform: scale(1.05);
+}
+
+.overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 3rem;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.5));
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.linkText {
+    color: #fff;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-bottom: 2px solid #fff;
+    padding-bottom: 5px;
+    transition: opacity 0.3s;
+}
+
+.progressDots {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 2rem;
+}
+
+.dot {
+    width: 25px;
+    height: 2px;
+    background: #ddd;
+    transition: all 0.3s;
+}
+
+.activeDot {
+    background: #000;
+    width: 40px;
+}
+
+@media (max-width: 1024px) {
+    .sliderGrid {
+        height: 400px;
+    }
+
+    .title {
+        font-size: 1.3rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .sliderGrid {
+        grid-template-columns: 1fr;
+        height: 350px;
+    }
+
+    .overlay {
+        padding: 1.5rem;
+    }
+}

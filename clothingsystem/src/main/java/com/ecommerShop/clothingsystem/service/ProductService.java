@@ -23,5 +23,5 @@ public interface ProductService {
     Product duplicateProduct(Long originalId);
 
     Page<Product> searchProducts(String keyword, Long categoryId, Double minPrice, Double maxPrice, String tag,
-            Pageable pageable);
+            List<String> colors, List<String> sizes, Pageable pageable);
 }

@@ -1,0 +1,60 @@
+.skeletonCard {
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.skeletonImage {
+    width: 100%;
+    aspect-ratio: 3/4;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+.skeletonInfo {
+    padding: 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.skeletonTitle {
+    height: 1.2rem;
+    width: 70%;
+    background: #f0f0f0;
+    border-radius: 4px;
+}
+
+.skeletonPrice {
+    height: 1rem;
+    width: 40%;
+    background: #f0f0f0;
+    border-radius: 4px;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

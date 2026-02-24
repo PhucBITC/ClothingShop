@@ -1,7 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from '../../../api/axios';
-import { BiPlus, BiPencil, BiTrash, BiError, BiCopy, BiSearch, BiFilter } from 'react-icons/bi';
+import {
+    BiPlus,
+    BiPencil,
+    BiTrash,
+    BiError,
+    BiCopy,
+    BiSearch,
+    BiFilter,
+    BiChevronLeft,
+    BiChevronRight
+} from 'react-icons/bi';
 import styles from './ProductList.module.css';
 
 const ProductList = () => {
@@ -276,35 +286,48 @@ const ProductList = () => {
                                     </table>
                                 </div>
 
-                                {/* Pagination */}
-                                <div className={styles.pagination}>
-                                    <button
-                                        className={styles.pageBtn}
-                                        disabled={page === 0}
-                                        onClick={() => setPage(p => p - 1)}
-                                    >
-                                        Previous
-                                    </button>
-                                    {Array.from({ length: totalPages }, (_, i) => (
+                                {/* Numerical Pagination */}
+                                {totalPages > 1 && (
+                                    <div className={styles.pagination}>
                                         <button
-                                            key={i}
-                                            className={`${styles.pageBtn} ${page === i ? styles.active : ''}`}
-                                            onClick={() => setPage(i)}
+                                            className={styles.pageArrow}
+                                            disabled={page === 0}
+                                            onClick={() => setPage(p => p - 1)}
                                         >
-                                            {i + 1}
+                                            <BiChevronLeft />
                                         </button>
-                                    )).slice(Math.max(0, page - 2), Math.min(totalPages, page + 3))}
-                                    <button
-                                        className={styles.pageBtn}
-                                        disabled={page >= totalPages - 1}
-                                        onClick={() => setPage(p => p + 1)}
-                                    >
-                                        Next
-                                    </button>
-                                    <span style={{ marginLeft: '10px', fontSize: '14px', color: '#666' }}>
-                                        Total: {totalElements}
-                                    </span>
-                                </div>
+
+                                        {Array.from({ length: totalPages }, (_, i) => {
+                                            // Simple logic to show current, first, last, and neighbors
+                                            if (i === 0 || i === totalPages - 1 || (i >= page - 1 && i <= page + 1)) {
+                                                return (
+                                                    <button
+                                                        key={i}
+                                                        className={`${styles.pageNumber} ${page === i ? styles.pageActive : ''}`}
+                                                        onClick={() => setPage(i)}
+                                                    >
+                                                        {i + 1}
+                                                    </button>
+                                                );
+                                            } else if (i === page - 2 || i === page + 2) {
+                                                return <span key={i} className={styles.pageDots}>...</span>;
+                                            }
+                                            return null;
+                                        })}
+
+                                        <button
+                                            className={styles.pageArrow}
+                                            disabled={page >= totalPages - 1}
+                                            onClick={() => setPage(p => p + 1)}
+                                        >
+                                            <BiChevronRight />
+                                        </button>
+
+                                        <div className={styles.totalInfo}>
+                                            Total: {totalElements} products
+                                        </div>
+                                    </div>
+                                )}
                             </>
                         )}
                 </div>
