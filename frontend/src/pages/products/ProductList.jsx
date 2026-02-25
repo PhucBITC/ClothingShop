@@ -71,16 +71,14 @@ function ProductList() {
         { name: 'Charcoal', hex: '#36454F', count: 30 },
     ];
 
-    const sizes = [
-        { label: 'XS', count: 4 },
-        { label: 'S', count: 6 },
-        { label: 'M', count: 20 },
-        { label: 'L', count: 7 },
-        { label: 'XL', count: 16 },
-        { label: 'XXL', count: 10 },
-        { label: '3XL', count: 2 },
+    const [sizeCategory, setSizeCategory] = useState('Clothing');
 
-    ];
+    const SIZE_MAP = {
+        'Clothing': ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
+        'Footwear (Adult)': ['35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46'],
+        'Footwear (Kids)': ['19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34'],
+        'Accessories': ['Free size', '90cm', '105cm', '16mm', '18mm']
+    };
 
     useEffect(() => {
         fetchCategories();
@@ -126,7 +124,7 @@ function ProductList() {
             setLoading(true);
             const params = {
                 page: page,
-                size: 5,
+                size: 12,
                 keyword: filters.keyword,
                 categoryId: filters.categoryId,
                 minPrice: filters.minPrice,
@@ -210,6 +208,7 @@ function ProductList() {
             colors: [],
             sizes: []
         });
+        setSizeCategory('Clothing');
         setPage(0);
     };
 
@@ -303,17 +302,30 @@ function ProductList() {
                             <span>Filter by Size</span> {collapsed.size ? <BiChevronRight /> : <BiChevronDown />}
                         </div>
                         {!collapsed.size && (
-                            <ul className={styles.sizeList}>
-                                {sizes.map(size => (
-                                    <li key={size.label} className={styles.sizeItem} onClick={() => toggleSize(size.label)}>
-                                        <div className={styles.sizeLeft}>
-                                            <input type="checkbox" checked={filters.sizes.includes(size.label)} readOnly />
-                                            <span>{size.label}</span>
-                                        </div>
-                                        <span className={styles.itemCount}>({size.count})</span>
-                                    </li>
-                                ))}
-                            </ul>
+                            <div className={styles.sizeFilterContainer}>
+                                <select
+                                    className={styles.sizeCategorySelect}
+                                    value={sizeCategory}
+                                    onChange={(e) => {
+                                        setSizeCategory(e.target.value);
+                                        setFilters(prev => ({ ...prev, sizes: [] }));
+                                    }}
+                                >
+                                    {Object.keys(SIZE_MAP).map(cat => (
+                                        <option key={cat} value={cat}>{cat}</option>
+                                    ))}
+                                </select>
+                                <ul className={styles.sizeList}>
+                                    {SIZE_MAP[sizeCategory].map(sizeLabel => (
+                                        <li key={sizeLabel} className={styles.sizeItem} onClick={() => toggleSize(sizeLabel)}>
+                                            <div className={styles.sizeLeft}>
+                                                <input type="checkbox" checked={filters.sizes.includes(sizeLabel)} readOnly />
+                                                <span>{sizeLabel}</span>
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
                         )}
                     </div>
 

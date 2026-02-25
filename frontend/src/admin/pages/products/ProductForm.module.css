@@ -351,3 +351,44 @@
         width: 100%;
     }
 }
+
+/* Category-specific Size Options */
+.categorySpecialOptions {
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.radioGroup {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+    color: #475569;
+}
+
+.radioGroup label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.radioGroup label:hover {
+    color: #FF8800;
+}
+
+.radioGroup input[type="radio"] {
+    accent-color: #FF8800;
+    width: 16px;
+    height: 16px;
+}
+
+.subTypeSelect {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}

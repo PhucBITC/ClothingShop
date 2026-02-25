@@ -47,7 +47,14 @@ const ProductForm = () => {
     ];
 
     const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
+    const FOOTWEAR_ADULT_SIZES = Array.from({ length: 46 - 35 + 1 }, (_, i) => (35 + i).toString());
+    const FOOTWEAR_KIDS_SIZES = Array.from({ length: 34 - 19 + 1 }, (_, i) => (19 + i).toString());
     const COLORS = ['Black', 'White', 'Blue', 'Red', 'Green', 'Yellow', 'Gray', 'Pink', 'Purple', 'Orange', 'Brown', 'Beige', 'Navy', 'Maroon', 'Charcoal'];
+
+    // Specialized Logic States
+    const [footwearGroup, setFootwearGroup] = useState('ADULT'); // ADULT or KIDS
+    const [accessorySubType, setAccessorySubType] = useState('NONE'); // NONE, DIMENSIONS, MEASUREMENT
+    const [accessoryUnit, setAccessoryUnit] = useState('cm');
 
     // Bulk Update State
     const [bulkPrice, setBulkPrice] = useState('');
@@ -148,6 +155,9 @@ const ProductForm = () => {
     const handleTypeChange = (e) => {
         setSelectedType(e.target.value);
         setFormData(prev => ({ ...prev, categoryId: '' }));
+        // Reset specialized states
+        setFootwearGroup('ADULT');
+        setAccessorySubType('NONE');
     };
 
     // Variant Handlers
@@ -157,8 +167,30 @@ const ProductForm = () => {
         setVariants(newVariants);
     };
 
+    const handleDimensionChange = (index, dimIndex, value) => {
+        const newVariants = [...variants];
+        let currentSize = newVariants[index].size || '0x0x0';
+        // Handle cases where size might be "Free size" or empty
+        if (!currentSize.includes('x')) currentSize = '0x0x0';
+        let dims = currentSize.replace(' cm', '').split('x');
+        if (dims.length !== 3) dims = ['0', '0', '0'];
+        dims[dimIndex] = value || '0';
+        newVariants[index].size = `${dims.join('x')} cm`;
+        setVariants(newVariants);
+    };
+
+    const handleMeasurementChange = (index, value) => {
+        const newVariants = [...variants];
+        newVariants[index].size = `${value}${accessoryUnit}`;
+        setVariants(newVariants);
+    };
+
     const addVariant = () => {
-        setVariants([...variants, { size: '', color: '', stock: '', price: '', salePrice: '' }]);
+        let initialSize = '';
+        if (selectedType === 'ACCESSORIES' && accessorySubType === 'NONE') {
+            initialSize = 'Free size';
+        }
+        setVariants([...variants, { size: initialSize, color: '', stock: '', price: '', salePrice: '' }]);
     };
 
     const removeVariant = (index) => {
@@ -320,6 +352,39 @@ const ProductForm = () => {
 
                         {/* Variant Table */}
                         <div className={styles.variantTable}>
+                            {/* Specialized Group Selectors */}
+                            {(selectedType === 'FOOTWEAR' || selectedType === 'ACCESSORIES') && (
+                                <div className={styles.categorySpecialOptions}>
+                                    {selectedType === 'FOOTWEAR' && (
+                                        <div className={styles.radioGroup}>
+                                            <span style={{ fontWeight: 600, marginRight: '12px' }}>Footwear Type:</span>
+                                            <label>
+                                                <input type="radio" name="fwGroup" checked={footwearGroup === 'ADULT'} onChange={() => setFootwearGroup('ADULT')} /> Adult (35-46)
+                                            </label>
+                                            <label style={{ marginLeft: '16px' }}>
+                                                <input type="radio" name="fwGroup" checked={footwearGroup === 'KIDS'} onChange={() => setFootwearGroup('KIDS')} /> Kids (19-34)
+                                            </label>
+                                        </div>
+                                    )}
+                                    {selectedType === 'ACCESSORIES' && (
+                                        <div className={styles.subTypeSelect}>
+                                            <label style={{ fontWeight: 600, marginRight: '8px' }}>Size Format: </label>
+                                            <select value={accessorySubType} onChange={(e) => setAccessorySubType(e.target.value)} className={styles.select} style={{ width: 'auto' }}>
+                                                <option value="NONE">No size (Free size)</option>
+                                                <option value="DIMENSIONS">Dimensions (LxWxH)</option>
+                                                <option value="MEASUREMENT">Measured (e.g. 90cm)</option>
+                                            </select>
+                                            {accessorySubType === 'MEASUREMENT' && (
+                                                <select value={accessoryUnit} onChange={(e) => setAccessoryUnit(e.target.value)} className={styles.select} style={{ width: 'auto', marginLeft: '8px' }}>
+                                                    <option value="cm">cm</option>
+                                                    <option value="mm">mm</option>
+                                                </select>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
                             <div className={styles.variantHeader}>
                                 <span className={styles.variantLabel}>Size</span>
                                 <span className={styles.variantLabel}>Color</span>
@@ -331,10 +396,37 @@ const ProductForm = () => {
 
                             {variants.map((variant, index) => (
                                 <div key={index} className={styles.variantRow}>
-                                    <select value={variant.size} onChange={e => handleVariantChange(index, 'size', e.target.value)} required className={styles.select}>
-                                        <option value="">Select Size</option>
-                                        {SIZES.map(s => <option key={s} value={s}>{s}</option>)}
-                                    </select>
+                                    {/* DYNAMIC SIZE INPUT */}
+                                    {selectedType === 'FOOTWEAR' ? (
+                                        <select value={variant.size} onChange={e => handleVariantChange(index, 'size', e.target.value)} required className={styles.select}>
+                                            <option value="">Size</option>
+                                            {(footwearGroup === 'ADULT' ? FOOTWEAR_ADULT_SIZES : FOOTWEAR_KIDS_SIZES).map(s => (
+                                                <option key={s} value={s}>{s}</option>
+                                            ))}
+                                        </select>
+                                    ) : selectedType === 'ACCESSORIES' ? (
+                                        accessorySubType === 'NONE' ? (
+                                            <input value="Free size" disabled className={styles.input} />
+                                        ) : accessorySubType === 'DIMENSIONS' ? (
+                                            <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                                                <input type="number" placeholder="L" className={styles.input} style={{ padding: '6px', width: '60px' }} onChange={(e) => handleDimensionChange(index, 0, e.target.value)} />
+                                                <span style={{ fontSize: '12px' }}>x</span>
+                                                <input type="number" placeholder="W" className={styles.input} style={{ padding: '6px', width: '60px' }} onChange={(e) => handleDimensionChange(index, 1, e.target.value)} />
+                                                <span style={{ fontSize: '12px' }}>x</span>
+                                                <input type="number" placeholder="H" className={styles.input} style={{ padding: '6px', width: '60px' }} onChange={(e) => handleDimensionChange(index, 2, e.target.value)} />
+                                            </div>
+                                        ) : (
+                                            <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                                                <input type="number" placeholder="Value" className={styles.input} onChange={(e) => handleMeasurementChange(index, e.target.value)} />
+                                                <span style={{ fontWeight: 600 }}>{accessoryUnit}</span>
+                                            </div>
+                                        )
+                                    ) : (
+                                        <select value={variant.size} onChange={e => handleVariantChange(index, 'size', e.target.value)} required className={styles.select}>
+                                            <option value="">Size</option>
+                                            {SIZES.map(s => <option key={s} value={s}>{s}</option>)}
+                                        </select>
+                                    )}
 
                                     <select value={variant.color} onChange={e => handleVariantChange(index, 'color', e.target.value)} required className={styles.select}>
                                         <option value="">Select Color</option>
