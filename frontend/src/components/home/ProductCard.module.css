@@ -14,7 +14,8 @@
     aspect-ratio: 4/5;
     overflow: hidden;
     position: relative;
-    background: #F8F8F8;
+    /* màu nền của ảnh */
+    background: #f5f0f048;
     border-radius: 8px;
 }
 
@@ -94,16 +95,19 @@
 /* Bottom Action (Add to Cart Overlay) */
 .bottomAction {
     position: absolute;
-    top: 50%;
+    bottom: -20px;
+    /* Start slightly below */
     left: 50%;
-    transform: translate(-50%, -50%);
-    width: 80%;
+    transform: translateX(-50%);
+    width: 90%;
     opacity: 0;
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
     z-index: 6;
 }
 
 .productCard:hover .bottomAction {
+    bottom: 20px;
+    /* Slide up to 20px from bottom */
     opacity: 1;
 }
 
