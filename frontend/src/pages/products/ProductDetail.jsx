@@ -1,70 +1,201 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { BiHeart, BiSearch, BiShoppingBag, BiCheck } from 'react-icons/bi';
-import { FaStar, FaRegStar } from 'react-icons/fa';
+import { BiHeart, BiCheck, BiChevronLeft, BiChevronRight, BiBox, BiDollarCircle, BiHeadphone, BiCreditCard } from 'react-icons/bi';
+import { FaStar } from 'react-icons/fa';
+import axios from '../../api/axios';
+import { useToast } from '../../components/common/toast/ToastContext';
+import { useWishlist } from '../../context/WishlistContext';
 import styles from './ProductDetail.module.css';
-import { products, colors, sizes, services, reviews } from '../../data/mockData';
 
-function ProductDetail() {
+const ProductDetail = () => {
     const { id } = useParams();
+    const toast = useToast();
+    const { toggleWishlist, isInWishlist } = useWishlist();
+
     const [product, setProduct] = useState(null);
+    const [loading, setLoading] = useState(true);
     const [activeImage, setActiveImage] = useState('');
     const [quantity, setQuantity] = useState(1);
     const [selectedColor, setSelectedColor] = useState('');
     const [selectedSize, setSelectedSize] = useState('');
     const [activeTab, setActiveTab] = useState('descriptions');
+    const [relatedProducts, setRelatedProducts] = useState([]);
+    const [zoomStyle, setZoomStyle] = useState({});
+    const [thumbIndex, setThumbIndex] = useState(0);
 
-    // Load product data (Mock logic)
+    const handleMouseMove = (e) => {
+        const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+        const x = ((e.pageX - left - window.scrollX) / width) * 100;
+        const y = ((e.pageY - top - window.scrollY) / height) * 100;
+
+        setZoomStyle({
+            transformOrigin: `${x}% ${y}%`,
+            transform: 'scale(2.5)' // Scale factor for zoom
+        });
+    };
+
+    const handleMouseLeave = () => {
+        setZoomStyle({
+            transformOrigin: 'center center',
+            transform: 'scale(1)'
+        });
+    };
+
+    // Fetch product data
     useEffect(() => {
-        // Find product by ID or default to first product
-        const foundProduct = products.find(p => p.id === parseInt(id)) || products[0];
-        setProduct(foundProduct);
-        setActiveImage(foundProduct.image);
-        // Determine default color/size from product data or valid options
-        if (foundProduct.color) setSelectedColor(foundProduct.color);
-        if (foundProduct.size) setSelectedSize(foundProduct.size);
-    }, [id]);
+        const fetchProduct = async () => {
+            setLoading(true);
+            try {
+                const response = await axios.get(`/products/${id}`);
+                const data = response.data;
+                setProduct(data);
 
-    if (!product) return <div>Loading...</div>;
+                // Set initial images
+                if (data.images && data.images.length > 0) {
+                    const primary = data.images.find(img => img.primary) || data.images[0];
+                    setActiveImage(primary.imageUrl);
+                }
 
-    // Use the detailed "images" array if available, otherwise fallback to single image
-    const galleryImages = product.images && product.images.length > 0 ? product.images : [product.image, product.image, product.image, product.image];
+                // Set initial variants if available
+                if (data.variants && data.variants.length > 0) {
+                    setSelectedColor(data.variants[0].color);
+                    setSelectedSize(data.variants[0].size);
+                }
 
-    // Mock colors/sizes for the selector (in reality, each product would have its own available options)
-    const availableColors = colors.slice(0, 5);
-    const availableSizes = sizes.map(s => s.name);
+                // Fetch related products (same category)
+                if (data.category?.id) {
+                    const relatedRes = await axios.get('/products/search', {
+                        params: { categoryId: data.category.id, size: 4 }
+                    });
+                    setRelatedProducts(relatedRes.data.content.filter(p => p.id !== parseInt(id)));
+                }
+            } catch (err) {
+                console.error("Error fetching product:", err);
+                toast.error("Error", "Failed to load product details.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProduct();
+        window.scrollTo(0, 0);
+    }, [id, toast]);
+
+    if (loading) return <div className={styles.loadingContainer}>Loading product details...</div>;
+    if (!product) return <div className={styles.errorContainer}>Product not found.</div>;
+
+    // Derived Data
+    const availableColors = [...new Set(product.variants?.map(v => v.color))];
+    const availableSizes = [...new Set(product.variants?.filter(v => v.color === selectedColor).map(v => v.size))];
+
+    // Find current selected variant
+    const currentVariant = product.variants?.find(v => v.color === selectedColor && v.size === selectedSize);
+    const displayPrice = currentVariant?.price || product.basePrice;
+    const salePrice = currentVariant?.salePrice;
+    const stockCount = currentVariant?.stock || 0;
+
+    const handleAddToCart = () => {
+        if (!selectedColor || !selectedSize) {
+            toast.error("Selection Required", "Please select color and size.");
+            return;
+        }
+        if (stockCount <= 0) {
+            toast.error("Out of Stock", "This variant is currently unavailable.");
+            return;
+        }
+
+        // Add to Cart logic (Simulated for now as CartContext is not fully defined but uses localStorage)
+        const cartItem = {
+            id: product.id,
+            variantId: currentVariant.id,
+            name: product.name,
+            color: selectedColor,
+            size: selectedSize,
+            price: salePrice || displayPrice,
+            image: activeImage,
+            quantity: quantity
+        };
+
+        const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const existingIdx = existingCart.findIndex(item => item.id === cartItem.id && item.variantId === cartItem.variantId);
+
+        if (existingIdx > -1) {
+            existingCart[existingIdx].quantity += quantity;
+        } else {
+            existingCart.push(cartItem);
+        }
+
+        localStorage.setItem('cart', JSON.stringify(existingCart));
+        toast.success("Added to Cart", `${product.name} (${selectedSize}, ${selectedColor}) added to your cart.`);
+        // Dispatch custom event for Header to update cart count
+        window.dispatchEvent(new Event('cartUpdated'));
+    };
+
 
     return (
         <div className={styles.detailContainer}>
             {/* Breadcrumbs */}
             <div className={styles.breadcrumbs}>
-                Home &gt; Shop &gt; <span>{product.name}</span>
+                <Link to="/">Home</Link> &gt; <Link to="/products">Shop</Link> &gt; <span>{product.name}</span>
             </div>
 
             <div className={styles.productWrapper}>
                 {/* --- Gallery --- */}
                 <div className={styles.gallerySection}>
-                    <div className={styles.mainImageWrapper}>
-                        <img src={activeImage} alt={product.name} className={styles.mainImage} />
+                    <div
+                        className={styles.mainImageWrapper}
+                        onMouseMove={handleMouseMove}
+                        onMouseLeave={handleMouseLeave}
+                    >
+                        <img
+                            src={activeImage}
+                            alt={product.name}
+                            className={styles.mainImage}
+                            style={zoomStyle}
+                        />
                     </div>
-                    <div className={styles.thumbnailGrid}>
-                        {galleryImages.map((img, idx) => (
-                            <div
-                                key={idx}
-                                className={`${styles.thumbnail} ${activeImage === img ? styles.active : ''}`}
-                                onClick={() => setActiveImage(img)}
+                    <div className={styles.thumbnailCarousel}>
+                        {product.images?.length > 4 && (
+                            <button
+                                className={`${styles.thumbArrow} ${styles.prevArrow}`}
+                                onClick={() => setThumbIndex(prev => Math.max(0, prev - 1))}
+                                disabled={thumbIndex === 0}
                             >
-                                <img src={img} alt="thumb" className={styles.thumbImg} />
-                            </div>
-                        ))}
+                                <BiChevronLeft />
+                            </button>
+                        )}
+
+                        <div className={styles.thumbnailGrid}>
+                            {product.images?.slice(thumbIndex, thumbIndex + 4).map((img, idx) => (
+                                <div
+                                    key={idx}
+                                    className={`${styles.thumbnail} ${activeImage === img.imageUrl ? styles.active : ''}`}
+                                    onClick={() => setActiveImage(img.imageUrl)}
+                                >
+                                    <img src={img.imageUrl} alt="thumb" className={styles.thumbImg} />
+                                </div>
+                            ))}
+                        </div>
+
+                        {product.images?.length > 4 && (
+                            <button
+                                className={`${styles.thumbArrow} ${styles.nextArrow}`}
+                                onClick={() => setThumbIndex(prev => Math.min(product.images.length - 4, prev + 1))}
+                                disabled={thumbIndex >= product.images.length - 4}
+                            >
+                                <BiChevronRight />
+                            </button>
+                        )}
                     </div>
                 </div>
 
                 {/* --- Info --- */}
                 <div className={styles.productInfo}>
                     <div className={styles.headerRow}>
-                        <h2 className={styles.brand}>{product.brand}</h2>
-                        <div className={styles.stockBadge}>In Stock</div>
+                        <h2 className={styles.categoryName}>{product.category?.name || 'Uncategorized'}</h2>
+                        <div className={stockCount > 0 ? styles.stockBadge : styles.outOfStockBadge}>
+                            {stockCount > 0 ? `In Stock (${stockCount})` : 'Out of Stock'}
+                        </div>
                     </div>
 
                     <h1 className={styles.productTitle}>{product.name}</h1>
@@ -72,41 +203,55 @@ function ProductDetail() {
                     <div className={styles.ratingRow}>
                         <div className={styles.stars}>
                             {[...Array(5)].map((_, i) => (
-                                <FaStar key={i} color={i < Math.floor(product.rating || 5) ? "#ffac1c" : "#e0e0e0"} />
+                                <FaStar key={i} color={i < 4 ? "#ffac1c" : "#e0e0e0"} />
                             ))}
                         </div>
-                        <span>{product.rating} ({product.reviews || 0} reviews)</span>
+                        <span>4.0 (24 reviews)</span>
                     </div>
 
                     <div className={styles.priceRow}>
-                        <span className={styles.currentPrice}>${product.price.toFixed(2)}</span>
-                        <span className={styles.originalPrice}>${product.originalPrice.toFixed(2)}</span>
+                        {salePrice ? (
+                            <>
+                                <span className={styles.currentPrice}>${salePrice.toFixed(2)}</span>
+                                <span className={styles.originalPrice}>${displayPrice.toFixed(2)}</span>
+                            </>
+                        ) : (
+                            <span className={styles.currentPrice}>${displayPrice.toFixed(2)}</span>
+                        )}
                     </div>
 
                     <p className={styles.description}>
-                        {product.description || 'It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.'}
+                        {product.description || 'No description available for this product.'}
                     </p>
 
-                    {/* Selectors */}
+                    {/* Color Selector */}
                     <div className={styles.selectorGroup}>
-                        <div className={styles.selectorTitle}>Color</div>
+                        <div className={styles.selectorTitle}>Color: {selectedColor}</div>
                         <div className={styles.colorOptions}>
-                            {availableColors.map((col, idx) => (
-                                <div
+                            {availableColors.map((color, idx) => (
+                                <button
                                     key={idx}
-                                    className={`${styles.colorCircle} ${selectedColor === col.name ? styles.selected : ''}`}
-                                    style={{ backgroundColor: col.hex }}
-                                    onClick={() => setSelectedColor(col.name)}
-                                    title={col.name}
-                                ></div>
+                                    className={`${styles.colorBtn} ${selectedColor === color ? styles.selected : ''}`}
+                                    onClick={() => {
+                                        setSelectedColor(color);
+                                        // Reset size if current size not available in new color
+                                        const sizesForColor = product.variants.filter(v => v.color === color).map(v => v.size);
+                                        if (!sizesForColor.includes(selectedSize)) {
+                                            setSelectedSize(sizesForColor[0]);
+                                        }
+                                    }}
+                                >
+                                    {color}
+                                </button>
                             ))}
                         </div>
                     </div>
 
+                    {/* Size Selector */}
                     <div className={styles.selectorGroup}>
-                        <div className={styles.selectorTitle}>Size</div>
+                        <div className={styles.selectorTitle}>Size: {selectedSize}</div>
                         <div className={styles.sizeOptions}>
-                            {availableSizes.slice(0, 4).map((size, idx) => ( // Show S M L XL
+                            {availableSizes.map((size, idx) => (
                                 <button
                                     key={idx}
                                     className={`${styles.sizeBtn} ${selectedSize === size ? styles.selected : ''}`}
@@ -126,13 +271,33 @@ function ProductDetail() {
                             <button className={styles.qtyBtn} onClick={() => setQuantity(q => q + 1)}>+</button>
                         </div>
 
-                        <button className={styles.addToCartBtn}>Add to Cart</button>
+                        <button
+                            className={styles.addToCartBtn}
+                            onClick={handleAddToCart}
+                            disabled={stockCount <= 0}
+                        >
+                            {stockCount > 0 ? 'Add to Cart' : 'Out of Stock'}
+                        </button>
 
-                        <button className={styles.wishlistBtn}>
+                        <button
+                            className={`${styles.wishlistBtn} ${isInWishlist(product.id) ? styles.active : ''}`}
+                            onClick={() => toggleWishlist(product)}
+                        >
                             <BiHeart />
                         </button>
                     </div>
 
+                    {/* Meta Info */}
+                    <div className={styles.metaInfo}>
+                        <div className={styles.metaRow}>
+                            <span className={styles.metaLabel}>SKU:</span>
+                            <span className={styles.metaValue}>{currentVariant?.sku || 'N/A'}</span>
+                        </div>
+                        <div className={styles.metaRow}>
+                            <span className={styles.metaLabel}>Tags:</span>
+                            <span className={styles.metaValue}>{product.tags || 'N/A'}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -151,129 +316,103 @@ function ProductDetail() {
                     >
                         Additional Information
                     </button>
-                    <button
-                        className={`${styles.tabBtn} ${activeTab === 'reviews' ? styles.active : ''}`}
-                        onClick={() => setActiveTab('reviews')}
-                    >
-                        Reviews
-                    </button>
                 </div>
                 <div className={styles.tabContent}>
-
                     {activeTab === 'descriptions' && (
-                        <p>{product.description} It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English.</p>
+                        <div className={styles.tabDescription}>
+                            <p>{product.description}</p>
+                            <p style={{ marginTop: '1rem' }}>{product.metaDescription}</p>
+                        </div>
                     )}
 
                     {activeTab === 'additional' && (
                         <div className={styles.additionalInfo}>
-                            <div className={styles.infoRow}>
-                                <div className={styles.infoLabel}>Color</div>
-                                <div className={styles.infoValue}>
-                                    {availableColors.map(c => c.name).join(', ')}
+                            {product.weight && (
+                                <div className={styles.infoRow}>
+                                    <div className={styles.infoLabel}>Weight</div>
+                                    <div className={styles.infoValue}>{product.weight} g</div>
                                 </div>
-                            </div>
+                            )}
+                            {(product.length || product.width || product.height) && (
+                                <div className={styles.infoRow}>
+                                    <div className={styles.infoLabel}>Dimensions</div>
+                                    <div className={styles.infoValue}>
+                                        {product.length || 0} x {product.width || 0} x {product.height || 0} cm
+                                    </div>
+                                </div>
+                            )}
                             <div className={styles.infoRow}>
-                                <div className={styles.infoLabel}>Size</div>
+                                <div className={styles.infoLabel}>Variants</div>
                                 <div className={styles.infoValue}>
-                                    {availableSizes.join(', ')}
+                                    Available in {availableColors.length} colors and {availableSizes.length} sizes
                                 </div>
                             </div>
                         </div>
                     )}
-
-                    {activeTab === 'reviews' && (
-                        <div className={styles.reviewsContainer}>
-                            {/* Customer Reviews List */}
-                            <div className={styles.customerReviews}>
-                                <h3>Customer Reviews</h3>
-                                {reviews.map(review => (
-                                    <div key={review.id} className={styles.reviewItem}>
-                                        <div className={styles.reviewAvatar}>
-                                            <img src={review.image} alt={review.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                        </div>
-                                        <div className={styles.reviewContent}>
-                                            <div className={styles.reviewHeader}>
-                                                <div className={styles.reviewName}>{review.name}</div>
-                                                <div className={styles.stars}>
-                                                    {[...Array(5)].map((_, i) => (
-                                                        <FaStar key={i} color={i < review.rating ? "#ffac1c" : "#e0e0e0"} size={14} />
-                                                    ))}
-                                                </div>
-                                            </div>
-                                            <div className={styles.reviewTitle}>{review.title}</div>
-                                            <p style={{ color: '#666', fontSize: '0.95rem' }}>{review.comment}</p>
-                                            <div className={styles.reviewMeta}>Review by {review.name} Posted on {review.date}</div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-
-                            {/* Add Review Form */}
-                            <div className={styles.addReviewForm}>
-                                <h3>Add your Review</h3>
-                                <div style={{ marginBottom: '1.5rem' }}>
-                                    <div className={styles.formLabel}>Your Rating</div>
-                                    <div className={styles.stars} style={{ cursor: 'pointer' }}>
-                                        <FaRegStar size={20} color="#888" /> <FaRegStar size={20} color="#888" /> <FaRegStar size={20} color="#888" /> <FaRegStar size={20} color="#888" /> <FaRegStar size={20} color="#888" />
-                                    </div>
-                                </div>
-
-                                <div className={styles.formGroup}>
-                                    <label className={styles.formLabel}>Name *</label>
-                                    <input type="text" className={styles.formInput} placeholder="Enter Your Name" />
-                                </div>
-                                <div className={styles.formGroup}>
-                                    <label className={styles.formLabel}>Email Address *</label>
-                                    <input type="email" className={styles.formInput} placeholder="Enter Your Email" />
-                                </div>
-                                <div className={styles.formGroup}>
-                                    <label className={styles.formLabel}>Your Review *</label>
-                                    <textarea className={styles.formTextarea} rows="5" placeholder="Enter Your Review"></textarea>
-                                </div>
-                                <button className={styles.submitBtn}>Submit</button>
-                            </div>
-                        </div>
-                    )}
-
                 </div>
             </section>
 
             {/* --- Related Products --- */}
-            <section className={styles.relatedSection}>
-                <h2 className={styles.sectionTitle}>Related Products</h2>
-                <div className={styles.productGrid}>
-                    {products.slice(1, 5).map(item => (
-                        <Link to={`/products/${item.id}`} key={item.id} style={{ textDecoration: 'none', color: 'inherit' }}>
-                            <div key={item.id} style={{ background: '#fff', cursor: 'pointer' }}>
-                                <div className={styles.mainImageWrapper} style={{ height: '300px', marginBottom: '1rem' }}>
-                                    <img src={item.image} alt={item.name} className={styles.mainImage} />
+            {relatedProducts.length > 0 && (
+                <section className={styles.relatedSection}>
+                    <h2 className={styles.sectionTitle}>Related Products</h2>
+                    <div className={styles.productGrid}>
+                        {relatedProducts.map(item => (
+                            <Link to={`/products/${item.id}`} key={item.id} className={styles.relatedCard}>
+                                <div className={styles.relatedImgWrapper}>
+                                    <img
+                                        src={item.images?.find(img => img.isPrimary)?.imageUrl || item.images?.[0]?.imageUrl || '/placeholder.png'}
+                                        alt={item.name}
+                                        className={styles.relatedImg}
+                                    />
                                 </div>
-                                <div style={{ padding: '0.5rem' }}>
-                                    <h4 style={{ fontSize: '1rem', fontWeight: '600' }}>{item.brand}</h4>
-                                    <p style={{ color: '#555', fontSize: '0.9rem' }}>{item.name}</p>
-                                    <div style={{ fontWeight: '600', marginTop: '0.5rem' }}>${item.price.toFixed(2)}</div>
+                                <div className={styles.relatedInfo}>
+                                    <h4 className={styles.relatedBrand}>{item.brand || 'Krist'}</h4>
+                                    <p className={styles.relatedName}>{item.name}</p>
+                                    <div className={styles.relatedPriceRow}>
+                                        <span className={styles.relatedPrice}>${item.basePrice.toFixed(2)}</span>
+                                        {/* Simplified: showing strike price if it were available in search response */}
+                                    </div>
                                 </div>
-                            </div>
-                        </Link>
-                    ))}
+                            </Link>
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            {/* --- Services Section --- */}
+            <section className={styles.servicesSection}>
+                <div className={styles.serviceItem}>
+                    <div className={styles.serviceIcon}><BiBox /></div>
+                    <div className={styles.serviceText}>
+                        <h4 className={styles.serviceTitle}>Free Shipping</h4>
+                        <p className={styles.serviceDesc}>Free shipping for order above $150</p>
+                    </div>
+                </div>
+                <div className={styles.serviceItem}>
+                    <div className={styles.serviceIcon}><BiDollarCircle /></div>
+                    <div className={styles.serviceText}>
+                        <h4 className={styles.serviceTitle}>Money Guarantee</h4>
+                        <p className={styles.serviceDesc}>Within 30 days for an exchange</p>
+                    </div>
+                </div>
+                <div className={styles.serviceItem}>
+                    <div className={styles.serviceIcon}><BiHeadphone /></div>
+                    <div className={styles.serviceText}>
+                        <h4 className={styles.serviceTitle}>Online Support</h4>
+                        <p className={styles.serviceDesc}>24 hours a day, 7 days a week</p>
+                    </div>
+                </div>
+                <div className={styles.serviceItem}>
+                    <div className={styles.serviceIcon}><BiCreditCard /></div>
+                    <div className={styles.serviceText}>
+                        <h4 className={styles.serviceTitle}>Flexible Payment</h4>
+                        <p className={styles.serviceDesc}>Pay with multiple credit cards</p>
+                    </div>
                 </div>
             </section>
-
-            {/* --- Services --- */}
-            <section className={styles.featuresSection}>
-                {services.map(service => (
-                    <div key={service.id} className={styles.featureItem}>
-                        <service.icon className={styles.featureIcon} />
-                        <div>
-                            <h4 className={styles.featureTitle}>{service.title}</h4>
-                            <p className={styles.featureDesc}>{service.desc}</p>
-                        </div>
-                    </div>
-                ))}
-            </section>
-
         </div>
     );
-}
+};
 
 export default ProductDetail;
