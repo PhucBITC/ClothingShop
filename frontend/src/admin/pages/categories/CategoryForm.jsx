@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from '../../../api/axios';
+import { useToast } from '../../../components/common/toast/ToastContext';
 import styles from './CategoryForm.module.css';
 import { motion } from 'framer-motion';
 
 const CategoryForm = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const toast = useToast();
     const isEditMode = Boolean(id);
 
     const [formData, setFormData] = useState({
@@ -75,12 +77,17 @@ const CategoryForm = () => {
         try {
             if (isEditMode) {
                 await axios.put(`/categories/${id}`, formData);
+                toast.success('Updated Successfully', `Category "${formData.name}" has been updated.`);
             } else {
                 await axios.post('/categories', formData);
+                toast.success('Created Successfully', `Category "${formData.name}" has been added.`);
             }
             navigate('/admin/categories');
         } catch (err) {
-            setError('Failed to save category. Please try again.');
+            console.error("Error saving category:", err);
+            const errorMessage = err.response?.data?.message || 'Failed to save category. Please try again.';
+            setError(errorMessage);
+            toast.error('Save Failed', errorMessage);
             setLoading(false);
         }
     };

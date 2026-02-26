@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from '../../../api/axios';
 import { BiPencil, BiTrash, BiPlus, BiError } from 'react-icons/bi';
+import { useToast } from '../../../components/common/toast/ToastContext';
 import styles from './CategoryList.module.css';
 
 const CategoryList = () => {
@@ -14,6 +15,7 @@ const CategoryList = () => {
     const [categoryToDelete, setCategoryToDelete] = useState(null);
 
     const navigate = useNavigate();
+    const toast = useToast();
 
     useEffect(() => {
         fetchCategories();
@@ -41,13 +43,19 @@ const CategoryList = () => {
     const handleDelete = async () => {
         if (!categoryToDelete) return;
 
+        const loadingToastId = toast.loading('Deleting...', `Deleting category "${categoryToDelete.name}"`);
+
         try {
             await axios.delete(`/categories/${categoryToDelete.id}`);
             setCategories(categories.filter(cat => cat.id !== categoryToDelete.id));
             setShowDeleteModal(false);
             setCategoryToDelete(null);
+
+            toast.remove(loadingToastId);
+            toast.success('Deleted Successfully', `Category "${categoryToDelete.name}" has been removed.`);
         } catch (err) {
-            alert('Failed to delete category');
+            toast.remove(loadingToastId);
+            toast.error('Delete Failed', err.response?.data?.message || 'Failed to delete category. Check if it has associated products.');
         }
     };
 

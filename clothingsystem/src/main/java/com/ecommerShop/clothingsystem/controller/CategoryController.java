@@ -1,9 +1,12 @@
 package com.ecommerShop.clothingsystem.controller;
 
 import com.ecommerShop.clothingsystem.model.Category;
+import com.ecommerShop.clothingsystem.model.Product;
 import com.ecommerShop.clothingsystem.repository.CategoryRepository;
+import com.ecommerShop.clothingsystem.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,6 +17,9 @@ public class CategoryController {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
 
     // 1. Lấy danh sách tất cả danh mục
     @GetMapping
@@ -48,10 +54,14 @@ public class CategoryController {
     }
 
     // 3. Xóa một danh mục theo ID
+    @Transactional
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCategory(@PathVariable Long id) {
         return categoryRepository.findById(id)
                 .map(category -> {
+                    // Cập nhật các sản phẩm liên quan bằng batch update
+                    productRepository.unlinkProductsFromCategory(id);
+
                     categoryRepository.delete(category);
                     return ResponseEntity.ok().build();
                 }).orElse(ResponseEntity.notFound().build());

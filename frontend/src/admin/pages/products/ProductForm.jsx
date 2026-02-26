@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from '../../../api/axios';
+import { useToast } from '../../../components/common/toast/ToastContext';
 import styles from './ProductForm.module.css';
 import { motion } from 'framer-motion';
 
 const ProductForm = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const toast = useToast();
     const isEditMode = Boolean(id);
 
     const [formData, setFormData] = useState({
@@ -33,7 +35,7 @@ const ProductForm = () => {
 
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState(null); // Keep local error for initial fetch, but use toast for form submission
 
     // Two-step category selection state
     const [selectedType, setSelectedType] = useState('');
@@ -107,12 +109,13 @@ const ProductForm = () => {
             } catch (err) {
                 console.error("Error fetching data:", err);
                 setError("Failed to load data.");
+                toast.error("Load Failed", "Failed to load product data.");
             } finally {
                 setLoading(false);
             }
         };
         fetchData();
-    }, [id, isEditMode]);
+    }, [id, isEditMode, toast]);
 
     // Filter categories when Type changes
     useEffect(() => {
@@ -132,7 +135,7 @@ const ProductForm = () => {
                 setSelectedType(selectedCat.categoryType);
             }
         }
-    }, [formData.categoryId, categories]);
+    }, [formData.categoryId, categories, selectedType]);
 
     // Auto-generate Slug Preview
     useEffect(() => {
@@ -207,7 +210,7 @@ const ProductForm = () => {
         setVariants(newVariants);
         setBulkPrice('');
         setBulkStock('');
-        // Optional: show toast/notification instead of alert
+        toast.info('Batch Update Applied', 'Price and stock updated for all variants.');
     };
 
     // File Handlers
@@ -227,10 +230,9 @@ const ProductForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setError(null);
 
         if (!formData.name || !formData.basePrice || !formData.categoryId) {
-            setError("Please fill in all required fields.");
+            toast.error("Validation Error", "Please fill in all required fields.");
             setLoading(false);
             return;
         }
@@ -263,15 +265,18 @@ const ProductForm = () => {
                 await axios.put(`/products/${id}`, data, {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 });
+                toast.success('Success', `Product "${formData.name}" has been updated.`);
             } else {
                 await axios.post('/products', data, {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 });
+                toast.success('Success', `Product "${formData.name}" has been added.`);
             }
             navigate('/admin/products');
         } catch (err) {
             console.error("Error saving product:", err);
-            setError("Error saving product. Please try again.");
+            const errorMessage = err.response?.data?.message || 'Failed to save product. Please try again.';
+            toast.error('Save Failed', errorMessage);
         } finally {
             setLoading(false);
         }

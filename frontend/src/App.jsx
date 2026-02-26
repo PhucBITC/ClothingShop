@@ -92,13 +92,16 @@ function AppLayout() {
 }
 
 import { WishlistProvider } from "./context/WishlistContext";
+import { ToastProvider } from "./components/common/toast/ToastContext";
 
 function App() {
   return (
     <BrowserRouter>
-      <WishlistProvider>
-        <AppLayout />
-      </WishlistProvider>
+      <ToastProvider>
+        <WishlistProvider>
+          <AppLayout />
+        </WishlistProvider>
+      </ToastProvider>
     </BrowserRouter>
   );
 }
