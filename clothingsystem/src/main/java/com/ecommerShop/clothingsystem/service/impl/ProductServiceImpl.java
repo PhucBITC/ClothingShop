@@ -129,17 +129,21 @@ public class ProductServiceImpl implements ProductService {
 
         // Update Variants
         if (request.getVariants() != null) {
-            // Keep track of existing variants to update or delete?
-            // Simple approach: Delete old and re-create? NO, ID reference might be
-            // important.
-            // Better: Clear list and re-add (logic from original code), but this deletes
-            // old IDs.
-            // Given "Simple Code": clear and re-add is acceptable, but let's try to be
-            // consistent with original logic which did:
-            // product.getVariants().clear(); ... add new.
-            // This works because of orphanRemoval = true in Entity.
-
             product.getVariants().clear();
+        }
+
+        // Update Images (existing ones)
+        if (request.getImages() != null) {
+            product.getImages().clear();
+        }
+
+        // IMPORTANT: Flush deletions before adding new ones to avoid "Duplicate entry"
+        // (SKU collision)
+        // because Hibernate flushes INSERTS before DELETES by default.
+        productRepository.saveAndFlush(product);
+
+        // Re-add Variants
+        if (request.getVariants() != null) {
             for (ProductRequest.VariantDTO vDto : request.getVariants()) {
                 ProductVariant variant = new ProductVariant();
                 variant.setProduct(product);
@@ -149,14 +153,24 @@ public class ProductServiceImpl implements ProductService {
                 variant.setPrice(vDto.getPrice() != null ? vDto.getPrice() : product.getBasePrice());
                 variant.setSalePrice(vDto.getSalePrice());
 
-                // Regenerate SKU or keep? If we clear, we regenerate.
+                // Regenerate SKU based on existing slug
                 variant.setSku(generateSku(product.getSlug(), vDto.getColor(), vDto.getSize()));
 
                 product.getVariants().add(variant);
             }
         }
 
-        // Update Images
+        // Re-add Existing Images from Request
+        if (request.getImages() != null) {
+            for (ProductRequest.ImageDTO imgDto : request.getImages()) {
+                ProductImage image = new ProductImage();
+                image.setProduct(product);
+                image.setImageUrl(imgDto.getImageUrl());
+                image.setPrimary(imgDto.isPrimary());
+                product.getImages().add(image);
+            }
+        }
+
         if (files != null && files.length > 0) {
             saveImages(files, product, false);
         }

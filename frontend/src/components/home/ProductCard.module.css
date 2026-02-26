@@ -15,7 +15,8 @@
     overflow: hidden;
     position: relative;
     /* màu nền của ảnh */
-    background: #f5f0f048;
+    /* background: #f5f0f048; */
+    border: 1px solid #ccc;
     border-radius: 8px;
 }
 

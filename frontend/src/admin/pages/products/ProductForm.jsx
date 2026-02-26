@@ -227,6 +227,34 @@ const ProductForm = () => {
         setPreviewImages(prev => prev.filter((_, i) => i !== index));
     };
 
+    const removeExistingImage = (index) => {
+        setExistingImages(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const moveExistingImage = (index, direction) => {
+        const newImages = [...existingImages];
+        const newIndex = index + direction;
+        if (newIndex < 0 || newIndex >= newImages.length) return;
+
+        [newImages[index], newImages[newIndex]] = [newImages[newIndex], newImages[index]];
+
+        // Ensure only the first image is primary if we move things around
+        const updatedImages = newImages.map((img, i) => ({
+            ...img,
+            primary: i === 0
+        }));
+
+        setExistingImages(updatedImages);
+    };
+
+    const setAsPrimary = (index) => {
+        const updatedImages = existingImages.map((img, i) => ({
+            ...img,
+            primary: i === index
+        }));
+        setExistingImages(updatedImages);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -251,6 +279,10 @@ const ProductForm = () => {
                     stock: parseInt(v.stock, 10),
                     price: v.price ? parseFloat(v.price) : null,
                     salePrice: v.salePrice ? parseFloat(v.salePrice) : null
+                })),
+                images: existingImages.map(img => ({
+                    imageUrl: img.imageUrl,
+                    primary: img.primary
                 }))
             };
 
@@ -464,14 +496,23 @@ const ProductForm = () => {
 
                         <div className={styles.previewContainer}>
                             {existingImages.map((img, idx) => (
-                                <div key={`ex-${idx}`} className={styles.previewWrapper}>
+                                <div key={img.id || `ex-${idx}`} className={styles.previewWrapper}>
                                     <img src={img.imageUrl} alt="Existing" className={styles.previewImg} />
-                                    {img.primary && <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'rgba(0,0,0,0.5)', color: 'white', fontSize: '10px', padding: '2px', textAlign: 'center' }}>Primary</div>}
+                                    <div className={styles.imgBadge}>
+                                        {img.primary ? 'Primary' : 'Secondary'}
+                                    </div>
+                                    <div className={styles.imgActions}>
+                                        <button type="button" onClick={() => moveExistingImage(idx, -1)} disabled={idx === 0} className={styles.btnAction} title="Move Left">←</button>
+                                        <button type="button" onClick={() => moveExistingImage(idx, 1)} disabled={idx === existingImages.length - 1} className={styles.btnAction} title="Move Right">→</button>
+                                        <button type="button" onClick={() => setAsPrimary(idx)} disabled={img.primary} className={styles.btnAction} title="Set as Primary">★</button>
+                                        <button type="button" onClick={() => removeExistingImage(idx)} className={styles.btnRemoveImgSmall}>✕</button>
+                                    </div>
                                 </div>
                             ))}
                             {previewImages.map((src, idx) => (
                                 <div key={`new-${idx}`} className={styles.previewWrapper}>
                                     <img src={src} alt="Preview" className={styles.previewImg} />
+                                    <div className={styles.imgBadge}>New</div>
                                     <button type="button" onClick={() => removeSelectedFile(idx)} className={styles.btnRemoveImg}>✕</button>
                                 </div>
                             ))}
