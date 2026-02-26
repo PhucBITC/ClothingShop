@@ -72,7 +72,18 @@
 
 .progressBar {
     height: 100%;
-    transition: width 0.01s linear;
+    width: 0%;
+    animation: shrink linear forwards;
+}
+
+@keyframes shrink {
+    from {
+        width: 100%;
+    }
+
+    to {
+        width: 0%;
+    }
 }
 
 /* Types Styling */

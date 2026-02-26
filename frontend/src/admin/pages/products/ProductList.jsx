@@ -12,12 +12,14 @@ import {
     BiChevronLeft,
     BiChevronRight
 } from 'react-icons/bi';
+import { useToast } from '../../../components/common/toast/ToastContext';
 import styles from './ProductList.module.css';
 
 const ProductList = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const toast = useToast();
 
     // Filter & Pagination State
     const [filters, setFilters] = useState({
@@ -36,6 +38,7 @@ const ProductList = () => {
     // Modal state
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [productToDelete, setProductToDelete] = useState(null);
+    const [isProcessing, setIsProcessing] = useState(false);
 
     const navigate = useNavigate();
 
@@ -115,16 +118,28 @@ const ProductList = () => {
     };
 
     const handleDuplicate = async (product) => {
-        if (!window.confirm(`Duplicate product "${product.name}"?`)) return;
+        if (isProcessing) return;
+        const confirmMsg = `Duplicate product "${product.name}"?`;
+        if (!window.confirm(confirmMsg)) return;
+
+        setIsProcessing(true);
+        const toastId = toast.loading('Duplicating...', `Creating a copy of ${product.name}`);
+
+        // Safety timeout to reset processing state if request hangs indefinitely
+        const safetyTimeout = setTimeout(() => setIsProcessing(false), 15000);
 
         try {
             const res = await axios.post(`/products/${product.id}/duplicate`);
-            alert("Product duplicated successfully!");
+            clearTimeout(safetyTimeout);
+            toast.success('Duplicated', `Product duplicated successfully!`, { id: toastId });
+            setIsProcessing(false);
             // Navigate to edit the new product
             navigate(`/admin/products/edit/${res.data.id}`);
         } catch (err) {
+            clearTimeout(safetyTimeout);
             console.error(err);
-            alert("Failed to duplicate product");
+            toast.error('Duplicate Failed', 'Failed to duplicate product', { id: toastId });
+            setIsProcessing(false);
         }
     };
 
@@ -134,15 +149,26 @@ const ProductList = () => {
     };
 
     const handleDelete = async () => {
-        if (!productToDelete) return;
+        if (!productToDelete || isProcessing) return;
+
+        setIsProcessing(true);
+        const toastId = toast.loading('Deleting...', `Removing ${productToDelete.name}`);
+
+        // Safety timeout
+        const safetyTimeout = setTimeout(() => setIsProcessing(false), 15000);
 
         try {
             await axios.delete(`/products/${productToDelete.id}`);
+            clearTimeout(safetyTimeout);
+            toast.success('Deleted', 'Product deleted successfully', { id: toastId });
             fetchProducts(); // Refresh list
             setShowDeleteModal(false);
             setProductToDelete(null);
+            setIsProcessing(false);
         } catch (err) {
-            alert("Failed to delete product");
+            clearTimeout(safetyTimeout);
+            toast.error('Delete Failed', 'Failed to delete product', { id: toastId });
+            setIsProcessing(false);
         }
     };
 

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useEffect } from 'react';
+import { motion } from 'framer-motion';
 import {
     HiCheckCircle,
     HiXCircle,
@@ -10,8 +10,6 @@ import {
 import styles from './Toast.module.css';
 
 const Toast = ({ type = 'info', title, message, duration = 3000, onClose }) => {
-    const [progress, setProgress] = useState(100);
-
     useEffect(() => {
         if (type === 'loading') return;
 
@@ -19,15 +17,10 @@ const Toast = ({ type = 'info', title, message, duration = 3000, onClose }) => {
             onClose();
         }, duration);
 
-        const progressTimer = setInterval(() => {
-            setProgress((prev) => Math.max(0, prev - (100 / (duration / 10))));
-        }, 10);
-
         return () => {
             clearTimeout(timer);
-            clearInterval(progressTimer);
         };
-    }, [duration, onClose, type]);
+    }, [duration, onClose, type, title, message]);
 
     const getIcon = () => {
         switch (type) {
@@ -64,8 +57,9 @@ const Toast = ({ type = 'info', title, message, duration = 3000, onClose }) => {
             {type !== 'loading' && (
                 <div className={styles.progressBarWrapper}>
                     <div
+                        key={`${type}-${title}-${message}`} // Force fresh animation on update
                         className={styles.progressBar}
-                        style={{ width: `${progress}%` }}
+                        style={{ animationDuration: `${duration}ms` }}
                     />
                 </div>
             )}

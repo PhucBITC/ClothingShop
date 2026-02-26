@@ -15,9 +15,20 @@ export const useToast = () => {
 export const ToastProvider = ({ children }) => {
     const [toasts, setToasts] = useState([]);
 
-    const addToast = useCallback((toast) => {
-        const id = Date.now();
-        setToasts((prev) => [...prev, { ...toast, id }]);
+    const addToast = useCallback((toastData) => {
+        // Use provided ID or generate a unique one
+        const id = toastData.id || (Date.now() + Math.random());
+
+        setToasts((prev) => {
+            const exists = prev.find(t => t.id === id);
+            if (exists) {
+                // Update existing toast
+                return prev.map(t => t.id === id ? { ...t, ...toastData, id } : t);
+            }
+            // Add new toast
+            return [...prev, { ...toastData, id }];
+        });
+
         return id;
     }, []);
 
@@ -26,11 +37,16 @@ export const ToastProvider = ({ children }) => {
     }, []);
 
     const toast = {
-        success: (title, message, duration) => addToast({ type: 'success', title, message, duration }),
-        error: (title, message, duration) => addToast({ type: 'error', title, message, duration }),
-        info: (title, message, duration) => addToast({ type: 'info', title, message, duration }),
-        warning: (title, message, duration) => addToast({ type: 'warning', title, message, duration }),
-        loading: (title, message) => addToast({ type: 'loading', title, message }),
+        success: (title, message, options = {}) =>
+            addToast({ type: 'success', title, message, ...options }),
+        error: (title, message, options = {}) =>
+            addToast({ type: 'error', title, message, ...options }),
+        info: (title, message, options = {}) =>
+            addToast({ type: 'info', title, message, ...options }),
+        warning: (title, message, options = {}) =>
+            addToast({ type: 'warning', title, message, ...options }),
+        loading: (title, message, options = {}) =>
+            addToast({ type: 'loading', title, message, ...options }),
         remove: (id) => removeToast(id)
     };
 
