@@ -7,11 +7,73 @@ import logo from '../assets/logo.png';
 import { FiHeart } from 'react-icons/fi';
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
+import { useToast } from './common/toast/ToastContext';
+import ConfirmModal from './common/modal/ConfirmModal';
 
 function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [selectedItems, setSelectedItems] = useState([]);
+    const [modalConfig, setModalConfig] = useState({ isOpen: false, type: '', data: null });
+
     const { wishlistItems } = useWishlist();
-    const { cartItems, cartCount, subtotal, removeFromCart } = useCart();
+    const { cartItems, cartCount, subtotal, removeFromCart, removeMultipleFromCart, clearCart } = useCart();
+    const toast = useToast();
+
+    const handleSelectItem = (id, variantId) => {
+        const itemKey = `${id}-${variantId}`;
+        setSelectedItems(prev =>
+            prev.includes(itemKey)
+                ? prev.filter(k => k !== itemKey)
+                : [...prev, itemKey]
+        );
+    };
+
+    const handleConfirmAction = () => {
+        const { type, data } = modalConfig;
+
+        if (type === 'SINGLE') {
+            removeFromCart(data.id, data.variantId);
+            setSelectedItems(prev => prev.filter(k => k !== `${data.id}-${data.variantId}`));
+            toast.success("Item removed from cart");
+        } else if (type === 'MULTIPLE') {
+            removeMultipleFromCart(data.items.map(i => ({ id: i.id, variantId: i.variantId })));
+            setSelectedItems([]);
+            toast.success(`${data.items.length} items removed from cart`);
+        } else if (type === 'CLEAR') {
+            clearCart();
+            setSelectedItems([]);
+            toast.success("Cart has been cleared");
+        }
+
+        setModalConfig({ isOpen: false, type: '', data: null });
+    };
+
+    const handleRemoveSelected = () => {
+        const toRemove = cartItems.filter(item => selectedItems.includes(`${item.id}-${item.variantId}`));
+        if (toRemove.length === 0) return;
+        setModalConfig({
+            isOpen: true,
+            type: 'MULTIPLE',
+            data: { items: toRemove }
+        });
+    };
+
+    const handleClearCart = () => {
+        if (cartItems.length === 0) return;
+        setModalConfig({
+            isOpen: true,
+            type: 'CLEAR',
+            data: null
+        });
+    };
+
+    const handleSingleRemove = (id, variantId, name) => {
+        setModalConfig({
+            isOpen: true,
+            type: 'SINGLE',
+            data: { id, variantId, name }
+        });
+    };
 
     // Check for admin role
     const role = localStorage.getItem('role');
@@ -148,12 +210,22 @@ function Header() {
                     {/* MiniCart Dropdown */}
                     <div className={styles.miniCart}>
                         <div className={styles.miniCartHeader}>
-                            You have {cartCount} {cartCount === 1 ? 'item' : 'items'} in your cart
+                            <span>You have {cartCount} {cartCount === 1 ? 'item' : 'items'}</span>
+                            {cartCount > 0 && (
+                                <button className={styles.clearAllBtn} onClick={handleClearCart}>Clear All</button>
+                            )}
                         </div>
 
                         <div className={styles.miniCartItems}>
                             {cartItems.map((item) => (
                                 <div key={`${item.id}-${item.variantId}`} className={styles.miniCartItem}>
+                                    <div className={styles.itemSelector}>
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedItems.includes(`${item.id}-${item.variantId}`)}
+                                            onChange={() => handleSelectItem(item.id, item.variantId)}
+                                        />
+                                    </div>
                                     <img src={item.image} alt={item.name} className={styles.miniCartImg} />
                                     <div className={styles.miniCartInfo}>
                                         <h4 className={styles.miniCartTitle}>{item.name}</h4>
@@ -162,7 +234,7 @@ function Header() {
                                     </div>
                                     <button
                                         className={styles.removeItemBtn}
-                                        onClick={() => removeFromCart(item.id, item.variantId)}
+                                        onClick={() => handleSingleRemove(item.id, item.variantId, item.name)}
                                     >
                                         <BiTrash />
                                     </button>
@@ -170,21 +242,43 @@ function Header() {
                             ))}
                         </div>
 
-                        <div className={styles.miniCartFooter}>
-                            <div className={styles.miniCartSubtotal}>
-                                <span>Subtotal</span>
-                                <span>${subtotal.toFixed(2)}</span>
+                        {cartItems.length > 0 && (
+                            <div className={styles.miniCartFooter}>
+                                {selectedItems.length > 0 && (
+                                    <button className={styles.removeSelectedBtn} onClick={handleRemoveSelected}>
+                                        Remove Selected ({selectedItems.length})
+                                    </button>
+                                )}
+                                <div className={styles.miniCartSubtotal}>
+                                    <span>Subtotal</span>
+                                    <span>${subtotal.toFixed(2)}</span>
+                                </div>
+                                <div className={styles.miniCartActions}>
+                                    <Link to="/cart" className={styles.viewCartBtn}>View Cart</Link>
+                                    <Link to="/checkout" className={styles.checkoutBtn}>Checkout</Link>
+                                </div>
                             </div>
-                            <div className={styles.miniCartActions}>
-                                <Link to="/cart" className={styles.viewCartBtn}>View Cart</Link>
-                                <Link to="/checkout" className={styles.checkoutBtn}>Checkout</Link>
-                            </div>
-                        </div>
+                        )}
                     </div>
                 </div>
 
                 <Link to="/login" className={styles.loginBtn}>Login</Link>
             </div>
+
+            <ConfirmModal
+                isOpen={modalConfig.isOpen}
+                onClose={() => setModalConfig({ ...modalConfig, isOpen: false })}
+                onConfirm={handleConfirmAction}
+                title={modalConfig.type === 'CLEAR' ? 'Clear Cart' : modalConfig.type === 'MULTIPLE' ? 'Delete Items' : 'Confirm Delete'}
+                message={
+                    modalConfig.type === 'SINGLE'
+                        ? 'Are you sure you want to delete'
+                        : modalConfig.type === 'MULTIPLE'
+                            ? `Are you sure you want to delete ${modalConfig.data?.items.length} selected items`
+                            : 'Are you sure you want to clear your entire cart'
+                }
+                itemName={modalConfig.type === 'SINGLE' ? modalConfig.data?.name : ''}
+            />
         </header>
     );
 }

@@ -218,11 +218,67 @@
 }
 
 .miniCartHeader {
-    font-size: 0.95rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
     color: #666;
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.8rem;
     border-bottom: 1px solid #f0f0f0;
+}
+
+/* Shipping Progress in MiniCart */
+.miniShippingProgress {
+    background: #f0f7ff;
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.miniShippingProgress.unlocked {
+    background: #f6ffed;
+}
+
+.miniProgressText {
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #131118;
+}
+
+.miniProgressBar {
+    height: 4px;
+    background: #e6e6e6;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.miniProgressFill {
+    height: 100%;
+    background: #1890ff;
+    transition: width 0.3s ease;
+}
+
+.unlocked .miniProgressFill {
+    background: #52c41a;
+}
+
+.clearAllBtn {
+    background: none;
+    border: none;
+    color: #ff4d4f;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.2s;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.clearAllBtn:hover {
+    color: #d9363e;
+    background: #fff1f0;
 }
 
 .miniCartItems {
@@ -235,10 +291,23 @@
 
 .miniCartItem {
     display: flex;
-    gap: 1rem;
+    align-items: center;
+    gap: 0.8rem;
     position: relative;
     padding-bottom: 1rem;
     border-bottom: 1px solid #f9f9f9;
+}
+
+.itemSelector {
+    display: flex;
+    align-items: center;
+}
+
+.itemSelector input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: #131118;
 }
 
 .miniCartImg {
@@ -291,6 +360,25 @@
     margin-top: 1rem;
     padding-top: 1rem;
     border-top: 1px solid #eee;
+}
+
+.removeSelectedBtn {
+    width: 100%;
+    background: #fff1f0;
+    color: #ff4d4f;
+    border: 1px solid #ffccc7;
+    padding: 0.5rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 1rem;
+    transition: all 0.2s;
+}
+
+.removeSelectedBtn:hover {
+    background: #ffccc7;
+    color: #cf1322;
 }
 
 .miniCartSubtotal {

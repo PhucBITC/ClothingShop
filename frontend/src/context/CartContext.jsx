@@ -45,6 +45,15 @@ export const CartProvider = ({ children }) => {
         setCartItems((prev) => prev.filter(item => !(item.id === cartItemId && item.variantId === variantId)));
     };
 
+    const removeMultipleFromCart = (itemsToRemove) => {
+        // itemsToRemove is an array of {id, variantId}
+        setCartItems((prev) =>
+            prev.filter(item =>
+                !itemsToRemove.some(rem => rem.id === item.id && rem.variantId === item.variantId)
+            )
+        );
+    };
+
     const updateQuantity = (cartItemId, variantId, delta) => {
         setCartItems((prev) =>
             prev.map(item => {
@@ -60,35 +69,44 @@ export const CartProvider = ({ children }) => {
         setCartItems([]);
     };
 
+    const calculateTotals = (items) => {
+        const itemSubtotal = items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+        const itemCount = items.reduce((acc, item) => acc + item.quantity, 0);
+        const itemWeight = items.reduce((acc, item) => acc + (item.weight * item.quantity), 0);
+
+        let charge = 1.50;
+        if (items.length === 0) {
+            charge = 0;
+        } else if (itemSubtotal >= 30 || itemCount >= 3) {
+            charge = 0;
+        } else if (itemWeight > 2000) {
+            const extraWeight = itemWeight - 2000;
+            charge += Math.ceil(extraWeight / 1000) * 1.00;
+        }
+
+        return {
+            subtotal: itemSubtotal,
+            deliveryCharge: charge,
+            total: itemSubtotal + charge
+        };
+    };
+
+    const { subtotal, deliveryCharge, total } = calculateTotals(cartItems);
     const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
-    const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-
-    // Dynamic Shipping Logic (Localized for Fashion E-commerce)
-    const totalWeight = cartItems.reduce((acc, item) => acc + (item.weight * item.quantity), 0);
-    let deliveryCharge = 1.50; // Standard flat rate (~35k-40k VND)
-
-    // Free shipping incentive: Spend $30 (~750k VND) OR buy at least 3 items (Combo logic)
-    if (subtotal >= 30 || cartCount >= 3) {
-        deliveryCharge = 0;
-    } else if (totalWeight > 2000) {
-        // Extra $1 for every 1kg over 2kg (Heavy items surcharge)
-        const extraWeight = totalWeight - 2000;
-        deliveryCharge += Math.ceil(extraWeight / 1000) * 1.00;
-    }
-
-    const total = subtotal + deliveryCharge;
 
     return (
         <CartContext.Provider value={{
             cartItems,
             addToCart,
             removeFromCart,
+            removeMultipleFromCart,
             updateQuantity,
             clearCart,
             cartCount,
             subtotal,
             deliveryCharge,
-            total
+            total,
+            calculateTotals
         }}>
             {children}
         </CartContext.Provider>

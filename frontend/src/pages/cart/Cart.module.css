@@ -35,6 +35,134 @@
     flex: 2;
 }
 
+/* --- Free Shipping Progress (Modern Sidebar Version) --- */
+.shippingProgress {
+    background: #fbfbfb;
+    padding: 1.2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    border: 1px solid #eee;
+}
+
+.shippingProgress.unlocked {
+    background: #f6ffed;
+    border-color: #b7eb8f;
+}
+
+.progressHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+}
+
+.progressTitle {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #131118;
+}
+
+.progressValue {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #555;
+}
+
+.progressBar {
+    height: 4px;
+    background: #e9e9e9;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 0.8rem;
+}
+
+.progressFill {
+    height: 100%;
+    background: #131118;
+    transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.unlocked .progressFill {
+    background: #52c41a;
+}
+
+.progressStatus {
+    font-size: 0.8rem;
+    color: #666;
+    line-height: 1.4;
+}
+
+.progressStatus strong {
+    color: #131118;
+}
+
+.unlocked .progressStatus {
+    color: #389e0d;
+}
+
+/* --- Minimalist Table Header Actions --- */
+.tableHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 0.5rem 1rem 0.5rem;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 1rem;
+}
+
+.leftActions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.selectionInfo {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 500;
+}
+
+.removeSelectedBtn {
+    background: none;
+    border: none;
+    color: #ff4d4f;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    padding: 0;
+}
+
+.removeSelectedBtn:hover {
+    color: #cf1322;
+}
+
+.clearAllBtn {
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.clearAllBtn:hover {
+    color: #ff4d4f;
+}
+
+.clearCartBtn:hover {
+    color: #d9363e;
+}
+
+.clearCartBtn:disabled {
+    color: #ccc;
+    cursor: not-allowed;
+}
+
 .cartTable {
     width: 100%;
     border-collapse: collapse;
@@ -61,13 +189,46 @@
     gap: 1.5rem;
 }
 
-.productImg {
+.imgWrapper {
+    position: relative;
     width: 80px;
     height: 80px;
+}
+
+.productImg {
+    width: 100%;
+    height: 100%;
     object-fit: contain;
     background: #f8f8f8;
     border-radius: 8px;
     mix-blend-mode: multiply;
+}
+
+.removeBtn {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 24px;
+    height: 24px;
+    background: #fff;
+    border: 1px solid #eee;
+    color: #ff4d4f;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s;
+    font-size: 1rem;
+    z-index: 2;
+}
+
+.removeBtn:hover {
+    background: #ff4d4f;
+    color: #fff;
+    border-color: #ff4d4f;
+    transform: scale(1.1);
 }
 
 .productMeta h4 {
@@ -91,6 +252,17 @@
 .subtotalCell {
     font-weight: 600;
     font-size: 1rem;
+}
+
+.itemCheckbox {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #131118;
+}
+
+.selectedRow {
+    background: #fafafa;
 }
 
 /* Quantity Control */
@@ -125,10 +297,12 @@
 .summarySection {
     flex: 1;
     background: #fff;
-    /* Image shows clean background */
-    /* If strict design: styling mimics the right column */
     padding-top: 2rem;
-    /* Align with table content if needed */
+}
+
+/* No longer used as a separate section */
+.bottomActions {
+    display: none;
 }
 
 .summaryRow {
@@ -149,30 +323,58 @@
     color: #131118;
 }
 
+/* --- Discount Section (Redesigned) --- */
+.discountWrapper {
+    margin: 2rem 0;
+}
+
+.discountWrapper h5 {
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    color: #131118;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
 .discountGroup {
     display: flex;
-    gap: 0;
-    margin: 2rem 0;
+    position: relative;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 4px;
+    transition: border-color 0.2s;
+}
+
+.discountGroup:focus-within {
+    border-color: #131118;
 }
 
 .discountInput {
     flex: 1;
-    padding: 0.8rem 1rem;
-    border: 1px solid #ddd;
-    border-right: none;
-    border-radius: 8px 0 0 8px;
+    padding: 0.7rem 1rem;
+    border: none;
     outline: none;
     font-family: inherit;
+    font-size: 0.9rem;
+    background: transparent;
 }
 
 .applyBtn {
     background: #131118;
     color: #fff;
     border: none;
-    padding: 0 2rem;
-    border-radius: 0 8px 8px 0;
+    padding: 0 1.5rem;
+    border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
+    font-size: 0.85rem;
+    transition: transform 0.2s;
+}
+
+.applyBtn:hover {
+    transform: scale(1.02);
 }
 
 .grandTotalRow {
