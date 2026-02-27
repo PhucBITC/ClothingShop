@@ -33,6 +33,7 @@ export const CartProvider = ({ children }) => {
                         image: product.images?.find(img => img.primary)?.imageUrl || product.images?.[0]?.imageUrl || '',
                         color: variant.color,
                         size: variant.size,
+                        weight: product.weight || 0, // Store weight per unit
                         quantity: quantity
                     }
                 ];
@@ -62,6 +63,21 @@ export const CartProvider = ({ children }) => {
     const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
     const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
 
+    // Dynamic Shipping Logic (Localized for Fashion E-commerce)
+    const totalWeight = cartItems.reduce((acc, item) => acc + (item.weight * item.quantity), 0);
+    let deliveryCharge = 1.50; // Standard flat rate (~35k-40k VND)
+
+    // Free shipping incentive: Spend $30 (~750k VND) OR buy at least 3 items (Combo logic)
+    if (subtotal >= 30 || cartCount >= 3) {
+        deliveryCharge = 0;
+    } else if (totalWeight > 2000) {
+        // Extra $1 for every 1kg over 2kg (Heavy items surcharge)
+        const extraWeight = totalWeight - 2000;
+        deliveryCharge += Math.ceil(extraWeight / 1000) * 1.00;
+    }
+
+    const total = subtotal + deliveryCharge;
+
     return (
         <CartContext.Provider value={{
             cartItems,
@@ -70,7 +86,9 @@ export const CartProvider = ({ children }) => {
             updateQuantity,
             clearCart,
             cartCount,
-            subtotal
+            subtotal,
+            deliveryCharge,
+            total
         }}>
             {children}
         </CartContext.Provider>

@@ -1,23 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BiHome, BiCreditCard, BiListCheck, BiEdit, BiShoppingBag } from 'react-icons/bi';
+import { useCart } from '../../context/CartContext';
 import styles from './ReviewOrder.module.css';
-import { products } from '../../data/mockData';
 
 function ReviewOrder() {
     const navigate = useNavigate();
     const [showSuccess, setShowSuccess] = useState(false);
-
-    // Mock items based on image
-    const orderItems = [
-        { ...products[0], quantity: 1, size: 'S' }, // Girls Pink Moana
-        { ...products[8], quantity: 1, size: 'Regular' }, // Handbag
-        { ...products[11], quantity: 1, size: 'M' }, // Casual Shirt
-    ];
-
-    const subtotal = 200.00;
-    const delivery = 5.00;
-    const total = 205.00;
+    const { cartItems, subtotal, deliveryCharge, total } = useCart();
 
     const handlePlaceOrder = () => {
         setShowSuccess(true);
@@ -51,8 +41,8 @@ function ReviewOrder() {
                     <h3 className={styles.estimatedDelivery}>Estimated delivery: 22 Feb 2022</h3>
 
                     <div className={styles.orderItems}>
-                        {orderItems.map((item, idx) => (
-                            <div key={idx} className={styles.orderItem}>
+                        {cartItems.map((item) => (
+                            <div key={`${item.id}-${item.variantId}`} className={styles.orderItem}>
                                 <img src={item.image} alt={item.name} className={styles.productImg} />
                                 <div className={styles.itemInfo}>
                                     <h4>{item.name}</h4>
@@ -102,7 +92,7 @@ function ReviewOrder() {
 
                     <div className={styles.summaryRow}>
                         <span className={styles.summaryLabel}>Delivery Charge</span>
-                        <span style={{ fontWeight: '700' }}>${delivery.toFixed(2)}</span>
+                        <span style={{ fontWeight: '700' }}>${deliveryCharge.toFixed(2)}</span>
                     </div>
 
                     <div className={styles.grandTotal}>

@@ -2,14 +2,11 @@ import { useCart } from '../../context/CartContext';
 import styles from './Cart.module.css';
 
 function Cart() {
-    const { cartItems, updateQuantity, removeFromCart, subtotal } = useCart();
-    const deliveryCharge = 5.00;
+    const { cartItems, updateQuantity, removeFromCart, subtotal, deliveryCharge, total } = useCart();
 
     const handleQuantityChange = (id, variantId, delta) => {
         updateQuantity(id, variantId, delta);
     };
-
-    const grandTotal = subtotal + deliveryCharge;
 
     return (
         <div className={styles.cartContainer}>
@@ -89,7 +86,7 @@ function Cart() {
 
                     <div className={styles.grandTotalRow}>
                         <span className={styles.summaryLabel}>Grand Total</span>
-                        <span className={styles.summaryValue}>${grandTotal.toFixed(2)}</span>
+                        <span className={styles.summaryValue}>${total.toFixed(2)}</span>
                     </div>
 
                     <button className={styles.checkoutBtn}>Proceed to Checkout</button>
