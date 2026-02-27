@@ -1,30 +1,15 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useCart } from '../../context/CartContext';
 import styles from './Cart.module.css';
-import { products } from '../../data/mockData';
 
 function Cart() {
-    // Initialize with some mock items from the products array
-    const [cartItems, setCartItems] = useState([
-        { ...products[0], quantity: 1, selectedSize: 'S', selectedColor: 'Green' }, // Girls Pink Moana... (Simulated match)
-        { ...products[8], quantity: 1, selectedSize: 'Regular', selectedColor: 'Brown' }, // Handbag
-        { ...products[11], quantity: 1, selectedSize: 'M', selectedColor: 'Black' }, // Cotton Casual Shirt
-    ]);
-
+    const { cartItems, updateQuantity, removeFromCart, subtotal } = useCart();
     const deliveryCharge = 5.00;
 
-    const handleQuantityChange = (id, delta) => {
-        setCartItems(prev => prev.map(item => {
-            if (item.id === id) {
-                const newQty = Math.max(1, item.quantity + delta);
-                return { ...item, quantity: newQty };
-            }
-            return item;
-        }));
+    const handleQuantityChange = (id, variantId, delta) => {
+        updateQuantity(id, variantId, delta);
     };
 
-    const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-    const grandTotal = subtotal + deliveryCharge; // Minus discount if applicable
+    const grandTotal = subtotal + deliveryCharge;
 
     return (
         <div className={styles.cartContainer}>
@@ -51,23 +36,31 @@ function Cart() {
                         </thead>
                         <tbody>
                             {cartItems.map(item => (
-                                <tr key={item.id}>
+                                <tr key={`${item.id}-${item.variantId}`}>
                                     <td>
                                         <div className={styles.productCell}>
-                                            <img src={item.image} alt={item.name} className={styles.productImg} />
+                                            <div className={styles.imgWrapper}>
+                                                <img src={item.image} alt={item.name} className={styles.productImg} />
+                                                <button
+                                                    className={styles.removeBtn}
+                                                    onClick={() => removeFromCart(item.id, item.variantId)}
+                                                >
+                                                    ×
+                                                </button>
+                                            </div>
                                             <div className={styles.productMeta}>
                                                 <h4>{item.name}</h4>
-                                                <p>Size: {item.selectedSize}</p>
-                                                <p>Color: {item.selectedColor}</p>
+                                                <p>Size: {item.size}</p>
+                                                <p>Color: {item.color}</p>
                                             </div>
                                         </div>
                                     </td>
                                     <td className={styles.priceCell}>${item.price.toFixed(2)}</td>
                                     <td>
                                         <div className={styles.quantityControl}>
-                                            <button className={styles.qtyBtn} onClick={() => handleQuantityChange(item.id, -1)}>−</button>
+                                            <button className={styles.qtyBtn} onClick={() => handleQuantityChange(item.id, item.variantId, -1)}>−</button>
                                             <div className={styles.qtyValue}>{item.quantity}</div>
-                                            <button className={styles.qtyBtn} onClick={() => handleQuantityChange(item.id, 1)}>+</button>
+                                            <button className={styles.qtyBtn} onClick={() => handleQuantityChange(item.id, item.variantId, 1)}>+</button>
                                         </div>
                                     </td>
                                     <td className={styles.subtotalCell}>${(item.price * item.quantity).toFixed(2)}</td>

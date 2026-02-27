@@ -4,11 +4,15 @@ import { motion } from 'framer-motion';
 import { BiCartAlt, BiShow, BiSync } from 'react-icons/bi';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { useWishlist } from '../../context/WishlistContext';
+import { useCart } from '../../context/CartContext';
+import { useToast } from '../common/toast/ToastContext';
 import styles from './ProductCard.module.css';
 
 const ProductCard = ({ product }) => {
     const navigate = useNavigate();
     const { toggleWishlist, isInWishlist } = useWishlist();
+    const { addToCart } = useCart();
+    const toast = useToast();
 
     const isLiked = isInWishlist(product.id);
 
@@ -28,6 +32,24 @@ const ProductCard = ({ product }) => {
     const onToggleWishlist = (e) => {
         e.stopPropagation();
         toggleWishlist(product);
+    };
+
+    const handleQuickAddToCart = (e) => {
+        e.stopPropagation();
+        if (!product.variants || product.variants.length === 0) {
+            toast.error("Error", "No variants available for this product.");
+            return;
+        }
+
+        const firstAvailable = product.variants.find(v => v.stock > 0) || product.variants[0];
+
+        if (firstAvailable.stock <= 0) {
+            toast.error("Out of Stock", "This product is currently unavailable.");
+            return;
+        }
+
+        addToCart(product, firstAvailable, 1);
+        toast.success("Added to Cart", `${product.name} (${firstAvailable.size}, ${firstAvailable.color}) added to your cart.`);
     };
 
     return (
@@ -68,7 +90,9 @@ const ProductCard = ({ product }) => {
 
                 {/* Bottom Action (Visible on hover) */}
                 <div className={styles.bottomAction}>
-                    <button className={styles.addToCartBtn}>Add to Cart</button>
+                    <button className={styles.addToCartBtn} onClick={handleQuickAddToCart}>
+                        Add to Cart
+                    </button>
                 </div>
             </div>
 

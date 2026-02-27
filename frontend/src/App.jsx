@@ -93,14 +93,17 @@ function AppLayout() {
 
 import { WishlistProvider } from "./context/WishlistContext";
 import { ToastProvider } from "./components/common/toast/ToastContext";
+import { CartProvider } from "./context/CartContext";
 
 function App() {
   return (
     <BrowserRouter>
       <ToastProvider>
-        <WishlistProvider>
-          <AppLayout />
-        </WishlistProvider>
+        <CartProvider>
+          <WishlistProvider>
+            <AppLayout />
+          </WishlistProvider>
+        </CartProvider>
       </ToastProvider>
     </BrowserRouter>
   );

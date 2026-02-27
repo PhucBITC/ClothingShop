@@ -6,10 +6,12 @@ import styles from './Header.module.css';
 import logo from '../assets/logo.png';
 import { FiHeart } from 'react-icons/fi';
 import { useWishlist } from '../context/WishlistContext';
+import { useCart } from '../context/CartContext';
 
 function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { wishlistItems } = useWishlist();
+    const { cartItems, cartCount, subtotal, removeFromCart } = useCart();
 
     // Check for admin role
     const role = localStorage.getItem('role');
@@ -20,15 +22,6 @@ function Header() {
 
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
     const closeMenu = () => setIsMenuOpen(false);
-
-    // Mock cart items for MiniCart preview
-    const miniCartItems = [
-        { ...products[0], quantity: 1, size: 'S' },
-        { ...products[8], quantity: 1, size: 'Regular' },
-        { ...products[11], quantity: 1, size: 'M' }
-    ];
-
-    const subtotal = miniCartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
 
     return (
         <header className={styles.header}>
@@ -149,25 +142,30 @@ function Header() {
                 <div className={styles.cartContainer}>
                     <Link to="/cart" className={styles.iconBtn} aria-label="Cart">
                         <BiShoppingBag />
-                        {miniCartItems.length > 0 && <span className={styles.cartBadge}>{miniCartItems.length}</span>}
+                        {cartCount > 0 && <span className={styles.cartBadge}>{cartCount}</span>}
                     </Link>
 
                     {/* MiniCart Dropdown */}
                     <div className={styles.miniCart}>
                         <div className={styles.miniCartHeader}>
-                            You have {miniCartItems.length} items in your cart
+                            You have {cartCount} {cartCount === 1 ? 'item' : 'items'} in your cart
                         </div>
 
                         <div className={styles.miniCartItems}>
-                            {miniCartItems.map((item, idx) => (
-                                <div key={idx} className={styles.miniCartItem}>
+                            {cartItems.map((item) => (
+                                <div key={`${item.id}-${item.variantId}`} className={styles.miniCartItem}>
                                     <img src={item.image} alt={item.name} className={styles.miniCartImg} />
                                     <div className={styles.miniCartInfo}>
                                         <h4 className={styles.miniCartTitle}>{item.name}</h4>
                                         <div className={styles.miniCartPrice}>{item.quantity} x ${item.price.toFixed(2)}</div>
                                         <div className={styles.miniCartSize}>Size: {item.size}</div>
                                     </div>
-                                    <button className={styles.removeItemBtn}><BiTrash /></button>
+                                    <button
+                                        className={styles.removeItemBtn}
+                                        onClick={() => removeFromCart(item.id, item.variantId)}
+                                    >
+                                        <BiTrash />
+                                    </button>
                                 </div>
                             ))}
                         </div>

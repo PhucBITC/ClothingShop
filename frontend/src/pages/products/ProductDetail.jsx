@@ -5,12 +5,14 @@ import { FaStar } from 'react-icons/fa';
 import axios from '../../api/axios';
 import { useToast } from '../../components/common/toast/ToastContext';
 import { useWishlist } from '../../context/WishlistContext';
+import { useCart } from '../../context/CartContext';
 import styles from './ProductDetail.module.css';
 
 const ProductDetail = () => {
     const { id } = useParams();
     const toast = useToast();
     const { toggleWishlist, isInWishlist } = useWishlist();
+    const { addToCart } = useCart();
 
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -104,31 +106,8 @@ const ProductDetail = () => {
             return;
         }
 
-        // Add to Cart logic (Simulated for now as CartContext is not fully defined but uses localStorage)
-        const cartItem = {
-            id: product.id,
-            variantId: currentVariant.id,
-            name: product.name,
-            color: selectedColor,
-            size: selectedSize,
-            price: salePrice || displayPrice,
-            image: activeImage,
-            quantity: quantity
-        };
-
-        const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
-        const existingIdx = existingCart.findIndex(item => item.id === cartItem.id && item.variantId === cartItem.variantId);
-
-        if (existingIdx > -1) {
-            existingCart[existingIdx].quantity += quantity;
-        } else {
-            existingCart.push(cartItem);
-        }
-
-        localStorage.setItem('cart', JSON.stringify(existingCart));
+        addToCart(product, currentVariant, quantity);
         toast.success("Added to Cart", `${product.name} (${selectedSize}, ${selectedColor}) added to your cart.`);
-        // Dispatch custom event for Header to update cart count
-        window.dispatchEvent(new Event('cartUpdated'));
     };
 
 
