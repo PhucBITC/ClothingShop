@@ -49,6 +49,9 @@ public class User implements UserDetails {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "avatar_url")
+    private String avatarUrl;
+
     // Constructors
     public User() {
     }
@@ -163,6 +166,14 @@ public class User implements UserDetails {
 
     public void setAuthProvider(AuthProvider authProvider) {
         this.authProvider = authProvider;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 
     // --- Các phương thức bắt buộc của UserDetails ---

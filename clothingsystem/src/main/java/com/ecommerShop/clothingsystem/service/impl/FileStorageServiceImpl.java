@@ -41,11 +41,25 @@ public class FileStorageServiceImpl implements FileStorageService {
 
     @Override
     public String save(MultipartFile file) {
+        return save(file, "");
+    }
+
+    @Override
+    public String save(MultipartFile file, String folder) {
         try {
+            Path targetFolder = this.root;
+            if (folder != null && !folder.isEmpty()) {
+                targetFolder = this.root.resolve(folder);
+                if (!Files.exists(targetFolder)) {
+                    Files.createDirectories(targetFolder);
+                }
+            }
             // Create unique filename to maintain uniqueness
             String filename = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-            Files.copy(file.getInputStream(), this.root.resolve(filename));
-            return filename;
+            Files.copy(file.getInputStream(), targetFolder.resolve(filename));
+
+            // Return folder + filename if folder exists
+            return (folder != null && !folder.isEmpty()) ? folder + "/" + filename : filename;
         } catch (Exception e) {
             throw new RuntimeException("Could not store the file. Error: " + e.getMessage());
         }
@@ -54,6 +68,7 @@ public class FileStorageServiceImpl implements FileStorageService {
     @Override
     public Resource load(String filename) {
         try {
+            // filename might potentially be "customers/xyz.jpg" or just "xyz.jpg"
             Path file = root.resolve(filename);
             Resource resource = new UrlResource(file.toUri());
 

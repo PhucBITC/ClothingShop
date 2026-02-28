@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { BiTrash, BiCheck } from 'react-icons/bi';
 import { useCart } from '../../context/CartContext';
 import { useToast } from '../../components/common/toast/ToastContext';
@@ -6,6 +7,7 @@ import ConfirmModal from '../../components/common/modal/ConfirmModal';
 import styles from './Cart.module.css';
 
 function Cart() {
+    const navigate = useNavigate();
     const {
         cartItems,
         updateQuantity,
@@ -241,6 +243,7 @@ function Cart() {
                         className={styles.checkoutBtn}
                         style={selectedItems.length === 0 ? { opacity: 0.6, cursor: 'not-allowed' } : {}}
                         disabled={selectedItems.length === 0}
+                        onClick={() => navigate('/checkout')}
                     >
                         {selectedItems.length === 0 ? 'Select items to checkout' : 'Proceed to Checkout'}
                     </button>

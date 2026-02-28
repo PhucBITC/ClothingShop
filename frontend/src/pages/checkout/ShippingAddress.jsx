@@ -1,39 +1,171 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BiHome, BiCreditCard, BiListCheck, BiCheckSquare, BiSquare, BiEdit, BiTrash } from 'react-icons/bi';
+import { BiHome, BiCreditCard, BiListCheck, BiCheckSquare, BiSquare, BiTrash } from 'react-icons/bi';
+import axios from '../../api/axios';
+import { useToast } from '../../components/common/toast/ToastContext';
 import styles from './ShippingAddress.module.css';
 
 function ShippingAddress() {
     const navigate = useNavigate();
-    const [selectedAddress, setSelectedAddress] = useState(1);
+    const toast = useToast();
+    const [addresses, setAddresses] = useState([]);
+    const [selectedAddressId, setSelectedAddressId] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    const addresses = [
-        {
-            id: 1,
-            name: 'Robert Fox',
-            address: '4517 Washington Ave. Manchester, Kentucky 39495',
-            checked: true
-        },
-        {
-            id: 2,
-            name: 'John Willions',
-            address: '3891 Ranchview Dr. Richardson, California 62639',
-            checked: false
+    // States for Vietnam Address API
+    const [provinces, setProvinces] = useState([]);
+    const [districts, setDistricts] = useState([]);
+    const [wards, setWards] = useState([]);
+
+    const [formData, setFormData] = useState({
+        fullName: '',
+        phone: '',
+        province: '',
+        district: '',
+        ward: '',
+        streetAddress: '',
+        note: '',
+        isDefault: false,
+        latitude: 0,
+        longitude: 0
+    });
+
+    useEffect(() => {
+        fetchAddresses();
+        fetchProvinces();
+    }, []);
+
+    const fetchAddresses = async () => {
+        try {
+            const response = await axios.get('/addresses');
+            setAddresses(response.data);
+            const defaultAddr = response.data.find(a => a.default);
+            if (defaultAddr) {
+                setSelectedAddressId(defaultAddr.id);
+            } else if (response.data.length > 0) {
+                setSelectedAddressId(response.data[0].id);
+            }
+        } catch (error) {
+            console.error("Error fetching addresses:", error);
+        } finally {
+            setLoading(false);
         }
-    ];
+    };
 
-    // Mock calculations
+    // Vietnam Address API Functions
+    const fetchProvinces = async () => {
+        try {
+            const response = await fetch('https://provinces.open-api.vn/api/p/');
+            const data = await response.json();
+            setProvinces(data);
+        } catch (error) {
+            console.error("Error fetching provinces:", error);
+        }
+    };
+
+    const fetchDistricts = async (provinceCode) => {
+        if (!provinceCode) return;
+        try {
+            const response = await fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`);
+            const data = await response.json();
+            setDistricts(data.districts);
+        } catch (error) {
+            console.error("Error fetching districts:", error);
+        }
+    };
+
+    const fetchWards = async (districtCode) => {
+        if (!districtCode) return;
+        try {
+            const response = await fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`);
+            const data = await response.json();
+            setWards(data.wards);
+        } catch (error) {
+            console.error("Error fetching wards:", error);
+        }
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value
+        }));
+
+        // Handle cascading logic
+        if (name === 'province') {
+            const selectedProvince = provinces.find(p => p.name === value);
+            if (selectedProvince) {
+                fetchDistricts(selectedProvince.code);
+                setFormData(prev => ({ ...prev, district: '', ward: '' }));
+                setDistricts([]);
+                setWards([]);
+            } else {
+                setDistricts([]);
+                setWards([]);
+                setFormData(prev => ({ ...prev, district: '', ward: '' }));
+            }
+        } else if (name === 'district') {
+            const selectedDistrict = districts.find(d => d.name === value);
+            if (selectedDistrict) {
+                fetchWards(selectedDistrict.code);
+                setFormData(prev => ({ ...prev, ward: '' }));
+                setWards([]);
+            } else {
+                setWards([]);
+                setFormData(prev => ({ ...prev, ward: '' }));
+            }
+        }
+    };
+
+    const handleAddAddress = async (e) => {
+        e.preventDefault();
+        try {
+            await axios.post('/addresses', formData);
+            toast.success("Success", "New address added.");
+            setFormData({
+                fullName: '', phone: '', province: '', district: '', ward: '',
+                streetAddress: '', note: '', isDefault: false,
+                latitude: 0, longitude: 0
+            });
+            fetchAddresses();
+        } catch (error) {
+            toast.error("Error", "Failed to add address.");
+        }
+    };
+
+    const handleDelete = async (id) => {
+        try {
+            await axios.delete(`/addresses/${id}`);
+            toast.success("Success", "Address deleted.");
+            fetchAddresses();
+        } catch (error) {
+            toast.error("Error", "Failed to delete address.");
+        }
+    };
+
+    const handleSetDefault = async (id) => {
+        try {
+            await axios.patch(`/addresses/${id}/set-default`);
+            toast.success("Success", "Default address updated.");
+            fetchAddresses();
+        } catch (error) {
+            toast.error("Error", "Failed to update default address.");
+        }
+    };
+
     const subtotal = 200.00;
     const delivery = 5.00;
-    const total = 205.00;
+    const total = subtotal + delivery;
+
+    if (loading) return <div>Loading...</div>;
 
     return (
         <div className={styles.checkoutContainer}>
             <h1 className={styles.pageTitle}>Shipping Address</h1>
 
-            {/* Timeline */}
             <div className={styles.timeline}>
-                <div className={`${ styles.step } ${ styles.active } `}>
+                <div className={`${styles.step} ${styles.active}`}>
                     <div className={styles.stepIcon}><BiHome /></div>
                     <span className={styles.stepLabel}>Address</span>
                 </div>
@@ -48,108 +180,121 @@ function ShippingAddress() {
             </div>
 
             <div className={styles.contentWrapper}>
-
-                {/* Left Column: Address Selection & Form */}
                 <div className={styles.leftColumn}>
-
                     <h3 className={styles.sectionHeader}>Select a delivery address</h3>
-                    <p className={styles.subText}>Is the address you'd like to use displayed below? If so, click the corresponding "Deliver to this address" button. Or you can enter a new delivery address.</p>
-
                     <div className={styles.addressGrid}>
                         {addresses.map(addr => (
                             <div
                                 key={addr.id}
-                                className={`${ styles.addressCard } ${ selectedAddress === addr.id ? styles.selected : '' } `}
-                                onClick={() => setSelectedAddress(addr.id)}
+                                className={`${styles.addressCard} ${selectedAddressId === addr.id ? styles.selected : ''}`}
+                                onClick={() => setSelectedAddressId(addr.id)}
                             >
                                 <div className={styles.cardHeader}>
-                                    <span className={styles.name}>{addr.name}</span>
+                                    <span className={styles.name}>{addr.fullName}</span>
                                     <div className={styles.checkbox}>
-                                        {selectedAddress === addr.id ? <BiCheckSquare /> : <BiSquare />}
+                                        {selectedAddressId === addr.id ? <BiCheckSquare /> : <BiSquare />}
                                     </div>
                                 </div>
-                                <p className={styles.addressText}>{addr.address}</p>
+                                <p className={styles.phoneText}>{addr.phone}</p>
+                                <p className={styles.addressText}>
+                                    {addr.streetAddress}, {addr.ward}, {addr.district}, {addr.province}
+                                </p>
                                 <div className={styles.cardActions}>
-                                    <button className={styles.actionBtn}><BiEdit /> Edit</button>
-                                    <button className={`${ styles.actionBtn } ${ styles.delete } `}><BiTrash /> Delete</button>
+                                    {!addr.default && (
+                                        <button className={styles.actionBtn} onClick={(e) => { e.stopPropagation(); handleSetDefault(addr.id); }}>
+                                            Set Default
+                                        </button>
+                                    )}
+                                    <button className={`${styles.actionBtn} ${styles.delete}`} onClick={(e) => { e.stopPropagation(); handleDelete(addr.id); }}>
+                                        <BiTrash /> Delete
+                                    </button>
                                 </div>
                             </div>
                         ))}
                     </div>
 
-                    <button className={styles.deliverBtn}>Deliver Here</button>
+                    {addresses.length > 0 && (
+                        <button className={styles.deliverBtn} onClick={() => navigate('/checkout/payment', { state: { addressId: selectedAddressId } })}>
+                            Deliver Here
+                        </button>
+                    )}
 
                     <div className={styles.addAddressSection}>
                         <h3 className={styles.sectionHeader}>Add a new address</h3>
-                        <form className={styles.addressForm}>
-                            <div className={styles.formGroup}>
-                                <label className={styles.label}>Name</label>
-                                <input type="text" className={styles.input} placeholder="Enter Name" />
+                        <form className={styles.addressForm} onSubmit={handleAddAddress}>
+                            <div className={styles.formGrid}>
+                                <div className={styles.formGroup}>
+                                    <label className={styles.label}>Full Name</label>
+                                    <input name="fullName" type="text" className={styles.input} required value={formData.fullName} onChange={handleInputChange} placeholder="E.g. John Doe" />
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label className={styles.label}>Mobile Number</label>
+                                    <input name="phone" type="text" className={styles.input} required value={formData.phone} onChange={handleInputChange} placeholder="E.g. 0123456789" />
+                                </div>
                             </div>
-                            <div className={styles.formGroup}>
-                                <label className={styles.label}>Mobile Number</label>
-                                <input type="text" className={styles.input} placeholder="Enter Mobile Number" />
+
+                            <div className={styles.formGrid}>
+                                <div className={styles.formGroup}>
+                                    <label className={styles.label}>Province / City</label>
+                                    <select name="province" className={styles.input} required value={formData.province} onChange={handleInputChange}>
+                                        <option value="">-- Select Province --</option>
+                                        {provinces.map(p => <option key={p.code} value={p.name}>{p.name}</option>)}
+                                    </select>
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label className={styles.label}>District</label>
+                                    <select name="district" className={styles.input} required value={formData.district} onChange={handleInputChange} disabled={!formData.province}>
+                                        <option value="">-- Select District --</option>
+                                        {districts.map(d => <option key={d.code} value={d.name}>{d.name}</option>)}
+                                    </select>
+                                </div>
                             </div>
-                            <div className={styles.formGroup}>
-                                <label className={styles.label}>Flat, House no., Building, Company, Apartment</label>
-                                <input type="text" className={styles.input} />
-                            </div>
-                            <div className={styles.formGroup}>
-                                <label className={styles.label}>Area, Colony, Street, Sector, Village</label>
-                                <input type="text" className={styles.input} />
+
+                            <div className={styles.formGrid}>
+                                <div className={styles.formGroup}>
+                                    <label className={styles.label}>Ward</label>
+                                    <select name="ward" className={styles.input} required value={formData.ward} onChange={handleInputChange} disabled={!formData.district}>
+                                        <option value="">-- Select Ward --</option>
+                                        {wards.map(w => <option key={w.code} value={w.name}>{w.name}</option>)}
+                                    </select>
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label className={styles.label}>Street Address & House Number</label>
+                                    <input name="streetAddress" type="text" className={styles.input} required value={formData.streetAddress} onChange={handleInputChange} placeholder="E.g. 123 Le Loi St" />
+                                </div>
                             </div>
 
                             <div className={styles.formGroup}>
-                                <label className={styles.label}>City</label>
-                                <select className={styles.input}>
-                                    <option>Select City</option>
-                                </select>
-                            </div>
-                            <div className={styles.formGroup}>
-                                <label className={styles.label}>Pin Code</label>
-                                <input type="text" className={styles.input} placeholder="Enter Pin Code" />
-                            </div>
-                            <div className={styles.formGroup}>
-                                <label className={styles.label}>State</label>
-                                <select className={styles.input}>
-                                    <option>Select State</option>
-                                </select>
+                                <label className={styles.label}>Note (Optional)</label>
+                                <textarea name="note" className={styles.input} value={formData.note} onChange={handleInputChange} placeholder="Provide any delivery instructions..."></textarea>
                             </div>
 
                             <div className={styles.checkboxGroup}>
-                                <input type="checkbox" id="defaultAddr" />
+                                <input name="isDefault" type="checkbox" id="defaultAddr" checked={formData.isDefault} onChange={handleInputChange} />
                                 <label htmlFor="defaultAddr">Use as my default address</label>
                             </div>
 
-                            <button type="button" className={styles.addNewBtn}>Add New Address</button>
+                            <button type="submit" className={styles.addNewBtn}>Add New Address</button>
                         </form>
                     </div>
-
                 </div>
 
-                {/* Right Column: Summary */}
                 <div className={styles.summaryColumn}>
-                    <div className={styles.summaryRow}>
-                        <span className={styles.summaryLabel}>Subtotal</span>
-                        <span style={{ fontWeight: '700' }}>${subtotal.toFixed(2)}</span>
-                    </div>
-
-                    <div className={styles.discountGroup}>
-                        <input type="text" placeholder="Enter Discount Code" className={styles.discountInput} defaultValue="FLAT50" />
-                        <button className={styles.applyBtn}>Apply</button>
-                    </div>
-
-                    <div className={styles.summaryRow}>
-                        <span className={styles.summaryLabel}>Delivery Charge</span>
-                        <span style={{ fontWeight: '700' }}>${delivery.toFixed(2)}</span>
-                    </div>
-
-                    <div className={styles.grandTotal}>
-                        <span>Grand Total</span>
-                        <span>${total.toFixed(2)}</span>
+                    <div className={styles.summaryContent}>
+                        <div className={styles.summaryRow}>
+                            <span className={styles.summaryLabel}>Subtotal</span>
+                            <span>${subtotal.toFixed(2)}</span>
+                        </div>
+                        <div className={styles.summaryRow}>
+                            <span className={styles.summaryLabel}>Delivery Charge</span>
+                            <span>${delivery.toFixed(2)}</span>
+                        </div>
+                        <div className={styles.grandTotal}>
+                            <span>Grand Total</span>
+                            <span>${total.toFixed(2)}</span>
+                        </div>
                     </div>
                 </div>
-
             </div>
         </div>
     );

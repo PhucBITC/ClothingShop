@@ -6,9 +6,10 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.HandlerMapping;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/files")
@@ -17,8 +18,12 @@ public class FilesController {
     @Autowired
     FileStorageService storageService;
 
-    @GetMapping("/{filename:.+}")
-    public ResponseEntity<Resource> getFile(@PathVariable String filename) {
+    @GetMapping("/**")
+    public ResponseEntity<Resource> getFile(HttpServletRequest request) {
+        String path = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+        // Extracts whatever is after /api/files/
+        String filename = path.replace("/api/files/", "");
+
         Resource file = storageService.load(filename);
         String contentType = "application/octet-stream";
         try {

@@ -191,7 +191,7 @@ public class ProductServiceImpl implements ProductService {
         boolean hasPrimary = images.stream().anyMatch(ProductImage::isPrimary);
 
         for (MultipartFile file : files) {
-            String filename = fileStorageService.save(file);
+            String filename = fileStorageService.save(file, "products");
             String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                     .path("/api/files/")
                     .path(filename)

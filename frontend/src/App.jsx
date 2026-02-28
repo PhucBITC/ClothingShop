@@ -27,6 +27,7 @@ import AdminProductList from "./admin/pages/products/ProductList";
 import ProductForm from "./admin/pages/products/ProductForm";
 import CategoryList from "./admin/pages/categories/CategoryList";
 import CategoryForm from "./admin/pages/categories/CategoryForm";
+import CustomerList from "./admin/pages/customers/CustomerList";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function AppLayout() {
@@ -74,6 +75,7 @@ function AppLayout() {
             <Route path="categories" element={<CategoryList />} />
             <Route path="categories/add" element={<CategoryForm />} />
             <Route path="categories/edit/:id" element={<CategoryForm />} />
+            <Route path="customers" element={<CustomerList />} />
           </Route>
         </Route>
 
