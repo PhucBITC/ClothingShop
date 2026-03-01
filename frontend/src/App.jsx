@@ -29,6 +29,8 @@ import ProductForm from "./admin/pages/products/ProductForm";
 import CategoryList from "./admin/pages/categories/CategoryList";
 import CategoryForm from "./admin/pages/categories/CategoryForm";
 import CustomerList from "./admin/pages/customers/CustomerList";
+import OrderList from "./admin/pages/orders/OrderList";
+import OrderDetail from "./admin/pages/orders/OrderDetail";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function AppLayout() {
@@ -78,6 +80,8 @@ function AppLayout() {
             <Route path="categories/add" element={<CategoryForm />} />
             <Route path="categories/edit/:id" element={<CategoryForm />} />
             <Route path="customers" element={<CustomerList />} />
+            <Route path="orders" element={<OrderList />} />
+            <Route path="orders/:id" element={<OrderDetail />} />
           </Route>
         </Route>
 

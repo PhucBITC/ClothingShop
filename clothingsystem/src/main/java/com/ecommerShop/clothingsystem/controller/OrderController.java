@@ -64,4 +64,32 @@ public class OrderController {
     public ResponseEntity<Order> getOrderById(@AuthenticationPrincipal User user, @PathVariable Long id) {
         return ResponseEntity.ok(orderService.getOrderById(id, user));
     }
+
+    // Admin Endpoints
+    @GetMapping("/admin/all")
+    public ResponseEntity<List<Order>> getAllOrders() {
+        return ResponseEntity.ok(orderService.getAllOrders());
+    }
+
+    @GetMapping("/admin/{id}")
+    public ResponseEntity<Order> getAdminOrderById(@PathVariable Long id) {
+        return ResponseEntity.ok(orderService.getOrderById(id));
+    }
+
+    @PutMapping("/admin/{orderId}/status")
+    public ResponseEntity<?> updateStatus(@PathVariable Long orderId,
+            @RequestBody java.util.Map<String, String> request) {
+        try {
+            orderService.updateOrderStatus(orderId, request.get("status"));
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/admin/{id}")
+    public ResponseEntity<?> deleteOrder(@PathVariable Long id) {
+        orderService.deleteOrder(id);
+        return ResponseEntity.ok().build();
+    }
 }

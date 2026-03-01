@@ -1,0 +1,287 @@
+.container {
+    padding: 2rem;
+    background-color: #f8fafc;
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.25rem;
+}
+
+.count {
+    color: #64748b;
+    font-size: 0.95rem;
+}
+
+.actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.searchBox {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 0.5rem 1rem;
+    gap: 0.75rem;
+    color: #94a3b8;
+    width: 320px;
+    transition: all 0.2s;
+}
+
+.searchBox:focus-within {
+    border-color: #131118;
+    box-shadow: 0 0 0 3px rgba(19, 17, 24, 0.05);
+}
+
+.searchBox input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 0.95rem;
+    color: #1e293b;
+}
+
+.filterBox {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 0.5rem 1rem;
+    gap: 0.75rem;
+    color: #94a3b8;
+}
+
+.filterBox select {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 0.95rem;
+    color: #1e293b;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.tableCard {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    border: 1px solid #e2e8f0;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.table th {
+    background: #f8fafc;
+    padding: 1.25rem 1.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.table td {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+    font-size: 0.95rem;
+}
+
+.table tr:last-child td {
+    border-bottom: none;
+}
+
+.orderId {
+    font-weight: 700;
+    color: #131118;
+}
+
+.customerInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.customerName {
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.customerPhone {
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.totalPrice {
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.statusBadge {
+    padding: 0.4rem 0.85rem;
+    border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.statusPending {
+    background: #fff7ed;
+    color: #9a3412;
+}
+
+.statusProcessing {
+    background: #eff6ff;
+    color: #1e40af;
+}
+
+.statusShipped {
+    background: #fdf4ff;
+    color: #86198f;
+}
+
+.statusDelivered {
+    background: #f0fdf4;
+    color: #166534;
+}
+
+.statusCancelled {
+    background: #fef2f2;
+    color: #991b1b;
+}
+
+.statusDefault {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.actionButtons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.viewBtn,
+.moreBtn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 1.2rem;
+}
+
+.viewBtn:hover {
+    color: #131118;
+    border-color: #131118;
+    background: #f8fafc;
+}
+
+.moreBtn:hover {
+    background: #f8fafc;
+    color: #1e293b;
+}
+
+.moreBtnActive {
+    background: #1e293b !important;
+    color: #fff !important;
+    border-color: #1e293b !important;
+}
+
+.moreMenuWrapper {
+    position: relative;
+}
+
+.dropdownMenu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    z-index: 100;
+    min-width: 180px;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.dropdownMenu button {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 1rem;
+    border: none;
+    background: transparent;
+    color: #475569;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    width: 100%;
+}
+
+.dropdownMenu button:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+.cancelAction:hover {
+    background: #fff7ed !important;
+    color: #9a3412 !important;
+}
+
+.deleteAction {
+    color: #ef4444 !important;
+}
+
+.deleteAction:hover {
+    background: #fef2f2 !important;
+    color: #dc2626 !important;
+}
+
+.noData {
+    padding: 3rem !important;
+    text-align: center;
+    color: #94a3b8;
+}
+
+.loading {
+    padding: 5rem;
+    text-align: center;
+    font-size: 1.2rem;
+    color: #64748b;
+}
