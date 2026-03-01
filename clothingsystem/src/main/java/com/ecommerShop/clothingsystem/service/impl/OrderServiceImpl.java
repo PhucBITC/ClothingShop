@@ -40,8 +40,10 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new RuntimeException("Cart not found"));
 
         if (cart.getItems().isEmpty()) {
+            System.err.println("Checkout failed: Cart is empty for user " + user.getId());
             throw new RuntimeException("Cart is empty");
         }
+        System.out.println("Cart has " + cart.getItems().size() + " items for user " + user.getId());
 
         // 2. Get Shipping Address
         ShippingAddress address = addressRepository.findById(addressId)
@@ -91,8 +93,14 @@ public class OrderServiceImpl implements OrderService {
         paymentRepository.save(payment);
         order.setPayment(payment);
 
-        // 7. Clear Cart
-        cartService.clearCart(user);
+        // 7. Clear Cart ONLY for COD (online payments clear after success)
+        System.out.println("Processing order for payment method: " + paymentMethod);
+        if ("COD".equalsIgnoreCase(paymentMethod)) {
+            System.out.println("Clearing cart for COD order");
+            cartService.clearCart(user);
+        } else {
+            System.out.println("Cart will be cleared after successful online payment");
+        }
 
         return order;
     }
@@ -140,5 +148,22 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Order not found with id: " + id));
         orderRepository.delete(order);
+    }
+
+    @Override
+    @Transactional
+    public void handlePaymentSuccess(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+        order.setStatus("CONFIRMED");
+        orderRepository.save(order);
+
+        Payment payment = paymentRepository.findByOrderId(orderId)
+                .orElseThrow(() -> new RuntimeException("Payment not found"));
+        payment.setPaymentStatus("COMPLETED");
+        paymentRepository.save(payment);
+
+        // Clear cart for online payments now that it's successful
+        cartService.clearCart(order.getUser());
     }
 }

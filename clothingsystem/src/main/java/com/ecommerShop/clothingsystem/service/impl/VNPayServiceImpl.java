@@ -27,22 +27,41 @@ public class VNPayServiceImpl implements VNPayService {
     @Value("${VNP_RETURN_URL}")
     private String vnpReturnUrl;
 
+    @jakarta.annotation.PostConstruct
+    public void init() {
+        if (tmnCode != null)
+            tmnCode = tmnCode.trim();
+        if (hashSecret != null)
+            hashSecret = hashSecret.trim();
+        if (vnpPayUrl != null)
+            vnpPayUrl = vnpPayUrl.trim();
+        if (vnpReturnUrl != null)
+            vnpReturnUrl = vnpReturnUrl.trim();
+    }
+
     @Override
-    public String createPaymentUrl(Long orderId, long amount, HttpServletRequest request) {
+    public String createPaymentUrl(Long orderId, double amount, HttpServletRequest request) {
+        // Convert to VND if it's USD (assuming amount < 1000 means it's likely USD)
+        // You can adjust this logic based on your currency needs
+        long vnp_AmountLong = (long) (amount * 25000 * 100); // Multiply by 25k and then 100 for VNPay subunit
+
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String vnp_TxnRef = orderId.toString();
         String vnp_IpAddr = getIpAddress(request);
+        if (vnp_IpAddr.contains(":"))
+            vnp_IpAddr = "127.0.0.1"; // Fix for IPv6 localhost
+
         String vnp_TmnCode = tmnCode;
-        String vnp_OrderInfo = "Thanh toan don hang: " + orderId;
+        String vnp_OrderInfo = "Payment" + orderId;
         String vnp_OrderType = "other";
-        String vnp_Locale = "vn";
+        String vnp_Locale = "en";
 
         Map<String, String> vnp_Params = new HashMap<>();
         vnp_Params.put("vnp_Version", vnp_Version);
         vnp_Params.put("vnp_Command", vnp_Command);
         vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
-        vnp_Params.put("vnp_Amount", String.valueOf(amount * 100)); // Multiplied by 100 as per VNPay requirement
+        vnp_Params.put("vnp_Amount", String.valueOf(vnp_AmountLong));
         vnp_Params.put("vnp_CurrCode", "VND");
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
         vnp_Params.put("vnp_OrderInfo", vnp_OrderInfo);
@@ -60,33 +79,48 @@ public class VNPayServiceImpl implements VNPayService {
         String vnp_ExpireDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 
+        // Sort keys
         List<String> fieldNames = new ArrayList<>(vnp_Params.keySet());
         Collections.sort(fieldNames);
+
         StringBuilder hashData = new StringBuilder();
         StringBuilder query = new StringBuilder();
-        Iterator<String> itr = fieldNames.iterator();
-        while (itr.hasNext()) {
-            String fieldName = itr.next();
+
+        for (String fieldName : fieldNames) {
             String fieldValue = vnp_Params.get(fieldName);
-            if ((fieldValue != null) && (fieldValue.length() > 0)) {
-                // Build hash data
-                hashData.append(fieldName);
-                hashData.append('=');
-                hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
-                // Build query
-                query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII));
-                query.append('=');
-                query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
-                if (itr.hasNext()) {
-                    query.append('&');
+            if (fieldValue != null && !fieldValue.isEmpty()) {
+                String encodedFieldValue = urlEncode(fieldValue);
+
+                if (hashData.length() > 0) {
                     hashData.append('&');
+                    query.append('&');
                 }
+
+                hashData.append(fieldName).append('=').append(encodedFieldValue);
+                query.append(urlEncode(fieldName)).append('=').append(encodedFieldValue);
             }
         }
+
+        String hashDataStr = hashData.toString();
         String queryUrl = query.toString();
-        String vnp_SecureHash = hmacSHA512(hashSecret, hashData.toString());
-        queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
-        return vnpPayUrl + "?" + queryUrl;
+        String vnp_SecureHash = hmacSHA512(hashSecret, hashDataStr);
+        String finalUrl = vnpPayUrl + "?" + queryUrl + "&vnp_SecureHash=" + vnp_SecureHash;
+
+        System.out.println("--- VNPay Security Debug ---");
+        System.out.println("TmnCode: " + tmnCode);
+        System.out.println("Hash Secret Length: " + (hashSecret != null ? hashSecret.length() : 0));
+        System.out.println("Hash Data String: [" + hashDataStr + "]");
+        System.out.println("Final URL: " + finalUrl);
+
+        return finalUrl;
+    }
+
+    private String urlEncode(String value) {
+        try {
+            return URLEncoder.encode(value, StandardCharsets.UTF_8.toString()).replace("+", "%20");
+        } catch (Exception e) {
+            return value;
+        }
     }
 
     @Override
@@ -104,9 +138,8 @@ public class VNPayServiceImpl implements VNPayService {
         fields.remove("vnp_SecureHashType");
         fields.remove("vnp_SecureHash");
 
-        // Verify signature (simplified for now, ideally you re-calculate and compare)
         String signValue = hashAllFields(fields);
-        if (signValue.equals(vnp_SecureHash)) {
+        if (signValue.equalsIgnoreCase(vnp_SecureHash)) {
             if ("00".equals(request.getParameter("vnp_ResponseCode"))) {
                 return 1; // Success
             } else {
@@ -128,7 +161,7 @@ public class VNPayServiceImpl implements VNPayService {
             if ((fieldValue != null) && (fieldValue.length() > 0)) {
                 sb.append(fieldName);
                 sb.append("=");
-                sb.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
+                sb.append(urlEncode(fieldValue));
                 if (itr.hasNext()) {
                     sb.append("&");
                 }
@@ -143,7 +176,7 @@ public class VNPayServiceImpl implements VNPayService {
                 throw new NullPointerException();
             }
             final Mac hmac512 = Mac.getInstance("HmacSHA512");
-            byte[] hmacKeyBytes = key.getBytes();
+            byte[] hmacKeyBytes = key.getBytes(StandardCharsets.UTF_8);
             final SecretKeySpec secretKey = new SecretKeySpec(hmacKeyBytes, "HmacSHA512");
             hmac512.init(secretKey);
             byte[] dataBytes = data.getBytes(StandardCharsets.UTF_8);

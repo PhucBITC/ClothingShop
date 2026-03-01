@@ -19,4 +19,6 @@ public interface OrderService {
     void updateOrderStatus(Long orderId, String status);
 
     void deleteOrder(Long id);
+
+    void handlePaymentSuccess(Long orderId);
 }

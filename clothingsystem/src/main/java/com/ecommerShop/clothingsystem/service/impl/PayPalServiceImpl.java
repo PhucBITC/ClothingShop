@@ -21,8 +21,21 @@ public class PayPalServiceImpl implements PayPalService {
     public PayPalServiceImpl(@Value("${PAYPAL_CLIENT_ID}") String clientId,
             @Value("${PAYPAL_CLIENT_SECRET}") String clientSecret,
             @Value("${PAYPAL_MODE}") String mode) {
-        PayPalEnvironment environment = mode.equals("sandbox") ? new PayPalEnvironment.Sandbox(clientId, clientSecret)
-                : new PayPalEnvironment.Live(clientId, clientSecret);
+        String trimmedClientId = clientId != null ? clientId.trim() : "";
+        String trimmedSecret = clientSecret != null ? clientSecret.trim() : "";
+        String trimmedMode = mode != null ? mode.trim() : "sandbox";
+
+        System.out.println("--- Initializing PayPal Service ---");
+        System.out.println("Mode: " + trimmedMode);
+        System.out.println(
+                "Client ID starts with: " + (trimmedClientId.length() > 4 ? trimmedClientId.substring(0, 4) : "???"));
+        System.out
+                .println("Secret starts with: " + (trimmedSecret.length() > 4 ? trimmedSecret.substring(0, 4) : "???"));
+        System.out.println("Secret length: " + trimmedSecret.length());
+
+        PayPalEnvironment environment = trimmedMode.equals("sandbox")
+                ? new PayPalEnvironment.Sandbox(trimmedClientId, trimmedSecret)
+                : new PayPalEnvironment.Live(trimmedClientId, trimmedSecret);
         this.client = new PayPalHttpClient(environment);
     }
 
@@ -35,11 +48,11 @@ public class PayPalServiceImpl implements PayPalService {
         purchaseUnits.add(new PurchaseUnitRequest()
                 .amountWithBreakdown(new AmountWithBreakdown()
                         .currencyCode("USD")
-                        .value(String.format("%.2f", order.getTotalPrice()))));
+                        .value(String.format(java.util.Locale.US, "%.2f", order.getTotalPrice()))));
         orderRequest.purchaseUnits(purchaseUnits);
 
         ApplicationContext applicationContext = new ApplicationContext()
-                .returnUrl("http://localhost:5173/checkout/payment-result?method=paypal")
+                .returnUrl("http://localhost:8080/api/orders/paypal-success?orderId=" + order.getId())
                 .cancelUrl("http://localhost:5173/checkout/payment-result?method=paypal&status=cancel");
         orderRequest.applicationContext(applicationContext);
 
@@ -53,11 +66,16 @@ public class PayPalServiceImpl implements PayPalService {
                         .findFirst()
                         .orElseThrow(() -> new RuntimeException("No approval link"))
                         .href();
+            } else {
+                System.err.println("PayPal Error Status: " + response.statusCode());
+                System.err.println("PayPal Error Response: " + response.result());
+                throw new RuntimeException("PayPal order creation failed with status: " + response.statusCode());
             }
         } catch (IOException e) {
-            throw new RuntimeException("PayPal order creation failed", e);
+            System.err.println("PayPal IOException: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("PayPal order creation failed: " + e.getMessage(), e);
         }
-        return null;
     }
 
     @Override

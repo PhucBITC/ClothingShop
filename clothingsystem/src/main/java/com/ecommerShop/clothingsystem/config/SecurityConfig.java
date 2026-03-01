@@ -45,12 +45,13 @@ public class SecurityConfig {
                                         return cfg;
                                 }))
                                 .authorizeHttpRequests(auth -> auth
-                                                .requestMatchers("/api/auth/**", "/api/files/**").permitAll()
-                                                .requestMatchers(org.springframework.http.HttpMethod.GET,
-                                                                "/api/products/**")
+                                                .requestMatchers("/api/auth/**", "/api/files/**",
+                                                                "/api/orders/vnpay-return",
+                                                                "/api/orders/paypal-success")
                                                 .permitAll()
                                                 .requestMatchers(org.springframework.http.HttpMethod.GET,
-                                                                "/api/categories/**")
+                                                                "/api/products/**", "/api/categories/**",
+                                                                "/api/orders/{id}")
                                                 .permitAll()
                                                 .requestMatchers("/api/orders/admin/**").hasRole("ADMIN")
                                                 .anyRequest().authenticated())

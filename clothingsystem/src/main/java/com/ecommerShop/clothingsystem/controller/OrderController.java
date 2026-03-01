@@ -10,6 +10,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -33,23 +35,26 @@ public class OrderController {
             Order order = orderService.createOrder(user, request.getAddressId(), request.getPaymentMethod());
 
             if ("VNPAY".equalsIgnoreCase(request.getPaymentMethod())) {
-                String paymentUrl = vnpayService.createPaymentUrl(order.getId(), Math.round(order.getTotalPrice()),
-                        httpRequest);
-                return ResponseEntity.ok(new java.util.HashMap<String, String>() {
-                    {
-                        put("paymentUrl", paymentUrl);
-                    }
-                });
+                String paymentUrl = vnpayService.createPaymentUrl(order.getId(), order.getTotalPrice(), httpRequest);
+                if (paymentUrl == null || paymentUrl.isEmpty()) {
+                    throw new RuntimeException("Could not generate VNPay payment URL");
+                }
+                Map<String, String> responseData = new HashMap<>();
+                responseData.put("paymentUrl", paymentUrl);
+                return ResponseEntity.ok(responseData);
             } else if ("PAYPAL".equalsIgnoreCase(request.getPaymentMethod())) {
                 String paymentUrl = paypalService.createPaymentUrl(order);
-                return ResponseEntity.ok(new java.util.HashMap<String, String>() {
-                    {
-                        put("paymentUrl", paymentUrl);
-                    }
-                });
+                if (paymentUrl == null || paymentUrl.isEmpty()) {
+                    throw new RuntimeException("Could not generate PayPal payment URL");
+                }
+                Map<String, String> responseData = new HashMap<>();
+                responseData.put("paymentUrl", paymentUrl);
+                return ResponseEntity.ok(responseData);
+            } else if ("COD".equalsIgnoreCase(request.getPaymentMethod())) {
+                return ResponseEntity.ok(order);
+            } else {
+                throw new RuntimeException("Unsupported payment method: " + request.getPaymentMethod());
             }
-
-            return ResponseEntity.ok(order);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -91,5 +96,33 @@ public class OrderController {
     public ResponseEntity<?> deleteOrder(@PathVariable Long id) {
         orderService.deleteOrder(id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/vnpay-return")
+    public void vnpayReturn(jakarta.servlet.http.HttpServletResponse response) throws java.io.IOException {
+        int result = vnpayService.orderReturn(httpRequest);
+        String orderId = httpRequest.getParameter("vnp_TxnRef");
+        String redirectUrl = "http://localhost:5173/checkout/review?method=vnpay";
+
+        if (result == 1) {
+            orderService.handlePaymentSuccess(Long.parseLong(orderId));
+            response.sendRedirect(redirectUrl + "&vnp_ResponseCode=00&orderId=" + orderId);
+        } else {
+            response.sendRedirect(redirectUrl + "&vnp_ResponseCode=" + httpRequest.getParameter("vnp_ResponseCode"));
+        }
+    }
+
+    @GetMapping("/paypal-success")
+    public void paypalSuccess(@RequestParam("token") String token, @RequestParam("orderId") String orderId,
+            jakarta.servlet.http.HttpServletResponse response) throws java.io.IOException {
+        boolean success = paypalService.executePayment(token, null);
+        String redirectUrl = "http://localhost:5173/checkout/review?method=paypal";
+
+        if (success) {
+            orderService.handlePaymentSuccess(Long.parseLong(orderId));
+            response.sendRedirect(redirectUrl + "&token=" + token + "&orderId=" + orderId);
+        } else {
+            response.sendRedirect(redirectUrl + "&status=cancel");
+        }
     }
 }
