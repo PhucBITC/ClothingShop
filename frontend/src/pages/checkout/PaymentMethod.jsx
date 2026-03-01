@@ -1,16 +1,53 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { BiHome, BiCreditCard, BiListCheck } from 'react-icons/bi';
+import { useCart } from '../../context/CartContext';
+import axios from '../../api/axios';
+import { useToast } from '../../components/common/toast/ToastContext';
 import styles from './PaymentMethod.module.css';
 
 function PaymentMethod() {
     const navigate = useNavigate();
-    const [selectedMethod, setSelectedMethod] = useState('card');
+    const location = useLocation();
+    const toast = useToast();
+    const { calculateTotals, clearCart } = useCart();
 
-    // Mock calculations
-    const subtotal = 200.00;
-    const delivery = 5.00;
-    const total = 205.00;
+    const addressId = location.state?.addressId;
+    const checkoutItems = location.state?.items || [];
+    const { subtotal, deliveryCharge, total } = calculateTotals(checkoutItems);
+    const [selectedMethod, setSelectedMethod] = useState('COD');
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (!addressId || checkoutItems.length === 0) {
+            navigate('/checkout');
+        }
+    }, [addressId, checkoutItems, navigate]);
+
+    const handleContinue = async () => {
+        setLoading(true);
+        try {
+            const response = await axios.post('/orders/checkout', {
+                addressId: addressId,
+                paymentMethod: selectedMethod
+            });
+
+            if (response.data.paymentUrl) {
+                // Redirect to VNPay or PayPal
+                window.location.href = response.data.paymentUrl;
+            } else {
+                // COD or other local process
+                toast.success("Success", "Order placed successfully!");
+                clearCart();
+                navigate('/checkout/review', { state: { order: response.data } });
+            }
+        } catch (error) {
+            console.error("Checkout error:", error);
+            toast.error("Error", error.response?.data || "Failed to place order.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div className={styles.checkoutContainer}>
@@ -18,11 +55,11 @@ function PaymentMethod() {
 
             {/* Timeline */}
             <div className={styles.timeline}>
-                <div className={`${ styles.step } ${ styles.active } `}>
+                <div className={`${styles.step} ${styles.active} `}>
                     <div className={styles.stepIcon}><BiHome /></div>
                     <span className={styles.stepLabel}>Address</span>
                 </div>
-                <div className={`${ styles.step } ${ styles.active } `}>
+                <div className={`${styles.step} ${styles.active} `}>
                     <div className={styles.stepIcon}><BiCreditCard /></div>
                     <span className={styles.stepLabel}>Payment Method</span>
                 </div>
@@ -40,73 +77,45 @@ function PaymentMethod() {
 
                     <div className={styles.paymentOptions}>
 
-                        {/* Debit/Credit Card */}
+                        {/* Cash on Delivery */}
                         <div className={styles.paymentOption}>
-                            <div className={styles.optionHeader} onClick={() => setSelectedMethod('card')}>
-                                <div className={`${ styles.radioCircle } ${ selectedMethod === 'card' ? styles.selected : '' } `}>
-                                    {selectedMethod === 'card' && <div className={styles.innerCircle} />}
+                            <div className={styles.optionHeader} onClick={() => setSelectedMethod('COD')}>
+                                <div className={`${styles.radioCircle} ${selectedMethod === 'COD' ? styles.selected : ''} `}>
+                                    {selectedMethod === 'COD' && <div className={styles.innerCircle} />}
                                 </div>
-                                <span>Debit/Credit Card</span>
+                                <span>Cash on Delivery (COD)</span>
                             </div>
-
-                            {selectedMethod === 'card' && (
-                                <div className={styles.cardForm}>
-                                    <div className={styles.formGroup}>
-                                        <label className={styles.label}>Card Number</label>
-                                        <input type="text" className={styles.input} placeholder="3897 22XX 1900 3890" />
-                                    </div>
-                                    <div className={styles.formGroup}>
-                                        <label className={styles.label}>Card Name</label>
-                                        <input type="text" className={styles.input} placeholder="Robert Fox" />
-                                    </div>
-                                    <div className={styles.row}>
-                                        <div className={styles.formGroup}>
-                                            <label className={styles.label}>Expiry Date</label>
-                                            <input type="text" className={styles.input} placeholder="09/26" />
-                                        </div>
-                                        <div className={styles.formGroup}>
-                                            <label className={styles.label}>CVV</label>
-                                            <input type="text" className={styles.input} placeholder="..." />
-                                        </div>
-                                    </div>
-                                    <button className={styles.addCardBtn}>Add Card</button>
-                                </div>
-                            )}
                         </div>
 
-                        {/* Google Pay */}
+                        {/* VNPay */}
                         <div className={styles.paymentOption}>
-                            <div className={styles.optionHeader} onClick={() => setSelectedMethod('googlepay')}>
-                                <div className={`${ styles.radioCircle } ${ selectedMethod === 'googlepay' ? styles.selected : '' } `}>
-                                    {selectedMethod === 'googlepay' && <div className={styles.innerCircle} />}
+                            <div className={styles.optionHeader} onClick={() => setSelectedMethod('VNPAY')}>
+                                <div className={`${styles.radioCircle} ${selectedMethod === 'VNPAY' ? styles.selected : ''} `}>
+                                    {selectedMethod === 'VNPAY' && <div className={styles.innerCircle} />}
                                 </div>
-                                <span>Google Pay</span>
+                                <span>VNPay (ATM / QR Code)</span>
                             </div>
                         </div>
 
                         {/* Paypal */}
                         <div className={styles.paymentOption}>
-                            <div className={styles.optionHeader} onClick={() => setSelectedMethod('paypal')}>
-                                <div className={`${ styles.radioCircle } ${ selectedMethod === 'paypal' ? styles.selected : '' } `}>
-                                    {selectedMethod === 'paypal' && <div className={styles.innerCircle} />}
+                            <div className={styles.optionHeader} onClick={() => setSelectedMethod('PAYPAL')}>
+                                <div className={`${styles.radioCircle} ${selectedMethod === 'PAYPAL' ? styles.selected : ''} `}>
+                                    {selectedMethod === 'PAYPAL' && <div className={styles.innerCircle} />}
                                 </div>
                                 <span>Paypal</span>
                             </div>
                         </div>
 
-                        {/* Cash on Delivery */}
-                        <div className={styles.paymentOption}>
-                            <div className={styles.optionHeader} onClick={() => setSelectedMethod('cod')}>
-                                <div className={`${ styles.radioCircle } ${ selectedMethod === 'cod' ? styles.selected : '' } `}>
-                                    {selectedMethod === 'cod' && <div className={styles.innerCircle} />}
-                                </div>
-                                <span>Cash on Delivery</span>
-                            </div>
-                        </div>
-
                     </div>
 
-                    <button className={styles.continueBtn}>Continue</button>
+                    <button
+                        className={styles.continueBtn}
+                        onClick={handleContinue}
+                        disabled={loading}
+                    >
+                        {loading ? 'Processing...' : 'Continue'}
+                    </button>
 
                 </div>
 
@@ -116,13 +125,16 @@ function PaymentMethod() {
                         <span className={styles.summaryLabel}>Subtotal</span>
                         <span style={{ fontWeight: '700' }}>${subtotal.toFixed(2)}</span>
                     </div>
-                    <div className={styles.discountGroup}>
-                        <input type="text" placeholder="Enter Discount Code" className={styles.discountInput} defaultValue="FLAT50" />
-                        <button className={styles.applyBtn}>Apply</button>
+                    <div className={styles.discountWrapper}>
+                        <label className={styles.discountLabel}>Enter Discount Code</label>
+                        <div className={styles.discountGroup}>
+                            <input type="text" placeholder="FLAT50" className={styles.discountInput} />
+                            <button className={styles.applyBtn}>Apply</button>
+                        </div>
                     </div>
                     <div className={styles.summaryRow}>
                         <span className={styles.summaryLabel}>Delivery Charge</span>
-                        <span style={{ fontWeight: '700' }}>${delivery.toFixed(2)}</span>
+                        <span style={{ fontWeight: '700' }}>${deliveryCharge.toFixed(2)}</span>
                     </div>
                     <div className={styles.grandTotal}>
                         <span>Grand Total</span>

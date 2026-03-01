@@ -207,24 +207,39 @@
     font-size: 0.95rem;
 }
 
-.summaryLabel {
-    font-weight: 600;
-    color: #131118;
+.discountWrapper {
+    margin-bottom: 2rem;
+    padding: 1.5rem 0;
+    border-top: 1px solid #f0f0f0;
+}
+
+.discountLabel {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 0.75rem;
+    display: block;
 }
 
 .discountGroup {
     display: flex;
-    gap: 0;
-    margin: 2rem 0;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.discountGroup:focus-within {
+    border-color: #131118;
 }
 
 .discountInput {
     flex: 1;
-    padding: 0.8rem;
-    border: 1px solid #ddd;
-    border-right: none;
-    border-radius: 6px 0 0 6px;
+    padding: 0.8rem 1rem;
+    border: none;
     outline: none;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+    font-weight: 600;
 }
 
 .applyBtn {
@@ -232,9 +247,19 @@
     color: #fff;
     border: none;
     padding: 0 1.5rem;
-    border-radius: 0 6px 6px 0;
-    cursor: pointer;
     font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.applyBtn:hover {
+    background: #2a2830;
+}
+
+.summaryLabel {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #666;
 }
 
 .grandTotal {

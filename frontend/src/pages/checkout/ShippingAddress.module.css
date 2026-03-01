@@ -383,6 +383,55 @@ select.input:disabled {
     margin-bottom: 1.25rem;
 }
 
+.discountWrapper {
+    margin-bottom: 2rem;
+    padding: 1.5rem 0;
+    border-top: 1px solid var(--border-color);
+}
+
+.discountLabel {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+    display: block;
+}
+
+.discountGroup {
+    display: flex;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.discountGroup:focus-within {
+    border-color: var(--primary-black);
+}
+
+.discountInput {
+    flex: 1;
+    padding: 0.8rem 1rem;
+    border: none;
+    outline: none;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+.applyBtn {
+    background: var(--primary-black);
+    color: #fff;
+    border: none;
+    padding: 0 1.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.applyBtn:hover {
+    background: #2a2830;
+}
+
 .summaryLabel {
     color: var(--text-muted);
 }

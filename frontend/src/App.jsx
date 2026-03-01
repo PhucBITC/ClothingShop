@@ -13,6 +13,7 @@ import Cart from "./pages/cart/Cart";
 import ShippingAddress from "./pages/checkout/ShippingAddress";
 import PaymentMethod from "./pages/checkout/PaymentMethod";
 import ReviewOrder from "./pages/checkout/ReviewOrder";
+import PaymentResult from "./pages/checkout/PaymentResult";
 import MyOrders from "./pages/user/MyOrders";
 import UserInfo from "./pages/user/UserInfo";
 import Wishlist from "./pages/user/Wishlist";
@@ -55,6 +56,7 @@ function AppLayout() {
         <Route path="/checkout" element={<ShippingAddress />} />
         <Route path="/checkout/payment" element={<PaymentMethod />} />
         <Route path="/checkout/review" element={<ReviewOrder />} />
+        <Route path="/checkout/payment-result" element={<PaymentResult />} />
 
         {/* user */}
         <Route path="/user/orders" element={<MyOrders />} />

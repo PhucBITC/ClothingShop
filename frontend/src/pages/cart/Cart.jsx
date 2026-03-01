@@ -226,13 +226,6 @@ function Cart() {
                         </span>
                     </div>
 
-                    <div className={styles.discountWrapper}>
-                        <h5>Apply Promo Code</h5>
-                        <div className={styles.discountGroup}>
-                            <input type="text" placeholder="Enter Discount Code" className={styles.discountInput} />
-                            <button className={styles.applyBtn}>Apply</button>
-                        </div>
-                    </div>
 
                     <div className={styles.grandTotalRow} style={{ borderTop: '1px solid #eee', paddingTop: '1.5rem' }}>
                         <span className={styles.summaryLabel}>Grand Total</span>
@@ -243,7 +236,7 @@ function Cart() {
                         className={styles.checkoutBtn}
                         style={selectedItems.length === 0 ? { opacity: 0.6, cursor: 'not-allowed' } : {}}
                         disabled={selectedItems.length === 0}
-                        onClick={() => navigate('/checkout')}
+                        onClick={() => navigate('/checkout', { state: { selectedItems: selectedCartItems } })}
                     >
                         {selectedItems.length === 0 ? 'Select items to checkout' : 'Proceed to Checkout'}
                     </button>

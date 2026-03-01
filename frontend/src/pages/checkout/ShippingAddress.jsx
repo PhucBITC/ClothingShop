@@ -1,16 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { BiHome, BiCreditCard, BiListCheck, BiCheckSquare, BiSquare, BiTrash } from 'react-icons/bi';
+import { useCart } from '../../context/CartContext';
 import axios from '../../api/axios';
 import { useToast } from '../../components/common/toast/ToastContext';
 import styles from './ShippingAddress.module.css';
 
 function ShippingAddress() {
     const navigate = useNavigate();
+    const location = useLocation();
+    const { calculateTotals } = useCart();
     const toast = useToast();
     const [addresses, setAddresses] = useState([]);
     const [selectedAddressId, setSelectedAddressId] = useState(null);
     const [loading, setLoading] = useState(true);
+
+    const checkoutItems = location.state?.selectedItems || [];
+    const { subtotal, deliveryCharge, total } = calculateTotals(checkoutItems);
 
     // States for Vietnam Address API
     const [provinces, setProvinces] = useState([]);
@@ -31,9 +37,13 @@ function ShippingAddress() {
     });
 
     useEffect(() => {
+        if (checkoutItems.length === 0) {
+            navigate('/cart');
+            return;
+        }
         fetchAddresses();
         fetchProvinces();
-    }, []);
+    }, [checkoutItems]);
 
     const fetchAddresses = async () => {
         try {
@@ -154,9 +164,6 @@ function ShippingAddress() {
         }
     };
 
-    const subtotal = 200.00;
-    const delivery = 5.00;
-    const total = subtotal + delivery;
 
     if (loading) return <div>Loading...</div>;
 
@@ -214,7 +221,7 @@ function ShippingAddress() {
                     </div>
 
                     {addresses.length > 0 && (
-                        <button className={styles.deliverBtn} onClick={() => navigate('/checkout/payment', { state: { addressId: selectedAddressId } })}>
+                        <button className={styles.deliverBtn} onClick={() => navigate('/checkout/payment', { state: { addressId: selectedAddressId, items: checkoutItems } })}>
                             Deliver Here
                         </button>
                     )}
@@ -285,9 +292,16 @@ function ShippingAddress() {
                             <span className={styles.summaryLabel}>Subtotal</span>
                             <span>${subtotal.toFixed(2)}</span>
                         </div>
+                        <div className={styles.discountWrapper}>
+                            <label className={styles.discountLabel}>Enter Discount Code</label>
+                            <div className={styles.discountGroup}>
+                                <input type="text" placeholder="FLAT50" className={styles.discountInput} />
+                                <button className={styles.applyBtn}>Apply</button>
+                            </div>
+                        </div>
                         <div className={styles.summaryRow}>
                             <span className={styles.summaryLabel}>Delivery Charge</span>
-                            <span>${delivery.toFixed(2)}</span>
+                            <span>${deliveryCharge.toFixed(2)}</span>
                         </div>
                         <div className={styles.grandTotal}>
                             <span>Grand Total</span>
