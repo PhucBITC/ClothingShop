@@ -21,7 +21,7 @@ const OrderDetailsModal = ({ isOpen, onClose, order }) => {
                 <div className={styles.modalHeader}>
                     <div>
                         <h2 className={styles.modalTitle}>Order Details</h2>
-                        <span className={styles.orderId}>Order ID: #{order.id}</span>
+                        <span className={styles.orderId}>Order Code: {order.orderCode}</span>
                     </div>
                     <button className={styles.closeBtn} onClick={onClose}><BiX /></button>
                 </div>

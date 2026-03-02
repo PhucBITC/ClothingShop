@@ -56,7 +56,7 @@ const OrderDetail = () => {
         if (!status) return styles.statusDefault;
         switch (status.toUpperCase()) {
             case 'PENDING': return styles.statusPending;
-            case 'PROCESSING': return styles.statusProcessing;
+            case 'CONFIRMED': return styles.statusConfirmed;
             case 'SHIPPED': return styles.statusShipped;
             case 'DELIVERED': return styles.statusDelivered;
             case 'CANCELLED': return styles.statusCancelled;
@@ -74,7 +74,7 @@ const OrderDetail = () => {
                     <BiArrowBack /> Back to Orders
                 </button>
                 <div className={styles.headerInfo}>
-                    <h2 className={styles.title}>Order Details #{order.id}</h2>
+                    <h2 className={styles.title}>Order Details {order.orderCode}</h2>
                     <span className={styles.date}>Placed on {order.createdAt ? new Date(order.createdAt).toLocaleString() : 'N/A'}</span>
                 </div>
             </div>
@@ -143,7 +143,7 @@ const OrderDetail = () => {
                                     disabled={updating}
                                 >
                                     <option value="PENDING">Pending</option>
-                                    <option value="PROCESSING">Processing</option>
+                                    <option value="CONFIRMED">Confirmed</option>
                                     <option value="SHIPPED">Shipped</option>
                                     <option value="DELIVERED">Delivered</option>
                                     <option value="CANCELLED">Cancelled</option>

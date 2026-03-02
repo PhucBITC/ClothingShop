@@ -1,12 +1,36 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { BiTrash } from 'react-icons/bi';
 import UserSidebar from './UserSidebar';
 import styles from './Wishlist.module.css';
 import { useWishlist } from '../../context/WishlistContext';
+import { useCart } from '../../context/CartContext';
+import ConfirmModal from '../../components/common/modal/ConfirmModal';
+import { useToast } from '../../components/common/toast/ToastContext';
 
 function Wishlist() {
     const { wishlistItems, removeFromWishlist } = useWishlist();
+    const { addToCart } = useCart();
+    const [modalConfig, setModalConfig] = useState({ isOpen: false, item: null });
+    const toast = useToast();
+
+    const handleDeleteClick = (e, item) => {
+        e.preventDefault();
+        setModalConfig({ isOpen: true, item });
+    };
+
+    const handleConfirmDelete = () => {
+        if (modalConfig.item) {
+            removeFromWishlist(modalConfig.item.id);
+            toast.success("Success", "Removed from wishlist successfully");
+        }
+        setModalConfig({ isOpen: false, item: null });
+    };
+
+    const handleViewDetails = (e, item) => {
+        e.preventDefault();
+        window.location.href = `/products/${item.id}`;
+    };
 
     return (
         <div className={styles.pageContainer}>
@@ -38,7 +62,7 @@ function Wishlist() {
                                         />
                                         <button
                                             className={styles.deleteBtn}
-                                            onClick={() => removeFromWishlist(item.id)}
+                                            onClick={(e) => handleDeleteClick(e, item)}
                                             aria-label="Remove from wishlist"
                                         >
                                             <BiTrash />
@@ -56,13 +80,29 @@ function Wishlist() {
                                         </div>
                                     </div>
 
-                                    <button className={styles.moveToCartBtn}>Move to Cart</button>
+                                    <button
+                                        className={styles.moveToCartBtn}
+                                        onClick={(e) => handleViewDetails(e, item)}
+                                    >
+                                        View Details
+                                    </button>
                                 </div>
                             ))}
                         </div>
                     )}
                 </div>
             </div>
+
+            <ConfirmModal
+                isOpen={modalConfig.isOpen}
+                onClose={() => setModalConfig({ isOpen: false, item: null })}
+                onConfirm={handleConfirmDelete}
+                title="Confirm Delete"
+                message="Are you sure you want to delete"
+                itemName={modalConfig.item?.name}
+                confirmText="Delete"
+                confirmColor="#dc2626"
+            />
         </div>
     );
 }

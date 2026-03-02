@@ -71,6 +71,7 @@ public class OrderServiceImpl implements OrderService {
                 + ", " + address.getProvince());
         order.setTotalPrice(totalPrice);
         order.setStatus("PENDING");
+        order.setOrderCode(generateOrderCode());
 
         order = orderRepository.save(order);
 
@@ -171,5 +172,34 @@ public class OrderServiceImpl implements OrderService {
 
         // Clear cart for online payments now that it's successful
         cartService.clearCart(order.getUser());
+    }
+
+    // --- Helpers & Migration ---
+
+    private String generateOrderCode() {
+        String datePart = java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd")
+                .format(java.time.LocalDateTime.now());
+        String code;
+        do {
+            String randomPart = java.util.UUID.randomUUID().toString().substring(0, 5).toUpperCase();
+            code = "ORD-" + datePart + "-" + randomPart;
+        } while (orderRepository.existsByOrderCode(code));
+        return code;
+    }
+
+    @jakarta.annotation.PostConstruct
+    @Transactional
+    public void migrateExistingOrders() {
+        List<Order> ordersWithoutCode = orderRepository.findAll().stream()
+                .filter(o -> o.getOrderCode() == null)
+                .collect(java.util.stream.Collectors.toList());
+
+        if (!ordersWithoutCode.isEmpty()) {
+            System.out.println("Migrating " + ordersWithoutCode.size() + " orders to add order codes...");
+            for (Order order : ordersWithoutCode) {
+                order.setOrderCode(generateOrderCode());
+            }
+            orderRepository.saveAll(ordersWithoutCode);
+        }
     }
 }

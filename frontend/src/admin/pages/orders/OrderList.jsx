@@ -109,7 +109,7 @@ const OrderList = () => {
         if (!status) return styles.statusDefault;
         switch (status.toUpperCase()) {
             case 'PENDING': return styles.statusPending;
-            case 'PROCESSING': return styles.statusProcessing;
+            case 'CONFIRMED': return styles.statusConfirmed;
             case 'SHIPPED': return styles.statusShipped;
             case 'DELIVERED': return styles.statusDelivered;
             case 'CANCELLED': return styles.statusCancelled;
@@ -154,7 +154,7 @@ const OrderList = () => {
                         <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
                             <option value="ALL">All Status</option>
                             <option value="PENDING">Pending</option>
-                            <option value="PROCESSING">Processing</option>
+                            <option value="CONFIRMED">Confirmed</option>
                             <option value="SHIPPED">Shipped</option>
                             <option value="DELIVERED">Delivered</option>
                             <option value="CANCELLED">Cancelled</option>
@@ -201,7 +201,7 @@ const OrderList = () => {
                                             onChange={() => handleSelectOrder(order.id)}
                                         />
                                     </td>
-                                    <td className={styles.orderId}>#{order.id}</td>
+                                    <td className={styles.orderId}>{order.orderCode}</td>
                                     <td>
                                         <div className={styles.customerInfo}>
                                             <span className={styles.customerName}>{order.receiverName || 'Unknown'}</span>

@@ -154,7 +154,7 @@ function MyOrders() {
                                         </div>
                                         <div className={styles.productDetails}>
                                             <h4>{firstItem?.productVariant.product.name} {order.items.length > 1 && `+ ${order.items.length - 1} more`}</h4>
-                                            <div className={styles.productMeta}>Order ID: #{order.id}</div>
+                                            <div className={styles.productMeta}>Order Code: {order.orderCode}</div>
                                             <div className={styles.productMeta}>Date: {new Date(order.createdAt).toLocaleDateString()}</div>
                                             <div className={styles.price}>${order.totalPrice.toFixed(2)}</div>
                                         </div>
