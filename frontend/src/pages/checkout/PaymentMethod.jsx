@@ -37,7 +37,6 @@ function PaymentMethod() {
                 window.location.href = response.data.paymentUrl;
             } else {
                 // COD or other local process
-                toast.success("Success", "Order placed successfully!");
                 clearCart();
                 navigate('/checkout/review', { state: { order: response.data } });
             }

@@ -63,12 +63,42 @@ function ShippingAddress() {
         }
     };
 
+    // Localize Vietnamese address names
+    const anglicizeAddress = (name) => {
+        if (!name) return "";
+        let clean = name;
+
+        // Remove diacritics
+        clean = clean.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        clean = clean.replace(/đ/g, "d").replace(/Đ/g, "D");
+
+        // Translate prefixes
+        if (name.startsWith("Tỉnh")) {
+            clean = clean.replace(/^Tinh\s+/i, "") + " Province";
+        } else if (name.startsWith("Thành phố")) {
+            clean = clean.replace(/^Thanh pho\s+/i, "") + " City";
+        } else if (name.startsWith("Quận") || name.startsWith("Huyện")) {
+            clean = clean.replace(/^(Quan|Huyen)\s+/i, "") + " District";
+        } else if (name.startsWith("Thị xã")) {
+            clean = clean.replace(/^Thi xa\s+/i, "") + " Town";
+        } else if (name.startsWith("Phường")) {
+            clean = clean.replace(/^Phuong\s+/i, "") + " Ward";
+        } else if (name.startsWith("Xã")) {
+            clean = clean.replace(/^Xa\s+/i, "") + " Commune";
+        } else if (name.startsWith("Thị trấn")) {
+            clean = clean.replace(/^Thi tran\s+/i, "") + " Town";
+        }
+
+        return clean.trim();
+    };
+
     // Vietnam Address API Functions
     const fetchProvinces = async () => {
         try {
             const response = await fetch('https://provinces.open-api.vn/api/p/');
             const data = await response.json();
-            setProvinces(data);
+            const localized = data.map(p => ({ ...p, name: anglicizeAddress(p.name) }));
+            setProvinces(localized);
         } catch (error) {
             console.error("Error fetching provinces:", error);
         }
@@ -79,7 +109,8 @@ function ShippingAddress() {
         try {
             const response = await fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`);
             const data = await response.json();
-            setDistricts(data.districts);
+            const localized = data.districts.map(d => ({ ...d, name: anglicizeAddress(d.name) }));
+            setDistricts(localized);
         } catch (error) {
             console.error("Error fetching districts:", error);
         }
@@ -90,7 +121,8 @@ function ShippingAddress() {
         try {
             const response = await fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`);
             const data = await response.json();
-            setWards(data.wards);
+            const localized = data.wards.map(w => ({ ...w, name: anglicizeAddress(w.name) }));
+            setWards(localized);
         } catch (error) {
             console.error("Error fetching wards:", error);
         }
