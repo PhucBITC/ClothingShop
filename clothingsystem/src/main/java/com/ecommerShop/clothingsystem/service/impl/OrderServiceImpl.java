@@ -152,6 +152,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
+    public void deleteOrders(List<Long> ids) {
+        orderRepository.deleteAllById(ids);
+    }
+
+    @Override
+    @Transactional
     public void handlePaymentSuccess(Long orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));

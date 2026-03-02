@@ -166,10 +166,27 @@
 .productImg {
     width: 80px;
     height: 80px;
-    object-fit: contain;
     background: #f8f8f8;
     border-radius: 6px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.productImg img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
     mix-blend-mode: multiply;
+}
+
+.placeholderImg {
+    font-size: 0.7rem;
+    color: #999;
+    text-align: center;
+    padding: 5px;
 }
 
 .productDetails h4 {

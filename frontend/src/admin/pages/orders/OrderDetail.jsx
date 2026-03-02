@@ -46,7 +46,8 @@ const OrderDetail = () => {
     const getProductImage = (product) => {
         if (product?.images && product.images.length > 0) {
             const primaryImg = product.images.find(img => img.isPrimary) || product.images[0];
-            return `http://localhost:8080/api/files/products/${product.id}/${primaryImg.imageUrl}`;
+            // The imageUrl in DB already contains the full URL (e.g., http://localhost:8080/api/files/products/uuid_name.jpg)
+            return primaryImg.imageUrl;
         }
         return `https://via.placeholder.com/400x533?text=${encodeURIComponent(product?.name || 'Product')}`;
     };

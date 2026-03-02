@@ -20,5 +20,7 @@ public interface OrderService {
 
     void deleteOrder(Long id);
 
+    void deleteOrders(java.util.List<Long> ids);
+
     void handlePaymentSuccess(Long orderId);
 }

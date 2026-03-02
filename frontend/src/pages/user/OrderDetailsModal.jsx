@@ -62,7 +62,11 @@ const OrderDetailsModal = ({ isOpen, onClose, order }) => {
                             {order.items.map((item, idx) => (
                                 <div key={idx} className={styles.orderItem}>
                                     <img
-                                        src={item.productVariant.product.image ? (item.productVariant.product.image.startsWith('http') ? item.productVariant.product.image : `http://localhost:8080/api/files/${item.productVariant.product.image}`) : ''}
+                                        src={item.productVariant.product.images?.[0]
+                                            ? (item.productVariant.product.images[0].imageUrl.startsWith('http')
+                                                ? item.productVariant.product.images[0].imageUrl
+                                                : `http://localhost:8080/api/files/${item.productVariant.product.images[0].imageUrl}`)
+                                            : ''}
                                         alt={item.productVariant.product.name}
                                         className={styles.itemImg}
                                     />

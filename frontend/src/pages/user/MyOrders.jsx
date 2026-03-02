@@ -140,11 +140,18 @@ function MyOrders() {
                                 <div key={order.id} className={styles.orderCard}>
 
                                     <div className={styles.productSection}>
-                                        <img
-                                            src={firstItem?.productVariant.product.image ? (firstItem.productVariant.product.image.startsWith('http') ? firstItem.productVariant.product.image : `http://localhost:8080/api/files/${firstItem.productVariant.product.image}`) : ''}
-                                            alt={firstItem?.productVariant.product.name}
-                                            className={styles.productImg}
-                                        />
+                                        <div className={styles.productImg}>
+                                            {order.items?.[0]?.productVariant?.product?.images?.[0] ? (
+                                                <img
+                                                    src={order.items[0].productVariant.product.images[0].imageUrl.startsWith('http')
+                                                        ? order.items[0].productVariant.product.images[0].imageUrl
+                                                        : `http://localhost:8080/api/files/${order.items[0].productVariant.product.images[0].imageUrl}`}
+                                                    alt={order.items[0].productVariant.product.name}
+                                                />
+                                            ) : (
+                                                <div className={styles.placeholderImg}>No Image</div>
+                                            )}
+                                        </div>
                                         <div className={styles.productDetails}>
                                             <h4>{firstItem?.productVariant.product.name} {order.items.length > 1 && `+ ${order.items.length - 1} more`}</h4>
                                             <div className={styles.productMeta}>Order ID: #{order.id}</div>

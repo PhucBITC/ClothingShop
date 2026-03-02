@@ -17,6 +17,8 @@ const OrderList = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalType, setModalType] = useState('delete'); // 'delete' or 'cancel'
     const [selectedOrder, setSelectedOrder] = useState(null);
+    const [selectedIds, setSelectedIds] = useState([]);
+    const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
 
     useEffect(() => {
         fetchOrders();
@@ -24,6 +26,34 @@ const OrderList = () => {
         window.addEventListener('click', handleClickOutside);
         return () => window.removeEventListener('click', handleClickOutside);
     }, []);
+
+    const handleBulkDelete = async () => {
+        try {
+            await axios.delete('/orders/admin/bulk', { data: selectedIds });
+            toast.success("Success", "Selected orders deleted successfully.");
+            setOrders(orders.filter(o => !selectedIds.includes(o.id)));
+            setSelectedIds([]);
+        } catch (error) {
+            toast.error("Error", "Failed to delete selected orders.");
+            console.error(error);
+        } finally {
+            setIsBulkModalOpen(false);
+        }
+    };
+
+    const handleSelectAll = (e) => {
+        if (e.target.checked) {
+            setSelectedIds(filteredOrders.map(o => o.id));
+        } else {
+            setSelectedIds([]);
+        }
+    };
+
+    const handleSelectOrder = (id) => {
+        setSelectedIds(prev =>
+            prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+        );
+    };
 
     const fetchOrders = async () => {
         try {
@@ -130,6 +160,14 @@ const OrderList = () => {
                             <option value="CANCELLED">Cancelled</option>
                         </select>
                     </div>
+                    {selectedIds.length > 0 && (
+                        <button
+                            className={styles.bulkDeleteBtn}
+                            onClick={() => setIsBulkModalOpen(true)}
+                        >
+                            <BiTrash /> Delete ({selectedIds.length})
+                        </button>
+                    )}
                 </div>
             </div>
 
@@ -137,6 +175,13 @@ const OrderList = () => {
                 <table className={styles.table}>
                     <thead>
                         <tr>
+                            <th className={styles.checkboxCol}>
+                                <input
+                                    type="checkbox"
+                                    onChange={handleSelectAll}
+                                    checked={selectedIds.length > 0 && selectedIds.length === filteredOrders.length}
+                                />
+                            </th>
                             <th>Order ID</th>
                             <th>Customer</th>
                             <th>Date</th>
@@ -148,7 +193,14 @@ const OrderList = () => {
                     <tbody>
                         {filteredOrders.length > 0 ? (
                             filteredOrders.map((order) => (
-                                <tr key={order.id}>
+                                <tr key={order.id} className={selectedIds.includes(order.id) ? styles.selectedRow : ''}>
+                                    <td className={styles.checkboxCol}>
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedIds.includes(order.id)}
+                                            onChange={() => handleSelectOrder(order.id)}
+                                        />
+                                    </td>
                                     <td className={styles.orderId}>#{order.id}</td>
                                     <td>
                                         <div className={styles.customerInfo}>
@@ -225,6 +277,17 @@ const OrderList = () => {
                 itemName={`#${selectedOrder?.id}`}
                 confirmText={modalType === 'delete' ? 'Delete' : 'Confirm'}
                 confirmColor={modalType === 'delete' ? '#dc2626' : '#f97316'}
+            />
+
+            <ConfirmModal
+                isOpen={isBulkModalOpen}
+                onClose={() => setIsBulkModalOpen(false)}
+                onConfirm={handleBulkDelete}
+                title="Confirm Bulk Delete"
+                message={`Are you sure you want to delete ${selectedIds.length} orders?`}
+                itemName="selected orders"
+                confirmText="Delete All"
+                confirmColor="#dc2626"
             />
         </div>
     );

@@ -28,8 +28,28 @@
 
 .actions {
     display: flex;
-    gap: 1rem;
+    gap: 1.5rem;
+    align-items: center;
     flex-wrap: wrap;
+}
+
+.bulkDeleteBtn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    background: #dc2626;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.bulkDeleteBtn:hover {
+    background: #b91c1c;
+    transform: translateY(-2px);
 }
 
 .searchBox {
@@ -94,13 +114,40 @@
 
 .table th {
     background: #f8fafc;
-    padding: 1.25rem 1.5rem;
-    font-size: 0.85rem;
+    padding: 1.2rem 1.5rem;
+    text-align: left;
+    font-size: 0.875rem;
     font-weight: 600;
-    color: #64748b;
+    color: #475569;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border-bottom: 1px solid #e2e8f0;
+    letter-spacing: 0.025em;
+    border-bottom: 2px solid #f1f5f9;
+}
+
+.table tr {
+    border-bottom: 1px solid #f1f5f9;
+    transition: background 0.2s;
+}
+
+.table tr:hover {
+    background: #f8fafc;
+}
+
+.selectedRow {
+    background: #fff7ed !important;
+}
+
+.checkboxCol {
+    width: 50px;
+    padding: 0 1.5rem !important;
+    text-align: center !important;
+}
+
+.checkboxCol input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #f97316;
 }
 
 .table td {

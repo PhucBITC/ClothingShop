@@ -98,6 +98,12 @@ public class OrderController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping("/admin/bulk")
+    public ResponseEntity<?> deleteOrders(@RequestBody List<Long> ids) {
+        orderService.deleteOrders(ids);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/vnpay-return")
     public void vnpayReturn(jakarta.servlet.http.HttpServletResponse response) throws java.io.IOException {
         int result = vnpayService.orderReturn(httpRequest);
