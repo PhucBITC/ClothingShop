@@ -218,4 +218,12 @@ public class AuthController {
 
         return ResponseEntity.ok("Mật khẩu đã được đặt lại thành công!");
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getMe(@org.springframework.security.core.annotation.AuthenticationPrincipal User user) {
+        if (user == null) {
+            return ResponseEntity.status(401).build();
+        }
+        return ResponseEntity.ok(user);
+    }
 }

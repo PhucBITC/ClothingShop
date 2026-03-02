@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FaEye, FaEyeSlash, FaGoogle, FaFacebook } from 'react-icons/fa';
+import { useAuth } from '../../context/AuthContext';
 import styles from './Login.module.css';
 import loginBg from '../../assets/login_bg.jpg';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -41,8 +43,12 @@ const Login = () => {
           setError('');
           // Có thể hiển thị thông báo "OTP đã gửi" nếu muốn
         } else if (response.data.token) {
-          localStorage.setItem('token', response.data.token);
-          navigate('/');
+          login(response.data.token, response.data.role);
+          if (response.data.role === 'ADMIN') {
+            navigate('/admin');
+          } else {
+            navigate('/');
+          }
         }
       } else {
         setIsLoading(false);
@@ -74,8 +80,12 @@ const Login = () => {
       const [response] = await Promise.all([apiCall, minLoadTime]);
 
       if (response.data && response.data.token) {
-        localStorage.setItem('token', response.data.token);
-        navigate('/');
+        login(response.data.token, response.data.role);
+        if (response.data.role === 'ADMIN') {
+          navigate('/admin');
+        } else {
+          navigate('/');
+        }
       } else {
         setIsLoading(false);
         setError('Xác thực thất bại.');

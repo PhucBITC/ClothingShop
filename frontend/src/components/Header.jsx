@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BiSearch, BiShoppingBag, BiChevronDown, BiTrash, BiMenu, BiX } from 'react-icons/bi';
+import { BiSearch, BiShoppingBag, BiChevronDown, BiTrash, BiMenu, BiX, BiUser, BiPackage, BiCog, BiLogOut } from 'react-icons/bi';
 import { Link, NavLink } from 'react-router-dom';
 import { products } from '../data/mockData';
 import styles from './Header.module.css';
@@ -8,6 +8,7 @@ import { FiHeart } from 'react-icons/fi';
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
 import { useToast } from './common/toast/ToastContext';
+import { useAuth } from '../context/AuthContext';
 import ConfirmModal from './common/modal/ConfirmModal';
 
 function Header() {
@@ -17,6 +18,7 @@ function Header() {
 
     const { wishlistItems } = useWishlist();
     const { cartItems, cartCount, subtotal, removeFromCart, removeMultipleFromCart, clearCart } = useCart();
+    const { user, logout } = useAuth();
     const toast = useToast();
 
     const handleSelectItem = (id, variantId) => {
@@ -43,6 +45,9 @@ function Header() {
             clearCart();
             setSelectedItems([]);
             toast.success("Cart has been cleared");
+        } else if (type === 'LOGOUT') {
+            logout();
+            toast.success("Logged out successfully");
         }
 
         setModalConfig({ isOpen: false, type: '', data: null });
@@ -181,13 +186,6 @@ function Header() {
                 <div className={styles.navItem}>
                     <NavLink to="/contact" className={getNavLinkClass}><span title="Contact Us">Contact Us</span></NavLink>
                 </div>
-                {isAdmin && (
-                    <div className={styles.navItem}>
-                        <Link to="/admin" className={styles.navLink} style={{ color: '#FF8800', fontWeight: 'bold' }}>
-                            <span title="System Management">System Management</span>
-                        </Link>
-                    </div>
-                )}
             </nav>
 
             {/* Actions */}
@@ -262,22 +260,80 @@ function Header() {
                     </div>
                 </div>
 
-                <Link to="/login" className={styles.loginBtn}>Login</Link>
+                {user ? (
+                    <div className={styles.userAccount}>
+                        <div className={styles.userTrigger}>
+                            {user.avatarUrl ? (
+                                <img
+                                    src={user.avatarUrl.startsWith('http') ? user.avatarUrl : `http://localhost:8080/api/files/${user.avatarUrl}`}
+                                    alt={user.fullName}
+                                    className={styles.userAvatar}
+                                />
+                            ) : (
+                                <div className={styles.userInitial}>
+                                    {user.fullName?.charAt(0).toUpperCase() || 'U'}
+                                </div>
+                            )}
+                            <span className={styles.userName}>{user.fullName}</span>
+                            <BiChevronDown />
+                        </div>
+
+                        <div className={styles.userDropdown}>
+                            {isAdmin && (
+                                <Link to="/admin" className={styles.userMenuLink} style={{ color: '#FF8800', fontWeight: 'bold' }}>
+                                    <BiCog /> System Management
+                                </Link>
+                            )}
+                            <Link to="/user/profile" className={styles.userMenuLink}>
+                                <BiUser /> My Profile
+                            </Link>
+                            <Link to="/user/orders" className={styles.userMenuLink}>
+                                <BiPackage /> My Orders
+                            </Link>
+                            <Link to="/user/wishlist" className={styles.userMenuLink}>
+                                <FiHeart /> Wishlist
+                            </Link>
+                            <Link to="/user/settings" className={styles.userMenuLink}>
+                                <BiCog /> Settings
+                            </Link>
+                            <button
+                                onClick={() => setModalConfig({ isOpen: true, type: 'LOGOUT', data: null })}
+                                className={styles.logoutBtn}
+                            >
+                                <BiLogOut /> Logout
+                            </button>
+                        </div>
+                    </div>
+                ) : (
+                    <Link to="/login" className={styles.loginBtn}>Login</Link>
+                )}
             </div>
 
             <ConfirmModal
                 isOpen={modalConfig.isOpen}
                 onClose={() => setModalConfig({ ...modalConfig, isOpen: false })}
                 onConfirm={handleConfirmAction}
-                title={modalConfig.type === 'CLEAR' ? 'Clear Cart' : modalConfig.type === 'MULTIPLE' ? 'Delete Items' : 'Confirm Delete'}
+                title={
+                    modalConfig.type === 'CLEAR' ? 'Clear Cart' :
+                        modalConfig.type === 'MULTIPLE' ? 'Delete Items' :
+                            modalConfig.type === 'LOGOUT' ? 'Logout Confirmation' :
+                                'Confirm Delete'
+                }
                 message={
                     modalConfig.type === 'SINGLE'
                         ? 'Are you sure you want to delete'
                         : modalConfig.type === 'MULTIPLE'
                             ? `Are you sure you want to delete ${modalConfig.data?.items.length} selected items`
-                            : 'Are you sure you want to clear your entire cart'
+                            : modalConfig.type === 'LOGOUT'
+                                ? 'Are you sure you want to logout from your account'
+                                : 'Are you sure you want to clear your entire cart'
                 }
-                itemName={modalConfig.type === 'SINGLE' ? modalConfig.data?.name : ''}
+                itemName={
+                    modalConfig.type === 'SINGLE' ? modalConfig.data?.name :
+                        modalConfig.type === 'LOGOUT' ? (user?.fullName || '') : ''
+                }
+                confirmText={modalConfig.type === 'LOGOUT' ? 'Logout' : 'Delete'}
+                confirmColor={modalConfig.type === 'LOGOUT' ? '#dc2626' : '#dc2626'}
             />
         </header>
     );

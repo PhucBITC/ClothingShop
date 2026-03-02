@@ -173,6 +173,119 @@
     transform: translateY(-1px);
 }
 
+/* --- User Account Styles --- */
+.userAccount {
+    position: relative;
+    padding: 0.5rem 0;
+}
+
+.userTrigger {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.5rem 1rem;
+    background: #f8f8f8;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.userTrigger:hover {
+    background: #f0f0f0;
+    border-color: #eee;
+}
+
+.userAvatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.userInitial {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #131118;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.userName {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #131118;
+}
+
+.userDropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 200px;
+    background: #fff;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    padding: 0.5rem 0;
+    z-index: 1002;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+}
+
+.userAccount:hover .userDropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.userMenuLink {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.8rem 1.2rem;
+    color: #333;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.userMenuLink:hover {
+    background: #f8f8f8;
+    color: #131118;
+}
+
+.userMenuLink i {
+    font-size: 1.1rem;
+}
+
+.logoutBtn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.8rem 1.2rem;
+    color: #ff4d4f;
+    background: none;
+    border: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-top: 1px solid #f0f0f0;
+    margin-top: 0.5rem;
+}
+
+.logoutBtn:hover {
+    background: #fff1f0;
+}
+
 /* --- MiniCart Styles --- */
 .cartContainer {
     position: relative;

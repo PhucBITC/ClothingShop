@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import styles from './Verify-otp.module.css';
 import verifyBg from '../../assets/verify_bg.jpg'; // Đảm bảo bạn có ảnh này
 
@@ -11,6 +12,7 @@ const VerifyOtp = () => {
     const [resendMessage, setResendMessage] = useState('');
     const navigate = useNavigate();
     const location = useLocation();
+    const { login } = useAuth();
 
     // Ref để điều khiển việc focus vào các ô input
     const inputRefs = useRef([]);
@@ -74,9 +76,8 @@ const VerifyOtp = () => {
             if (response.ok) {
                 const data = await response.json();
 
-                // Lưu token và role vào localStorage
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('role', data.role);
+                // Lưu token và role thông qua AuthContext
+                login(data.token, data.role);
 
                 // Điều hướng dựa trên role
                 if (data.role === 'ADMIN') {

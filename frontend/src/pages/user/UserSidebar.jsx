@@ -1,10 +1,12 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { BiUser, BiPackage, BiHeart, BiMap, BiCreditCard, BiBell, BiCog } from 'react-icons/bi';
+import { useAuth } from '../../context/AuthContext';
 import styles from './UserSidebar.module.css';
 
 function UserSidebar() {
     const location = useLocation();
+    const { user } = useAuth();
     const currentPath = location.pathname;
 
     const menuItems = [
@@ -17,14 +19,25 @@ function UserSidebar() {
         { name: 'Settings', path: '/user/settings', icon: <BiCog /> },
     ];
 
+    if (!user) return null;
+
     return (
         <aside className={styles.sidebar}>
             <div className={styles.profileHeader}>
-                {/* Placeholder Avatar - Replace with actual user image if avail */}
-                <img src="https://i.pravatar.cc/150?img=11" alt="Robert Fox" className={styles.avatar} />
+                {user.avatarUrl ? (
+                    <img
+                        src={user.avatarUrl.startsWith('http') ? user.avatarUrl : `http://localhost:8080/api/files/${user.avatarUrl}`}
+                        alt={user.fullName}
+                        className={styles.avatar}
+                    />
+                ) : (
+                    <div className={styles.userInitial}>
+                        {user.fullName?.charAt(0).toUpperCase() || 'U'}
+                    </div>
+                )}
                 <div className={styles.userInfo}>
                     <h5>Hello <span className={styles.wave}>👋</span></h5>
-                    <h3>Robert Fox</h3>
+                    <h3>{user.fullName}</h3>
                 </div>
             </div>
 

@@ -48,6 +48,19 @@
     object-fit: cover;
 }
 
+.userInitial {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: #131118;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 2rem;
+}
+
 .editAvatarBtn {
     position: absolute;
     bottom: 0;

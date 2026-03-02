@@ -102,17 +102,20 @@ function AppLayout() {
 import { WishlistProvider } from "./context/WishlistContext";
 import { ToastProvider } from "./components/common/toast/ToastContext";
 import { CartProvider } from "./context/CartContext";
+import { AuthProvider } from "./context/AuthContext";
 
 function App() {
   return (
     <BrowserRouter>
-      <ToastProvider>
-        <CartProvider>
-          <WishlistProvider>
-            <AppLayout />
-          </WishlistProvider>
-        </CartProvider>
-      </ToastProvider>
+      <AuthProvider>
+        <ToastProvider>
+          <CartProvider>
+            <WishlistProvider>
+              <AppLayout />
+            </WishlistProvider>
+          </CartProvider>
+        </ToastProvider>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

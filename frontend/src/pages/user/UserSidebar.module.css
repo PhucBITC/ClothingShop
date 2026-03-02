@@ -24,6 +24,19 @@
     object-fit: cover;
 }
 
+.userInitial {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #131118;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
 .userInfo h5 {
     font-size: 0.8rem;
     color: #888;

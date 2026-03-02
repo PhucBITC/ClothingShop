@@ -1,9 +1,12 @@
 import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 const OAuth2RedirectHandler = () => {
     const navigate = useNavigate();
     const location = useLocation();
+
+    const { login } = useAuth();
 
     useEffect(() => {
         // Helper to parse query params
@@ -19,11 +22,7 @@ const OAuth2RedirectHandler = () => {
         const error = getUrlParameter('error');
 
         if (token) {
-            localStorage.setItem('token', token);
-            if (role) {
-                localStorage.setItem('role', role);
-            }
-
+            login(token, role);
             if (role === 'ADMIN') {
                 navigate('/admin');
             } else {
@@ -32,7 +31,7 @@ const OAuth2RedirectHandler = () => {
         } else {
             navigate('/login', { state: { error: error } });
         }
-    }, [location, navigate]);
+    }, [location, navigate, login]);
 
     return (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
