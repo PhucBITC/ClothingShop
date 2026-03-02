@@ -29,6 +29,9 @@ public class AuthController {
     private JwtService jwtService;
 
     @Autowired
+    private com.ecommerShop.clothingsystem.service.FileStorageService fileStorageService;
+
+    @Autowired
     private EmailService emailService;
 
     @PostMapping("/register")
@@ -225,5 +228,29 @@ public class AuthController {
             return ResponseEntity.status(401).build();
         }
         return ResponseEntity.ok(user);
+    }
+
+    @PutMapping(value = "/update", consumes = { "multipart/form-data" })
+    public ResponseEntity<?> updateProfile(
+            @org.springframework.security.core.annotation.AuthenticationPrincipal User currentUser,
+            @RequestPart("user") User userDetails,
+            @RequestPart(value = "avatar", required = false) org.springframework.web.multipart.MultipartFile avatar) {
+
+        if (currentUser == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        User user = userRepository.findById(currentUser.getId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setFullName(userDetails.getFullName());
+        user.setPhoneNumber(userDetails.getPhoneNumber());
+
+        if (avatar != null && !avatar.isEmpty()) {
+            String filename = fileStorageService.save(avatar, "customers");
+            user.setAvatarUrl(filename);
+        }
+
+        return ResponseEntity.ok(userRepository.save(user));
     }
 }
