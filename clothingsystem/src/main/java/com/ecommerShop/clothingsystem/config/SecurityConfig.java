@@ -40,7 +40,8 @@ public class SecurityConfig {
                                         cfg.setAllowedOrigins(java.util.List.of("http://localhost:5173",
                                                         "http://localhost:5174",
                                                         "http://127.0.0.1:5173", "http://127.0.0.1:5174"));
-                                        cfg.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE"));
+                                        cfg.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "PATCH",
+                                                        "HEAD", "OPTIONS"));
                                         cfg.setAllowedHeaders(java.util.List.of("*"));
                                         return cfg;
                                 }))

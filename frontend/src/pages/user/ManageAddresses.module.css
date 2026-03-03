@@ -58,20 +58,45 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid #f0f0f0;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #f0f0f0;
+    transition: all 0.2s ease;
 }
 
-.addressCard:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
+.defaultCard {
+    border-color: #131118;
+    background: #fafafa;
 }
 
-.addressInfo h4 {
+.addressInfo {
+    flex: 1;
+}
+
+.cardHeader {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.cardHeader h4 {
     font-size: 1.1rem;
     font-weight: 700;
-    margin: 0 0 0.5rem 0;
+    margin: 0;
     color: #131118;
+}
+
+.defaultBadge {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: #131118;
+    color: #fff;
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
 }
 
 .addressText {
@@ -87,11 +112,24 @@
     color: #555;
     font-size: 0.95rem;
     font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.noteText {
+    font-size: 0.85rem;
+    color: #888;
+    font-style: italic;
 }
 
 .actions {
     display: flex;
     flex-direction: column;
+    align-items: flex-end;
+    gap: 0.8rem;
+}
+
+.topActions {
+    display: flex;
     gap: 0.8rem;
 }
 
@@ -100,32 +138,64 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    font-size: 0.85rem;
+    padding: 0.6rem 1.25rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
     font-weight: 600;
     cursor: pointer;
-    border: none;
-    transition: background 0.2s;
-    min-width: 90px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid transparent;
+    min-width: 100px;
 }
 
 .editBtn {
-    background: #f5f5f5;
-    color: #131118;
+    background: #f3f4f6;
+    color: #374151;
 }
 
 .editBtn:hover {
-    background: #e0e0e0;
+    background: #e5e7eb;
+    color: #111827;
+    transform: translateY(-1px);
 }
 
 .deleteBtn {
-    background: #fff0f0;
-    color: #ff6b6b;
+    background: #fee2e2;
+    color: #ef4444;
 }
 
 .deleteBtn:hover {
-    background: #ffe0e0;
+    background: #ef4444;
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+}
+
+.setDefaultLink {
+    background: none;
+    border: none;
+    color: #6b7280;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    transition: all 0.2s;
+    margin-top: 0.5rem;
+}
+
+.setDefaultLink:hover {
+    color: #131118;
+    background: #f8f9fa;
+}
+
+.loading,
+.noAddresses {
+    padding: 3rem;
+    text-align: center;
+    color: #888;
+    font-size: 1rem;
 }
 
 /* --- Add Address Modal --- */
@@ -140,12 +210,12 @@
     justify-content: center;
     align-items: center;
     z-index: 2000;
+    backdrop-filter: blur(2px);
 }
 
 .modalContent {
     background: #fff;
     width: 600px;
-    /* Wider for address form */
     max-width: 90%;
     border-radius: 12px;
     padding: 2rem;
@@ -165,6 +235,12 @@
     display: flex;
     flex-direction: column;
     gap: 1.2rem;
+}
+
+.formGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
 }
 
 .formGroup {
