@@ -33,6 +33,11 @@ function PaymentMethod() {
             });
 
             if (response.data.paymentUrl) {
+                // Persist state to sessionStorage before redirecting to external payment site
+                sessionStorage.setItem('checkoutState', JSON.stringify({
+                    addressId: addressId,
+                    items: checkoutItems
+                }));
                 // Redirect to VNPay or PayPal
                 window.location.href = response.data.paymentUrl;
             } else {

@@ -114,7 +114,8 @@ public class OrderController {
             orderService.handlePaymentSuccess(Long.parseLong(orderId));
             response.sendRedirect(redirectUrl + "&vnp_ResponseCode=00&orderId=" + orderId);
         } else {
-            response.sendRedirect(redirectUrl + "&vnp_ResponseCode=" + httpRequest.getParameter("vnp_ResponseCode"));
+            response.sendRedirect(redirectUrl + "&vnp_ResponseCode=" + httpRequest.getParameter("vnp_ResponseCode")
+                    + "&orderId=" + orderId);
         }
     }
 

@@ -428,6 +428,40 @@
     }
 }
 
+/* Failure Specific Styles */
+.failureCard {
+    border-top: 4px solid #e74c3c;
+}
+
+.failureCard .animatedIconWrapper {
+    background: #fdedec;
+    animation: pulseFailure 2s infinite;
+}
+
+.failureCheckIcon {
+    font-size: 4rem;
+    color: #e74c3c;
+    animation: scaleIn 0.5s 0.2s both cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.failureProgress {
+    background: #e74c3c;
+}
+
+@keyframes pulseFailure {
+    0% {
+        box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 20px rgba(231, 76, 60, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(231, 76, 60, 0);
+    }
+}
+
 /* --- Responsive Design --- */
 @media (max-width: 992px) {
     .contentWrapper {

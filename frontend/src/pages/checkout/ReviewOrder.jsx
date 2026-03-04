@@ -1,19 +1,23 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
-import { BiHome, BiCreditCard, BiListCheck, BiEdit, BiShoppingBag, BiCheckCircle, BiLoaderAlt } from 'react-icons/bi';
+import { BiHome, BiCreditCard, BiListCheck, BiEdit, BiShoppingBag, BiCheckCircle, BiLoaderAlt, BiXCircle } from 'react-icons/bi';
 import { useCart } from '../../context/CartContext';
 import axios from '../../api/axios';
+import { useToast } from '../../components/common/toast/ToastContext';
 import styles from './ReviewOrder.module.css';
 
 function ReviewOrder() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const location = useLocation();
+    const toast = useToast();
 
     const [showSuccess, setShowSuccess] = useState(false);
+    const [showFailure, setShowFailure] = useState(false);
     const [isPaymentComplete, setIsPaymentComplete] = useState(false);
     const [loading, setLoading] = useState(false);
     const [orderData, setOrderData] = useState(null);
+    const hasHandledError = useRef(false);
 
     const { cartItems, subtotal, deliveryCharge, total, clearCart } = useCart();
 
@@ -38,7 +42,37 @@ function ReviewOrder() {
         const urlOrderId = searchParams.get('orderId');
         const stateOrder = location.state?.order;
 
+        if (vnpResponse && vnpResponse !== '00') {
+            if (!hasHandledError.current) {
+                hasHandledError.current = true;
+                setShowFailure(true);
+
+                const orderId = urlOrderId || stateOrder?.id;
+                if (orderId) {
+                    fetchOrderDetails(orderId);
+                }
+
+                setTimeout(() => {
+                    setShowFailure(false);
+                    // Attempt to reconstruct state from sessionStorage
+                    const persistedState = sessionStorage.getItem('checkoutState');
+                    if (persistedState) {
+                        const { addressId, items } = JSON.parse(persistedState);
+                        navigate('/checkout/payment', { state: { addressId, items } });
+                    } else {
+                        // Fallback fallback: go to checkout address page with current items
+                        const itemsToPass = orderData ? orderData.items : cartItems;
+                        navigate('/checkout', { state: { selectedItems: itemsToPass } });
+                    }
+                }, 4000);
+            }
+            return;
+        }
+
         if (vnpResponse === '00' || paypalToken || stateOrder) {
+            // Clear the persisted state on success
+            sessionStorage.removeItem('checkoutState');
+
             setShowSuccess(true);
             setIsPaymentComplete(true);
 
@@ -55,9 +89,15 @@ function ReviewOrder() {
             }, 4000);
             return () => clearTimeout(timer);
         }
-    }, [searchParams, location.state, clearCart, cartItems.length, fetchOrderDetails]);
+    }, [searchParams, location.state, clearCart, cartItems.length, fetchOrderDetails, navigate, toast]);
 
     const handlePlaceOrder = () => {
+        // This button is primarily for COD in the current ReviewOrder logic
+        // because online payments redirect to this page AFTER payment.
+        if (orderData?.payment?.paymentMethod === 'VNPAY' || orderData?.payment?.paymentMethod === 'PAYPAL') {
+            // For online payments already processed but shown here, we don't "place" again
+            return;
+        }
         setShowSuccess(true);
         setIsPaymentComplete(true);
         clearCart();
@@ -216,6 +256,22 @@ function ReviewOrder() {
                         <p className={styles.vibrantMessage}>Your payment has been successfully processed. Thank you for your purchase!</p>
                         <div className={styles.progressBarWrapper}>
                             <div className={styles.progressBar}></div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Failure Overlay */}
+            {showFailure && (
+                <div className={styles.successOverlay}>
+                    <div className={`${styles.vibrantCard} ${styles.failureCard}`}>
+                        <div className={styles.animatedIconWrapper}>
+                            <BiXCircle className={styles.failureCheckIcon} />
+                        </div>
+                        <h2 className={styles.vibrantTitle}>Payment Not Processed</h2>
+                        <p className={styles.vibrantMessage}>The transaction was cancelled or could not be completed. Returning you to checkout...</p>
+                        <div className={styles.progressBarWrapper}>
+                            <div className={`${styles.progressBar} ${styles.failureProgress}`}></div>
                         </div>
                     </div>
                 </div>
