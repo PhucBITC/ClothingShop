@@ -18,7 +18,6 @@ import MyOrders from "./pages/user/MyOrders";
 import UserInfo from "./pages/user/UserInfo";
 import Wishlist from "./pages/user/Wishlist";
 import ManageAddresses from "./pages/user/ManageAddresses";
-import SavedCards from "./pages/user/SavedCards";
 import Notifications from "./pages/user/Notifications";
 import Settings from "./pages/user/Settings";
 import OAuth2RedirectHandler from "./pages/auth/OAuth2RedirectHandler";
@@ -65,7 +64,6 @@ function AppLayout() {
         <Route path="/user/profile" element={<UserInfo />} />
         <Route path="/user/wishlist" element={<Wishlist />} />
         <Route path="/user/addresses" element={<ManageAddresses />} />
-        <Route path="/user/saved-cards" element={<SavedCards />} />
         <Route path="/user/notifications" element={<Notifications />} />
         <Route path="/user/settings" element={<Settings />} />
 

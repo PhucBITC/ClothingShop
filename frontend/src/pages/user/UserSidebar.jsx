@@ -14,7 +14,6 @@ function UserSidebar() {
         { name: 'My Orders', path: '/user/orders', icon: <BiPackage /> },
         { name: 'My Wishlists', path: '/user/wishlist', icon: <BiHeart /> },
         { name: 'Manage Addresses', path: '/user/addresses', icon: <BiMap /> },
-        { name: 'Saved Cards', path: '/user/saved-cards', icon: <BiCreditCard /> },
         { name: 'Notifications', path: '/user/notifications', icon: <BiBell /> },
         { name: 'Settings', path: '/user/settings', icon: <BiCog /> },
     ];
