@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import com.ecommerShop.clothingsystem.security.AesEncryptor;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.Collection;
@@ -29,6 +30,7 @@ public class User implements UserDetails {
 
     private String fullName;
 
+    @Convert(converter = AesEncryptor.class)
     private String phoneNumber;
 
     @Enumerated(EnumType.STRING)

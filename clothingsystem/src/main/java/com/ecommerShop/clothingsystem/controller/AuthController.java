@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import com.ecommerShop.clothingsystem.service.EmailService;
+import com.ecommerShop.clothingsystem.security.HashUtils;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -59,8 +60,9 @@ public class AuthController {
 
         // 4. Generate OTP and metadata
         String otp = String.valueOf((int) (Math.random() * 900000) + 100000);
-        // Format: OTP:ATTEMPTS:RESENDS:TIMESTAMP
-        String tokenMetadata = otp + ":0:0:" + System.currentTimeMillis();
+        // Format: HASHED_OTP:ATTEMPTS:RESENDS:TIMESTAMP
+        String hashedOtp = HashUtils.hashSHA256(otp);
+        String tokenMetadata = hashedOtp + ":0:0:" + System.currentTimeMillis();
 
         // Store in memory instead of database
         pendingOtpStore.put(user.getEmail(), tokenMetadata);
@@ -124,7 +126,8 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Too many incorrect OTP attempts");
         }
 
-        if (!savedOtp.equals(otp)) {
+        String hashedInputOtp = HashUtils.hashSHA256(otp);
+        if (!savedOtp.equals(hashedInputOtp)) {
             attempts++;
             pendingOtpStore.put(email, savedOtp + ":" + attempts + ":" + resends + ":" + timestamp);
             return ResponseEntity.badRequest().body("Invalid OTP");
@@ -176,7 +179,8 @@ public class AuthController {
         // Generate new OTP
         String newOtp = String.valueOf((int) (Math.random() * 900000) + 100000);
         resends++;
-        String newTokenMetadata = newOtp + ":0:" + resends + ":" + System.currentTimeMillis();
+        String hashedNewOtp = HashUtils.hashSHA256(newOtp);
+        String newTokenMetadata = hashedNewOtp + ":0:" + resends + ":" + System.currentTimeMillis();
 
         pendingOtpStore.put(email, newTokenMetadata);
         pendingOtpExpiry.put(email, LocalDateTime.now().plusMinutes(5));
@@ -216,9 +220,9 @@ public class AuthController {
             }
             // Instead of returning token immediately, create 2FA OTP
             String otp = String.valueOf((int) (Math.random() * 900000) + 100000);
-
-            // Format: OTP:ATTEMPTS:RESENDS:TIMESTAMP
-            String tokenMetadata = otp + ":0:0:" + System.currentTimeMillis();
+            // Format: HASHED_OTP:ATTEMPTS:RESENDS:TIMESTAMP
+            String hashedOtp = HashUtils.hashSHA256(otp);
+            String tokenMetadata = hashedOtp + ":0:0:" + System.currentTimeMillis();
             user.setResetPasswordToken(tokenMetadata);
             user.setResetPasswordTokenExpiry(LocalDateTime.now().plusMinutes(5));
             userRepository.save(user);
@@ -281,7 +285,8 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Too many incorrect OTP attempts. Please login again.");
         }
 
-        if (!savedOtp.equals(otp)) {
+        String hashedInputOtp = HashUtils.hashSHA256(otp);
+        if (!savedOtp.equals(hashedInputOtp)) {
             attempts++;
             user.setResetPasswordToken(savedOtp + ":" + attempts + ":" + resends + ":" + timestamp);
             userRepository.save(user);
@@ -328,14 +333,16 @@ public class AuthController {
 
             // Increment resends
             otpToSend = String.valueOf((int) (Math.random() * 900000) + 100000);
-            String tokenMetadata = otpToSend + ":0:" + (resends + 1) + ":" + System.currentTimeMillis();
+            String hashedOtp = HashUtils.hashSHA256(otpToSend);
+            String tokenMetadata = hashedOtp + ":0:" + (resends + 1) + ":" + System.currentTimeMillis();
             user.setResetPasswordToken(tokenMetadata);
             user.setResetPasswordTokenExpiry(LocalDateTime.now().plusMinutes(5));
             userRepository.save(user);
         } else {
             // New request
             otpToSend = String.valueOf((int) (Math.random() * 900000) + 100000);
-            String tokenMetadata = otpToSend + ":0:0:" + System.currentTimeMillis();
+            String hashedOtp = HashUtils.hashSHA256(otpToSend);
+            String tokenMetadata = hashedOtp + ":0:0:" + System.currentTimeMillis();
             user.setResetPasswordToken(tokenMetadata);
             user.setResetPasswordTokenExpiry(LocalDateTime.now().plusMinutes(5));
             userRepository.save(user);
@@ -396,7 +403,8 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Too many incorrect OTP attempts");
         }
 
-        if (!savedOtp.equals(otp)) {
+        String hashedInputOtp = HashUtils.hashSHA256(otp);
+        if (!savedOtp.equals(hashedInputOtp)) {
             attempts++;
             user.setResetPasswordToken(savedOtp + ":" + attempts + ":" + resends + ":" + timestamp);
             userRepository.save(user);
@@ -416,8 +424,11 @@ public class AuthController {
         String token = request.get("token"); // This token is the OTP
         String newPassword = request.get("newPassword");
 
-        // Use startsWith because token is stored as "OTP:ATTEMPTS:RESENDS:TIMESTAMP"
-        User user = userRepository.findByResetPasswordTokenStartingWith(token + ":").orElse(null);
+        // Hash the incoming token (OTP) to search in the metadata
+        String hashedToken = HashUtils.hashSHA256(token);
+        // Use startsWith because token is stored as
+        // "HASHED_OTP:ATTEMPTS:RESENDS:TIMESTAMP"
+        User user = userRepository.findByResetPasswordTokenStartingWith(hashedToken + ":").orElse(null);
         if (user == null) {
             return ResponseEntity.badRequest().body("Invalid token.");
         }

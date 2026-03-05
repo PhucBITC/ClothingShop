@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaGoogle, FaGithub, FaFacebook } from 'react-icons/fa';
 import { useToast } from '../../components/common/toast/ToastContext';
@@ -46,8 +46,11 @@ const Register = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [isOtpStep, setIsOtpStep] = useState(false);
-    const [otp, setOtp] = useState('');
+    const [otp, setOtp] = useState(new Array(6).fill(''));
     const [resendTimer, setResendTimer] = useState(0);
+
+    // Ref to control input focus
+    const inputRefs = useRef([]);
     const navigate = useNavigate();
     const toast = useToast();
 
@@ -56,6 +59,35 @@ const Register = () => {
             ...formData,
             [e.target.id]: e.target.value
         });
+    };
+
+    // Focus on first input when OTP step is active
+    useEffect(() => {
+        if (isOtpStep && inputRefs.current[0]) {
+            setTimeout(() => inputRefs.current[0].focus(), 100);
+        }
+    }, [isOtpStep]);
+
+    const handleOtpChange = (element, index) => {
+        if (isNaN(element.value)) return false;
+
+        const newOtp = [...otp];
+        newOtp[index] = element.value;
+        setOtp(newOtp);
+
+        // Auto jump to next input
+        if (element.value !== "" && index < 5) {
+            inputRefs.current[index + 1].focus();
+        }
+    };
+
+    const handleOtpKeyDown = (e, index) => {
+        if (e.key === "Backspace") {
+            if (otp[index] === "" && index > 0) {
+                // Return to previous box if current is empty
+                inputRefs.current[index - 1].focus();
+            }
+        }
     };
 
     const handleRegister = async (e) => {
@@ -105,7 +137,7 @@ const Register = () => {
                     fullName: formData.fullName,
                     email: formData.email,
                     password: formData.password,
-                    otp: otp
+                    otp: otp.join("")
                 }),
             });
 
@@ -186,14 +218,20 @@ const Register = () => {
                     {isOtpStep ? (
                         <>
                             <form onSubmit={handleVerify} className={styles.formGrid}>
-                                <FloatingLabelInput
-                                    id="otp"
-                                    type="text"
-                                    value={otp}
-                                    onChange={(e) => setOtp(e.target.value)}
-                                    placeholder="Enter OTP"
-                                    icon={<FaLock />}
-                                />
+                                <div className={styles.otpInputsContainer}>
+                                    {otp.map((data, index) => (
+                                        <input
+                                            key={index}
+                                            type="text"
+                                            maxLength="1"
+                                            className={styles.otpBox}
+                                            value={data}
+                                            ref={(el) => (inputRefs.current[index] = el)}
+                                            onChange={(e) => handleOtpChange(e.target, index)}
+                                            onKeyDown={(e) => handleOtpKeyDown(e, index)}
+                                        />
+                                    ))}
+                                </div>
 
                                 <button type="submit" className={styles.submitBtn}>
                                     Verify Account
