@@ -306,3 +306,37 @@
     text-align: center;
     margin-bottom: 1rem;
 }
+
+.successMessage {
+    color: #10b981;
+    font-size: 0.875rem;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.resendContainer {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.resendBtn {
+    background: none;
+    border: none;
+    color: #09090b;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.resendBtn:hover:not(:disabled) {
+    color: #000;
+}
+
+.resendBtn:disabled {
+    color: #a1a1aa;
+    text-decoration: none;
+    cursor: not-allowed;
+}

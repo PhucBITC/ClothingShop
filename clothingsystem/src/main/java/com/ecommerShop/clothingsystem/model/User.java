@@ -9,10 +9,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.Collection;
 import java.time.LocalDateTime;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "users")
-@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "password" })
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class User implements UserDetails {
 
     @Id
@@ -22,8 +23,9 @@ public class User implements UserDetails {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(nullable = false)
-    private String password; // Đây là nơi lưu mật khẩu đã mã hóa (BCrypt)
+    private String password; // This field now allows writing from JSON but won't be sent back
 
     private String fullName;
 

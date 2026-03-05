@@ -1,31 +1,77 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FaEye, FaEyeSlash, FaGoogle, FaFacebook } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../components/common/toast/ToastContext';
 import styles from './Login.module.css';
 import loginBg from '../../assets/login_bg.jpg';
 
 const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const toast = useToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   // State for 2FA
-  const [otp, setOtp] = useState('');
+  const [otp, setOtp] = useState(new Array(6).fill(''));
   const [showOtpInput, setShowOtpInput] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0);
+  const [isResending, setIsResending] = useState(false);
+
+  // Ref to control input focus
+  const inputRefs = useRef([]);
 
   const togglePassword = () => {
     setPasswordVisible(!passwordVisible);
   };
 
+  useEffect(() => {
+    let interval;
+    if (resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [resendTimer]);
+
+  // Focus on first OTP input when shown
+  useEffect(() => {
+    if (showOtpInput && inputRefs.current[0]) {
+      setTimeout(() => inputRefs.current[0].focus(), 100);
+    }
+  }, [showOtpInput]);
+
+  // Handle OTP digit change
+  const handleOtpChange = (element, index) => {
+    if (isNaN(element.value)) return false;
+
+    const newOtp = [...otp];
+    newOtp[index] = element.value;
+    setOtp(newOtp);
+
+    // Auto jump to next input
+    if (element.value !== "" && index < 5) {
+      inputRefs.current[index + 1].focus();
+    }
+  };
+
+  // Handle Backspace in OTP boxes
+  const handleOtpKeyDown = (e, index) => {
+    if (e.key === "Backspace") {
+      if (otp[index] === "" && index > 0) {
+        // Return to previous box if current is empty
+        inputRefs.current[index - 1].focus();
+      }
+    }
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError('');
     setIsLoading(true);
 
     try {
@@ -40,8 +86,7 @@ const Login = () => {
         if (response.data.require2fa) {
           setIsLoading(false);
           setShowOtpInput(true);
-          setError('');
-          // Có thể hiển thị thông báo "OTP đã gửi" nếu muốn
+          toast.info("Verification Required", "Please check your email for the 2FA code.");
         } else if (response.data.token) {
           login(response.data.token, response.data.role);
           if (response.data.role === 'ADMIN') {
@@ -52,34 +97,35 @@ const Login = () => {
         }
       } else {
         setIsLoading(false);
-        setError('Đăng nhập thất bại: Không nhận được phản hồi hợp lệ.');
+        toast.error("Login Failed", 'Invalid response from server.');
       }
     } catch (err) {
       setIsLoading(false);
-      console.error('Lỗi đăng nhập:', err);
+      console.error('Login error:', err);
       if (err.response && err.response.data) {
-        setError(err.response.data.message || 'Email hoặc mật khẩu không đúng!');
+        toast.error("Login Failed", err.response.data.message || 'Invalid email or password!');
       } else {
-        setError('Có lỗi xảy ra khi kết nối đến server.');
+        toast.error("Error", 'An error occurred while connecting to the server.');
       }
     }
   };
 
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
-    setError('');
     setIsLoading(true);
 
     try {
       const minLoadTime = new Promise(resolve => setTimeout(resolve, 2000));
+      const otpString = otp.join("");
       const apiCall = axios.post('http://localhost:8080/api/auth/verify-login', {
         email: email,
-        otp: otp
+        otp: otpString
       });
 
       const [response] = await Promise.all([apiCall, minLoadTime]);
 
       if (response.data && response.data.token) {
+        toast.success("Welcome", "Sign in successful!");
         login(response.data.token, response.data.role);
         if (response.data.role === 'ADMIN') {
           navigate('/admin');
@@ -88,16 +134,35 @@ const Login = () => {
         }
       } else {
         setIsLoading(false);
-        setError('Xác thực thất bại.');
+        toast.error("Verification Failed", 'Invalid response.');
       }
     } catch (err) {
       setIsLoading(false);
-      console.error('Lỗi verify OTP:', err);
+      console.error('Verify OTP error:', err);
       if (err.response && err.response.data) {
-        setError(err.response.data || 'Mã OTP không chính xác hoặc đã hết hạn.');
+        toast.error("Error", err.response.data || 'Invalid or expired OTP code.');
       } else {
-        setError('Có lỗi xảy ra.');
+        toast.error("Error", 'An error occurred.');
       }
+    }
+  };
+  const handleResendOtp = async () => {
+    setIsResending(true);
+    try {
+      const response = await axios.post('http://localhost:8080/api/auth/login', {
+        email: email,
+        password: password
+      });
+      if (response.data && response.data.require2fa) {
+        toast.success("Resent", "Verification code has been resent to your email.");
+        setResendTimer(60);
+      }
+    } catch (err) {
+      console.error('Resend error:', err);
+      const errMsg = err.response?.data?.message || err.response?.data || 'Resend failed.';
+      toast.error("Error", errMsg);
+    } finally {
+      setIsResending(false);
     }
   };
 
@@ -135,43 +200,68 @@ const Login = () => {
           </div>
 
           <form onSubmit={showOtpInput ? handleVerifyOtp : handleLogin} className={styles.formGrid}>
-            {error && <div className={styles.errorMessage}>{error}</div>}
 
             {showOtpInput ? (
               // OTP Input Form
               <div className={styles.inputGroup}>
                 <p className={styles.subtitle} style={{ marginBottom: '1rem', color: '#2c3e50' }}>
-                  Mã xác thực (OTP) đã được gửi đến email của bạn.
+                  A verification code (OTP) has been sent to your email.
                 </p>
-                <label className={styles.label} htmlFor="otp">Nhập mã OTP</label>
-                <input
-                  className={styles.input}
-                  id="otp"
-                  placeholder="Nhập 6 số OTP"
-                  type="text"
-                  required
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
-                  disabled={isLoading}
-                  style={{ letterSpacing: '2px', textAlign: 'center', fontSize: '1.2rem' }}
-                />
+                <label className={styles.label}>Enter OTP Code</label>
+
+                <div className={styles.otpInputsContainer}>
+                  {otp.map((data, index) => (
+                    <input
+                      key={index}
+                      type="text"
+                      maxLength="1"
+                      className={styles.otpBox}
+                      value={data}
+                      ref={(el) => (inputRefs.current[index] = el)}
+                      onChange={(e) => handleOtpChange(e.target, index)}
+                      onKeyDown={(e) => handleOtpKeyDown(e, index)}
+                      disabled={isLoading}
+                    />
+                  ))}
+                </div>
+
                 <button
                   type="submit"
                   className={styles.submitBtn}
                   disabled={isLoading}
                   style={{ marginTop: '1.5rem' }}
                 >
-                  Xác nhận
+                  Confirm
                 </button>
                 <button
                   type="button"
                   className={styles.submitBtn}
                   style={{ marginTop: '0.5rem', backgroundColor: '#95a5a6' }}
-                  onClick={() => setShowOtpInput(false)}
+                  onClick={() => {
+                    setShowOtpInput(false);
+                    setOtp(new Array(6).fill('')); // Clear OTP on back
+                  }}
                   disabled={isLoading}
                 >
-                  Quay lại
+                  Back
                 </button>
+                <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+                  <button
+                    type="button"
+                    onClick={handleResendOtp}
+                    disabled={resendTimer > 0 || isResending}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: resendTimer > 0 ? '#95a5a6' : '#3498db',
+                      cursor: resendTimer > 0 ? 'not-allowed' : 'pointer',
+                      fontSize: '0.9rem',
+                      textDecoration: 'underline'
+                    }}
+                  >
+                    {resendTimer > 0 ? `Resend code in ${resendTimer}s` : 'Resend code'}
+                  </button>
+                </div>
               </div>
             ) : (
               // Normal Login Form

@@ -1,20 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../components/common/toast/ToastContext';
 import styles from './Verify-otp.module.css';
-import verifyBg from '../../assets/verify_bg.jpg'; // Đảm bảo bạn có ảnh này
+import verifyBg from '../../assets/verify_bg.jpg';
 
 const VerifyOtp = () => {
-    // Tạo mảng 6 phần tử rỗng để chứa từng số OTP
     const [otp, setOtp] = useState(new Array(6).fill(""));
-    const [error, setError] = useState('');
     const [isResending, setIsResending] = useState(false);
-    const [resendMessage, setResendMessage] = useState('');
+    const [resendTimer, setResendTimer] = useState(0);
     const navigate = useNavigate();
     const location = useLocation();
     const { login } = useAuth();
+    const toast = useToast();
 
-    // Ref để điều khiển việc focus vào các ô input
+    // Ref to control input focus
     const inputRefs = useRef([]);
 
     const email = location.state?.email;
@@ -23,13 +23,23 @@ const VerifyOtp = () => {
         if (!email) {
             navigate('/forgot-password');
         }
-        // Focus vào ô đầu tiên khi trang vừa load
+        // Focus on first input on load
         if (inputRefs.current[0]) {
             inputRefs.current[0].focus();
         }
     }, [email, navigate]);
 
-    // Xử lý khi nhập số
+    useEffect(() => {
+        let interval;
+        if (resendTimer > 0) {
+            interval = setInterval(() => {
+                setResendTimer((prev) => prev - 1);
+            }, 1000);
+        }
+        return () => clearInterval(interval);
+    }, [resendTimer]);
+
+    // Handle number input
     const handleChange = (element, index) => {
         if (isNaN(element.value)) return false;
 
@@ -37,30 +47,27 @@ const VerifyOtp = () => {
         newOtp[index] = element.value;
         setOtp(newOtp);
 
-        // Tự động nhảy sang ô tiếp theo nếu đã nhập số
+        // Auto jump to next input
         if (element.value !== "" && index < 5) {
             inputRefs.current[index + 1].focus();
         }
     };
 
-    // Xử lý khi nhấn nút Xóa (Backspace)
+    // Handle Backspace
     const handleKeyDown = (e, index) => {
         if (e.key === "Backspace") {
             if (otp[index] === "" && index > 0) {
-                // Nếu ô hiện tại rỗng, lùi về ô trước đó
+                // Return to previous box if current is empty
                 inputRefs.current[index - 1].focus();
             }
         }
     };
-
     const handleVerify = async (e) => {
         e.preventDefault();
-        setError('');
-
-        const otpString = otp.join(""); // Gộp 6 ô thành 1 chuỗi
+        const otpString = otp.join("");
 
         if (otpString.length < 6) {
-            setError('Vui lòng nhập đủ 6 số OTP.');
+            toast.error("Error", 'Please enter all 6 OTP digits.');
             return;
         }
 
@@ -76,35 +83,34 @@ const VerifyOtp = () => {
             if (response.ok) {
                 const data = await response.json();
 
-                // Lưu token và role thông qua AuthContext
-                login(data.token, data.role);
-
-                // Điều hướng dựa trên role
-                if (data.role === 'ADMIN') {
-                    navigate('/admin');
+                if (location.state?.mode === 'forgot-password') {
+                    navigate(`/reset-password?token=${otpString}`);
                 } else {
-                    navigate('/');
+                    login(data.token, data.role);
+                    if (data.role === 'ADMIN') {
+                        navigate('/admin');
+                    } else {
+                        navigate('/');
+                    }
                 }
             } else {
                 const errData = await response.text();
-                setError(errData || 'Mã OTP không hợp lệ hoặc đã hết hạn.');
+                toast.error("Error", errData || 'Invalid or expired OTP code.');
             }
         } catch (err) {
             console.error(err);
-            setError('Lỗi kết nối Server.');
+            toast.error("Error", 'Server connection error.');
         }
     };
 
     const handleResend = async () => {
         setIsResending(true);
-        setResendMessage('');
-        setError('');
 
         try {
-            // Delay tối thiểu 2 giây để hiển thị loader
+            // Minimum delay of 2 seconds for loader
             const minLoadTime = new Promise(resolve => setTimeout(resolve, 2000));
 
-            // Gọi lại API forgot-password để gửi lại mã
+            // Call forgot-password API to resend
             const apiCall = fetch('http://localhost:8080/api/auth/forgot-password', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -114,20 +120,17 @@ const VerifyOtp = () => {
             const [response] = await Promise.all([apiCall, minLoadTime]);
 
             if (response.ok) {
-                setResendMessage("OTP đã được gửi lại!");
-                setOtp(new Array(6).fill("")); // Reset ô nhập
+                toast.success("Resent", "OTP has been resent!");
+                setOtp(new Array(6).fill("")); // Reset inputs
+                setResendTimer(60); // Start 60s cooldown
                 inputRefs.current[0].focus();
-
-                // Tắt thông báo sau 3 giây
-                setTimeout(() => {
-                    setResendMessage('');
-                }, 3000);
             } else {
-                setError("Gửi lại thất bại. Vui lòng thử lại sau.");
+                const errData = await response.text();
+                toast.error("Error", errData || "Resend failed. Please try again later.");
             }
         } catch (error) {
             console.error(error);
-            setError("Lỗi kết nối Server.");
+            toast.error("Error", "Server connection error.");
         } finally {
             setIsResending(false);
         }
@@ -154,44 +157,26 @@ const VerifyOtp = () => {
                 </div>
             )}
 
-            {/* Notification Success */}
-            {resendMessage && (
-                <div className={styles.resendNotificationOverlay}>
-                    <div className={styles.notificationBox}>
-                        {resendMessage.split('').map((char, index) => (
-                            <span
-                                key={index}
-                                className={styles.slideChar}
-                                style={{ animationDelay: `${index * 0.03}s` }}
-                            >
-                                {char === ' ' ? '\u00A0' : char}
-                            </span>
-                        ))}
-                    </div>
-                </div>
-            )}
+            <div className={styles.overlay}></div>
 
-            {/* Cột Trái: Hình ảnh */}
+            {/* Left Column: Image */}
             <div className={styles.otpLeft}>
                 <img src={verifyBg} alt="Verification" className={styles.bgImage} />
                 <div className={styles.overlayContent}>
                     <h2 className={styles.overlayTitle}>Security Check</h2>
                     <p className={styles.overlayText}>
-                        Bảo mật tài khoản là ưu tiên hàng đầu của chúng tôi.
+                        Account security is our top priority.
                     </p>
                 </div>
             </div>
 
-            {/* Cột Phải: Form nhập OTP */}
+            {/* Right Column: OTP Input Form */}
             <div className={styles.otpRight}>
                 <div className={styles.formContainer}>
                     <h2 className={styles.title}>Verification</h2>
                     <p className={styles.subtitle}>
-                        Nhập mã 6 số chúng tôi vừa gửi tới:<br />
                         <b>{email}</b>
                     </p>
-
-                    {error && <div className={styles.errorMessage}>{error}</div>}
 
                     <form onSubmit={handleVerify}>
                         <div className={styles.otpInputsContainer}>
@@ -219,9 +204,13 @@ const VerifyOtp = () => {
                     </form>
 
                     <div className={styles.resendContainer}>
-                        <p>Chưa nhận được mã?</p>
-                        <button className={styles.resendBtn} onClick={handleResend}>
-                            Gửi lại
+                        <p>Didn't receive the code?</p>
+                        <button
+                            className={styles.resendBtn}
+                            onClick={handleResend}
+                            disabled={isResending || resendTimer > 0}
+                        >
+                            {resendTimer > 0 ? `Resend (${resendTimer}s)` : 'Resend'}
                         </button>
                     </div>
                 </div>

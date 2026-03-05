@@ -1,28 +1,37 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaArrowLeft, FaEnvelope } from 'react-icons/fa'; // Đảm bảo bạn đã cài react-icons
+import { FaArrowLeft, FaEnvelope } from 'react-icons/fa';
+import { useToast } from '../../components/common/toast/ToastContext';
 import styles from './Forgot-password.module.css';
-import forgotBg from '../../assets/forgot_bg.jpg'; // Bạn nhớ chuẩn bị 1 ảnh đặt tên này nhé
+import forgotBg from '../../assets/forgot_bg.jpg';
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState('');
     const navigate = useNavigate();
-    const [message, setMessage] = useState(''); // Thông báo thành công
-    const [error, setError] = useState('');     // Thông báo lỗi
+    const toast = useToast();
     const [isLoading, setIsLoading] = useState(false);
+    const [resendTimer, setResendTimer] = useState(0);
+
+    React.useEffect(() => {
+        let interval;
+        if (resendTimer > 0) {
+            interval = setInterval(() => {
+                setResendTimer((prev) => prev - 1);
+            }, 1000);
+        }
+        return () => clearInterval(interval);
+    }, [resendTimer]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setMessage('');
-        setError('');
         setIsLoading(true);
 
 
         try {
-            // Delay tối thiểu 2 giây để hiển thị hiệu ứng loader
+            // Minimum delay of 2 seconds for loader effect
             const minLoadTime = new Promise(resolve => setTimeout(resolve, 2000));
 
-            // Giả định API Backend là /api/auth/forgot-password
+            // Backend API call
             const apiCall = fetch('http://localhost:8080/api/auth/forgot-password', {
                 method: 'POST',
                 headers: {
@@ -34,18 +43,19 @@ const ForgotPassword = () => {
             const [response] = await Promise.all([apiCall, minLoadTime]);
 
             if (response.ok) {
-                setMessage('Mã OTP đã được gửi đến email của bạn.');
+                toast.success("Success", 'OTP code has been sent to your email.');
+                setResendTimer(60); // Start 60s cooldown
                 setTimeout(() => {
-                    navigate('/verify-otp', { state: { email: email } });
+                    navigate('/verify-otp', { state: { email: email, mode: 'forgot-password' } });
                 }, 1000);
             } else {
-                // Xử lý trường hợp email không tồn tại trong hệ thống
+                // Handle case where email is not in system
                 const errData = await response.text();
-                setError(errData || 'Không tìm thấy email này trong hệ thống.');
+                toast.error("Error", errData || 'Email not found in our system.');
             }
         } catch (err) {
             console.error(err);
-            setError('Lỗi kết nối Server. Vui lòng thử lại sau.');
+            toast.error("Error", 'Server connection error. Please try again later.');
         } finally {
             setIsLoading(false);
         }
@@ -64,21 +74,21 @@ const ForgotPassword = () => {
                 </div>
             )}
 
-            {/* Cột Trái: Hình ảnh */}
+            {/* Left Column: Image */}
             <div className={styles.forgotLeft}>
                 <img src={forgotBg} alt="Forgot Password Background" className={styles.bgImage} />
                 <div className={styles.overlayContent}>
                     <h2 className={styles.overlayTitle}>Don't Worry!</h2>
                     <p className={styles.overlayText}>
-                        Chuyện quên mật khẩu xảy ra với tất cả mọi người. Chúng tôi sẽ giúp bạn lấy lại nó ngay thôi.
+                        Forgetting passwords happens to everyone. We'll help you recover it in no time.
                     </p>
                 </div>
             </div>
 
-            {/* Cột Phải: Form */}
+            {/* Right Column: Form */}
             <div className={styles.forgotRight}>
                 <div className={styles.formContainer}>
-                    {/* Nút quay lại Login */}
+                    {/* Back to login button */}
                     <Link to="/login" className={styles.backLink}>
                         <FaArrowLeft /> Back to Login
                     </Link>
@@ -87,10 +97,6 @@ const ForgotPassword = () => {
                     <p className={styles.subtitle}>
                         Enter your email address to get the password reset link.
                     </p>
-
-                    {/* Khu vực hiển thị thông báo */}
-                    {message && <div className={styles.successMessage}>{message}</div>}
-                    {error && <div className={styles.errorMessage}>{error}</div>}
 
                     <form onSubmit={handleSubmit} className={styles.form}>
                         <div className={styles.inputGroup}>
@@ -112,9 +118,9 @@ const ForgotPassword = () => {
                         <button
                             type="submit"
                             className={styles.submitBtn}
-                            disabled={isLoading}
+                            disabled={isLoading || resendTimer > 0}
                         >
-                            {isLoading ? 'Sending...' : 'Password Reset'}
+                            {isLoading ? 'Sending...' : (resendTimer > 0 ? `Resend (${resendTimer}s)` : 'Password Reset')}
                         </button>
                     </form>
                 </div>

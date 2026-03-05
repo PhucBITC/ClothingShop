@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaGoogle, FaGithub, FaFacebook } from 'react-icons/fa';
+import { useToast } from '../../components/common/toast/ToastContext';
 import styles from './Register.module.css';
 import registerBg from '../../assets/register_bg.jpg';
 
@@ -44,8 +45,11 @@ const Register = () => {
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [error, setError] = useState('');
+    const [isOtpStep, setIsOtpStep] = useState(false);
+    const [otp, setOtp] = useState('');
+    const [resendTimer, setResendTimer] = useState(0);
     const navigate = useNavigate();
+    const toast = useToast();
 
     const handleChange = (e) => {
         setFormData({
@@ -56,10 +60,8 @@ const Register = () => {
 
     const handleRegister = async (e) => {
         e.preventDefault();
-        setError('');
-
         if (formData.password !== formData.confirmPassword) {
-            setError('Mật khẩu nhập lại không khớp!');
+            toast.error("Error", 'Passwords do not match!');
             return;
         }
 
@@ -76,19 +78,84 @@ const Register = () => {
                 }),
             });
 
+            const data = await response.text();
             if (response.ok) {
-                // Có thể hiển thị thông báo đẹp hơn thay vì alert
-                // alert('Đăng ký thành công! Vui lòng đăng nhập.');
-                navigate('/login');
+                setIsOtpStep(true);
+                toast.success("Success", 'Verification code sent to your email.');
+                startTimer();
             } else {
-                const errorData = await response.text();
-                setError(errorData || 'Đăng ký thất bại. Vui lòng thử lại.');
+                toast.error("Registration Failed", data || 'Please try again.');
             }
 
         } catch (err) {
-            console.error("Lỗi kết nối:", err);
-            setError('Không thể kết nối đến server.');
+            console.error("Connection error:", err);
+            toast.error("Network Error", 'Could not connect to the server.');
         }
+    };
+
+    const handleVerify = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await fetch('http://localhost:8080/api/auth/verify-register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    fullName: formData.fullName,
+                    email: formData.email,
+                    password: formData.password,
+                    otp: otp
+                }),
+            });
+
+            const data = await response.text();
+            if (response.ok) {
+                // Success! Redirect to login
+                toast.success("Success", "Account verified successfully!");
+                navigate('/login', { state: { message: 'Registration successful! Please sign in.' } });
+            } else {
+                toast.error("Verification Failed", data || 'Invalid OTP. Please try again.');
+            }
+        } catch (err) {
+            toast.error("Network Error", 'Could not connect to the server.');
+        }
+    };
+
+    const handleResend = async () => {
+        if (resendTimer > 0) return;
+        try {
+            const response = await fetch('http://localhost:8080/api/auth/resend-register-otp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email: formData.email }),
+            });
+
+            const data = await response.text();
+            if (response.ok) {
+                toast.success("Resent", 'A new code has been sent.');
+                startTimer();
+            } else {
+                toast.error("Failed", data || 'Failed to resend OTP.');
+            }
+        } catch (err) {
+            toast.error("Network Error", 'Could not connect to the server.');
+        }
+    };
+
+    const startTimer = () => {
+        setResendTimer(60);
+        const interval = setInterval(() => {
+            setResendTimer(prev => {
+                if (prev <= 1) {
+                    clearInterval(interval);
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
     };
 
     return (
@@ -108,83 +175,117 @@ const Register = () => {
             <div className={styles.registerRight}>
                 <div className={styles.registerContainer}>
                     <div className={styles.header}>
-                        <h1 className={styles.title}>Create an account</h1>
-                        <p className={styles.subtitle}>Enter your details below to create your account</p>
+                        <h1 className={styles.title}>{isOtpStep ? 'Verify Your Email' : 'Create an Account'}</h1>
+                        <p className={styles.subtitle}>
+                            {isOtpStep
+                                ? `We've sent a 6-digit code to ${formData.email}`
+                                : 'Enter your details below to create your account'}
+                        </p>
                     </div>
 
-                    {error && <div className={styles.errorMessage}>{error}</div>}
+                    {isOtpStep ? (
+                        <>
+                            <form onSubmit={handleVerify} className={styles.formGrid}>
+                                <FloatingLabelInput
+                                    id="otp"
+                                    type="text"
+                                    value={otp}
+                                    onChange={(e) => setOtp(e.target.value)}
+                                    placeholder="Enter OTP"
+                                    icon={<FaLock />}
+                                />
 
-                    <form onSubmit={handleRegister} className={styles.formGrid}>
-                        <FloatingLabelInput
-                            id="fullName"
-                            type="text"
-                            value={formData.fullName}
-                            onChange={handleChange}
-                            placeholder="Full Name"
-                            icon={<FaUser />}
-                        />
+                                <button type="submit" className={styles.submitBtn}>
+                                    Verify Account
+                                </button>
+                            </form>
 
-                        <FloatingLabelInput
-                            id="email"
-                            type="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            placeholder="Email"
-                            icon={<FaEnvelope />}
-                        />
+                            <div className={styles.resendContainer}>
+                                <button
+                                    type="button"
+                                    className={styles.resendBtn}
+                                    onClick={handleResend}
+                                    disabled={resendTimer > 0}
+                                >
+                                    {resendTimer > 0 ? `Resend in ${resendTimer}s` : 'Resend OTP'}
+                                </button>
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <form onSubmit={handleRegister} className={styles.formGrid}>
+                                <FloatingLabelInput
+                                    id="fullName"
+                                    type="text"
+                                    value={formData.fullName}
+                                    onChange={handleChange}
+                                    placeholder="Full Name"
+                                    icon={<FaUser />}
+                                />
 
-                        <FloatingLabelInput
-                            id="password"
-                            type={showPassword ? "text" : "password"}
-                            value={formData.password}
-                            onChange={handleChange}
-                            placeholder="Password"
-                            icon={<FaLock />}
-                            rightIcon={showPassword ? <FaEyeSlash /> : <FaEye />}
-                            onRightIconClick={() => setShowPassword(!showPassword)}
-                        />
+                                <FloatingLabelInput
+                                    id="email"
+                                    type="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    placeholder="Email"
+                                    icon={<FaEnvelope />}
+                                />
 
-                        <FloatingLabelInput
-                            id="confirmPassword"
-                            type={showConfirmPassword ? "text" : "password"}
-                            value={formData.confirmPassword}
-                            onChange={handleChange}
-                            placeholder="Confirm Password"
-                            icon={<FaLock />}
-                            rightIcon={showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-                            onRightIconClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        />
+                                <FloatingLabelInput
+                                    id="password"
+                                    type={showPassword ? "text" : "password"}
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    placeholder="Password"
+                                    icon={<FaLock />}
+                                    rightIcon={showPassword ? <FaEyeSlash /> : <FaEye />}
+                                    onRightIconClick={() => setShowPassword(!showPassword)}
+                                />
 
-                        <button type="submit" className={styles.submitBtn}>
-                            Create Account
-                        </button>
-                    </form>
+                                <FloatingLabelInput
+                                    id="confirmPassword"
+                                    type={showConfirmPassword ? "text" : "password"}
+                                    value={formData.confirmPassword}
+                                    onChange={handleChange}
+                                    placeholder="Confirm Password"
+                                    icon={<FaLock />}
+                                    rightIcon={showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                                    onRightIconClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                />
 
-                    <div className={styles.dividerContainer}>
-                        <div className={styles.dividerLine}>
-                            <span className={styles.dividerSpan}></span>
-                        </div>
-                        <div className={styles.dividerTextWrapper}>
-                            <span className={styles.dividerText}>Or continue with</span>
-                        </div>
-                    </div>
+                                <button type="submit" className={styles.submitBtn}>
+                                    Create Account
+                                </button>
+                            </form>
 
-                    <div className={styles.socialGrid}>
-                        <button
-                            type="button"
-                            className={styles.socialBtn}
-                            onClick={() => window.location.href = 'http://localhost:8080/oauth2/authorization/google'}
-                        >
-                            <FaGoogle /> Google
-                        </button>
-                        <button
-                            type="button"
-                            className={styles.socialBtn}
-                            onClick={() => window.location.href = 'http://localhost:8080/oauth2/authorization/facebook'}
-                        >
-                            <FaFacebook /> Facebook
-                        </button>
-                    </div>
+                            <div className={styles.dividerContainer}>
+                                <div className={styles.dividerLine}>
+                                    <span className={styles.dividerSpan}></span>
+                                </div>
+                                <div className={styles.dividerTextWrapper}>
+                                    <span className={styles.dividerText}>Or continue with</span>
+                                </div>
+                            </div>
+
+                            <div className={styles.socialGrid}>
+                                <button
+                                    type="button"
+                                    className={styles.socialBtn}
+                                    onClick={() => window.location.href = 'http://localhost:8080/oauth2/authorization/google'}
+                                >
+                                    <FaGoogle /> Google
+                                </button>
+                                <button
+                                    type="button"
+                                    className={styles.socialBtn}
+                                    onClick={() => window.location.href = 'http://localhost:8080/oauth2/authorization/facebook'}
+                                >
+                                    <FaFacebook /> Facebook
+                                </button>
+                            </div>
+                        </>
+                    )}
 
                     <div className={styles.footer}>
                         Already have an account?{' '}

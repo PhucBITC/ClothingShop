@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FaLock, FaEye, FaEyeSlash, FaCheck } from 'react-icons/fa';
 import styles from './Reset-password.module.css';
-import resetBg from '../../assets/reset_bg.jpg'; // Bạn nhớ chuẩn bị ảnh này nhé
+import { useToast } from '../../components/common/toast/ToastContext';
+import resetBg from '../../assets/reset_bg.jpg';
 import PasswordChanged from './PasswordChanged';
 
 const ResetPassword = () => {
@@ -10,7 +11,7 @@ const ResetPassword = () => {
     const navigate = useNavigate();
     const [isSuccess, setIsSuccess] = useState(false);
 
-    // Lấy token từ URL (ví dụ: http://localhost:5173/reset-password?token=xyz123)
+    // Get token from URL
     const token = searchParams.get('token');
 
     const [passwords, setPasswords] = useState({
@@ -19,36 +20,44 @@ const ResetPassword = () => {
     });
 
     const [showPassword, setShowPassword] = useState(false);
-    const [message, setMessage] = useState('');
-    const [error, setError] = useState('');
+    const toast = useToast();
     const [isLoading, setIsLoading] = useState(false);
 
-    // Kiểm tra nếu không có token thì đuổi về trang login
+    // If no token, return to login
     useEffect(() => {
         if (!token) {
-            setError('Đường dẫn không hợp lệ hoặc đã hết hạn.');
+            toast.error("Error", 'Invalid or expired reset link.');
         }
     }, [token]);
 
+    // Auto redirect after success
+    useEffect(() => {
+        let timer;
+        if (isSuccess) {
+            timer = setTimeout(() => {
+                navigate('/login');
+            }, 3000); // Redirect after 3s
+        }
+        return () => clearTimeout(timer);
+    }, [isSuccess, navigate]);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setMessage('');
-        setError('');
 
         if (passwords.newPassword !== passwords.confirmPassword) {
-            setError('Mật khẩu nhập lại không khớp!');
+            toast.error("Error", 'Passwords do not match!');
             return;
         }
 
         if (passwords.newPassword.length < 6) {
-            setError('Mật khẩu phải có ít nhất 6 ký tự.');
+            toast.error("Error", 'Password must be at least 6 characters long.');
             return;
         }
 
         setIsLoading(true);
 
         try {
-            // Gọi API Backend để reset mật khẩu
+            // Call Backend API to reset password
             const response = await fetch('http://localhost:8080/api/auth/reset-password', {
                 method: 'POST',
                 headers: {
@@ -61,47 +70,44 @@ const ResetPassword = () => {
             });
 
             if (response.ok) {
+                // Only one notification (toast) as requested
+                toast.success("Success", "Password updated successfully!");
                 setIsSuccess(true);
             } else {
                 const errData = await response.text();
-                setError(errData || 'Đổi mật khẩu thất bại. Token có thể đã hết hạn.');
+                toast.error("Error", errData || 'Password reset failed. Token may have expired.');
             }
         } catch (err) {
             console.error(err);
-            setError('Lỗi kết nối Server. Vui lòng thử lại sau.');
+            toast.error("Error", 'Server connection error. Please try again later.');
         } finally {
             setIsLoading(false);
         }
     };
 
-    if (isSuccess) {
-        return <PasswordChanged />;
-    }
+    // Removed logic that returns PasswordChanged component entirely
 
     return (
         <div className={styles.resetWrapper}>
-            {/* Cột Trái: Ảnh */}
+            {/* Left Column: Image */}
             <div className={styles.resetLeft}>
                 <img src={resetBg} alt="Reset Password Background" className={styles.bgImage} />
                 <div className={styles.overlayContent}>
                     <h2 className={styles.overlayTitle}>New Beginning</h2>
                     <p className={styles.overlayText}>
-                        Tạo một mật khẩu mới mạnh mẽ hơn để bảo vệ tài khoản của bạn.
+                        Create a new, stronger password to protect your account.
                     </p>
                 </div>
             </div>
 
-            {/* Cột Phải: Form */}
+            {/* Right Column: Form */}
             <div className={styles.resetRight}>
                 <div className={styles.formContainer}>
                     <h2 className={styles.title}>Reset Password</h2>
                     <p className={styles.subtitle}>Enter your new password below.</p>
 
-                    {message && <div className={styles.successMessage}>{message}</div>}
-                    {error && <div className={styles.errorMessage}>{error}</div>}
-
                     <form onSubmit={handleSubmit} className={styles.form}>
-                        {/* Mật khẩu mới */}
+                        {/* New Password */}
                         <div className={styles.inputGroup}>
                             <label htmlFor="newPassword">New Password</label>
                             <div className={styles.inputWrapper}>
@@ -126,7 +132,7 @@ const ResetPassword = () => {
                             </div>
                         </div>
 
-                        {/* Xác nhận mật khẩu */}
+                        {/* Confirm Password */}
                         <div className={styles.inputGroup}>
                             <label htmlFor="confirmPassword">Confirm Password</label>
                             <div className={styles.inputWrapper}>
@@ -154,6 +160,22 @@ const ResetPassword = () => {
                     </form>
                 </div>
             </div>
+
+            {/* Success Overlay integrated directly */}
+            {isSuccess && (
+                <div className={styles.successOverlay}>
+                    <div className={styles.successContent}>
+                        <div className={styles.successIconWrapper}>
+                            <FaCheck />
+                        </div>
+                        <h3 className={styles.successTitle}>Password Changed!</h3>
+                        <p className={styles.successText}>
+                            Your password has been updated successfully.
+                            Returning to login screen...
+                        </p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

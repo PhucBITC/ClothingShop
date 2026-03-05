@@ -19,9 +19,9 @@ const PasswordChanged = () => {
 
                 <h2 className={styles.title}>Password Changed!</h2>
                 <p className={styles.message}>
-                    Mật khẩu của bạn đã được cập nhật thành công.
+                    Your password has been updated successfully.
                     <br />
-                    Bây giờ bạn có thể đăng nhập bằng mật khẩu mới.
+                    You can now sign in using your new password.
                 </p>
 
                 <button
