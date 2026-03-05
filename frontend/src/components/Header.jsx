@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BiSearch, BiShoppingBag, BiChevronDown, BiTrash, BiMenu, BiX, BiUser, BiPackage, BiCog, BiLogOut } from 'react-icons/bi';
+import { BiSearch, BiShoppingBag, BiChevronDown, BiTrash, BiMenu, BiX, BiUser, BiPackage, BiCog, BiLogOut, BiBell, BiLock, BiChevronLeft } from 'react-icons/bi';
 import { Link, NavLink } from 'react-router-dom';
 import { products } from '../data/mockData';
 import styles from './Header.module.css';
@@ -9,16 +9,19 @@ import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
 import { useToast } from './common/toast/ToastContext';
 import { useAuth } from '../context/AuthContext';
+import { useNotifications } from '../context/NotificationContext';
 import ConfirmModal from './common/modal/ConfirmModal';
 
 function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [selectedItems, setSelectedItems] = useState([]);
     const [modalConfig, setModalConfig] = useState({ isOpen: false, type: '', data: null });
+    const [selectedNote, setSelectedNote] = useState(null);
 
     const { wishlistItems } = useWishlist();
     const { cartItems, cartCount, subtotal, removeFromCart, removeMultipleFromCart, clearCart } = useCart();
     const { user, logout } = useAuth();
+    const { unreadCount, notifications, markAsRead, markAllAsRead, deleteAllNotifications } = useNotifications();
     const toast = useToast();
 
     const handleSelectItem = (id, variantId) => {
@@ -260,6 +263,75 @@ function Header() {
                     </div>
                 </div>
 
+                {/* Notifications with MiniNotification Hover */}
+                <div className={styles.notifContainer}>
+                    <Link to="/user/notifications" className={styles.iconBtn} aria-label="Notifications">
+                        <BiBell />
+                        {unreadCount > 0 && <span className={styles.cartBadge}>{unreadCount}</span>}
+                    </Link>
+
+                    <div className={styles.miniNotif} onMouseLeave={() => setSelectedNote(null)}>
+                        <div className={styles.miniNotifHeader}>
+                            <span>{selectedNote ? 'Notification Detail' : 'Notifications'}</span>
+                            {!selectedNote && notifications.length > 0 && (
+                                <button className={styles.clearAllBtn} onClick={deleteAllNotifications}>Clear All</button>
+                            )}
+                        </div>
+
+                        <div className={styles.miniNotifItems}>
+                            {selectedNote ? (
+                                <div className={styles.miniNotifDetail}>
+                                    <button className={styles.backBtn} onClick={() => setSelectedNote(null)}>
+                                        <BiChevronLeft /> Back
+                                    </button>
+                                    <h4 className={styles.detailTitle}>{selectedNote.title}</h4>
+                                    <p className={styles.detailContent}>{selectedNote.content}</p>
+                                    <span className={styles.detailTime}>
+                                        {new Date(selectedNote.createdAt || Date.now()).toLocaleString()}
+                                    </span>
+                                </div>
+                            ) : (
+                                <>
+                                    {notifications.length > 0 ? (
+                                        notifications.slice(0, 5).map((note) => (
+                                            <div
+                                                key={note.id}
+                                                className={`${styles.miniNotifItem} ${!note.isRead ? styles.unread : ''}`}
+                                                onClick={() => {
+                                                    if (!note.isRead) markAsRead(note.id);
+                                                    setSelectedNote(note);
+                                                }}
+                                            >
+                                                <div className={styles.miniNotifIcon}>
+                                                    {note.type === 'ORDER' ? <BiPackage /> :
+                                                        note.type === 'SECURITY' ? <BiLock /> : <BiUser />}
+                                                </div>
+                                                <div className={styles.miniNotifInfo}>
+                                                    <h4 className={styles.miniNotifTitle}>{note.title}</h4>
+                                                    <p className={styles.miniNotifDesc}>{note.content}</p>
+                                                </div>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className={styles.emptyNotif}>No new notifications</div>
+                                    )}
+                                </>
+                            )}
+                        </div>
+
+                        {!selectedNote && (
+                            <div className={styles.miniNotifFooter}>
+                                {unreadCount > 0 && (
+                                    <button className={styles.markAllReadBtn} onClick={markAllAsRead}>
+                                        Mark all as read
+                                    </button>
+                                )}
+                                <Link to="/user/notifications" className={styles.viewAllBtn}>View All</Link>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
                 {user ? (
                     <div className={styles.userAccount}>
                         <div className={styles.userTrigger}>
@@ -292,6 +364,10 @@ function Header() {
                             </Link>
                             <Link to="/user/wishlist" className={styles.userMenuLink}>
                                 <FiHeart /> Wishlist
+                            </Link>
+                            <Link to="/user/notifications" className={styles.userMenuLink}>
+                                <BiBell /> Notifications
+                                {unreadCount > 0 && <span className={styles.inlineBadge}>{unreadCount}</span>}
                             </Link>
                             <Link to="/user/settings" className={styles.userMenuLink}>
                                 <BiCog /> Settings

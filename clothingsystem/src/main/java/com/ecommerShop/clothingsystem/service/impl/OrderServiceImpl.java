@@ -4,6 +4,7 @@ import com.ecommerShop.clothingsystem.model.*;
 import com.ecommerShop.clothingsystem.repository.*;
 import com.ecommerShop.clothingsystem.service.CartService;
 import com.ecommerShop.clothingsystem.service.OrderService;
+import com.ecommerShop.clothingsystem.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +32,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private CartService cartService;
+
+    @Autowired
+    private NotificationService notificationService;
 
     @Override
     @Transactional
@@ -99,8 +103,24 @@ public class OrderServiceImpl implements OrderService {
         if ("COD".equalsIgnoreCase(paymentMethod)) {
             System.out.println("Clearing cart for COD order");
             cartService.clearCart(user);
+
+            // Trigger Notification for COD
+            notificationService.createNotification(
+                    user,
+                    "Order Placed Successfully",
+                    "Your order " + order.getOrderCode() + " has been placed. Payment will be collected upon delivery.",
+                    Notification.NotificationType.ORDER,
+                    true);
         } else {
             System.out.println("Cart will be cleared after successful online payment");
+            // Add a "Processing Payment" notification for immediate feedback
+            notificationService.createNotification(
+                    user,
+                    "Order Pending Payment",
+                    "Your order " + order.getOrderCode()
+                            + " has been placed. Please complete the payment to process it.",
+                    Notification.NotificationType.ORDER,
+                    false); // No email yet, wait for success
         }
 
         return order;
@@ -141,6 +161,14 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new RuntimeException("Order not found"));
         order.setStatus(status);
         orderRepository.save(order);
+
+        // Trigger Notification on status change
+        notificationService.createNotification(
+                order.getUser(),
+                "Order Status Updated",
+                "Your order " + order.getOrderCode() + " is now " + status + ".",
+                Notification.NotificationType.ORDER,
+                true);
     }
 
     @Override
@@ -172,6 +200,14 @@ public class OrderServiceImpl implements OrderService {
 
         // Clear cart for online payments now that it's successful
         cartService.clearCart(order.getUser());
+
+        // Trigger Notification for Payment Success
+        notificationService.createNotification(
+                order.getUser(),
+                "Payment Successful",
+                "Payment for order " + order.getOrderCode() + " has been received successfully.",
+                Notification.NotificationType.ORDER,
+                true);
     }
 
     // --- Helpers & Migration ---

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { BiHome, BiCreditCard, BiListCheck, BiEdit, BiShoppingBag, BiCheckCircle, BiLoaderAlt, BiXCircle } from 'react-icons/bi';
 import { useCart } from '../../context/CartContext';
+import { useNotifications } from '../../context/NotificationContext';
 import axios from '../../api/axios';
 import { useToast } from '../../components/common/toast/ToastContext';
 import styles from './ReviewOrder.module.css';
@@ -20,6 +21,7 @@ function ReviewOrder() {
     const hasHandledError = useRef(false);
 
     const { cartItems, subtotal, deliveryCharge, total, clearCart } = useCart();
+    const { fetchUnreadCount } = useNotifications();
 
     // Fetch order details if we have an ID (from redirect or state)
     const fetchOrderDetails = useCallback(async (orderId) => {
@@ -75,6 +77,7 @@ function ReviewOrder() {
 
             setShowSuccess(true);
             setIsPaymentComplete(true);
+            fetchUnreadCount();
 
             const orderId = urlOrderId || stateOrder?.id;
             if (orderId) {
@@ -101,6 +104,7 @@ function ReviewOrder() {
         setShowSuccess(true);
         setIsPaymentComplete(true);
         clearCart();
+        fetchUnreadCount();
         setTimeout(() => setShowSuccess(false), 3000);
     };
 

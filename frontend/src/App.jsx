@@ -101,18 +101,21 @@ import { WishlistProvider } from "./context/WishlistContext";
 import { ToastProvider } from "./components/common/toast/ToastContext";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
+import { NotificationProvider } from "./context/NotificationContext";
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <ToastProvider>
-          <CartProvider>
-            <WishlistProvider>
-              <AppLayout />
-            </WishlistProvider>
-          </CartProvider>
-        </ToastProvider>
+        <NotificationProvider>
+          <ToastProvider>
+            <CartProvider>
+              <WishlistProvider>
+                <AppLayout />
+              </WishlistProvider>
+            </CartProvider>
+          </ToastProvider>
+        </NotificationProvider>
       </AuthProvider>
     </BrowserRouter>
   );
