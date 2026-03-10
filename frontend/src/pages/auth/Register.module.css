@@ -4,8 +4,9 @@
     display: flex;
     min-height: 100vh;
     font-family: 'Inter', 'Segoe UI', sans-serif;
-    background-color: #ffffff;
+    background-color: var(--bg-page);
     width: 100%;
+    transition: all 0.3s ease;
 }
 
 /* Left Column - Image */
@@ -60,19 +61,21 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #ffffff;
+    background-color: var(--bg-page);
 }
 
 .registerContainer {
     width: 100%;
     max-width: 420px;
-    padding: 2rem;
-    /* No border or shadow needed in split view */
-    background-color: #ffffff;
+    padding: 2.5rem;
+    background-color: var(--bg-card);
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
     position: relative;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-md);
 }
 
 .header {
@@ -87,12 +90,12 @@
     font-size: 1.875rem;
     font-weight: 700;
     letter-spacing: -0.025em;
-    color: #09090b;
+    color: var(--text-main);
 }
 
 .subtitle {
     font-size: 0.95rem;
-    color: #71717a;
+    color: var(--text-muted);
 }
 
 .formGrid {
@@ -114,13 +117,13 @@
     display: flex;
     align-items: center;
     pointer-events: none;
-    color: #71717a;
+    color: var(--text-muted);
     transition: color 0.2s;
     z-index: 1;
 }
 
 .inputGroup:focus-within .inputIcon {
-    color: #09090b;
+    color: var(--text-main);
 }
 
 .input {
@@ -129,22 +132,22 @@
     /* Slightly taller for modern feel */
     width: 100%;
     border-radius: 0.5rem;
-    border: 1px solid #e4e4e7;
-    background-color: #ffffff;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-card);
     padding-left: 2.75rem;
     padding-right: 2.75rem;
     /* Space for both left and right icons */
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
     font-size: 0.95rem;
-    color: #09090b;
+    color: var(--text-main);
     transition: all 0.2s;
 }
 
 .input:focus {
     outline: none;
-    border-color: #09090b;
-    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+    border-color: var(--text-main);
+    box-shadow: 0 0 0 2px var(--bg-hover);
 }
 
 .input::placeholder {
@@ -157,7 +160,7 @@
     top: 50%;
     transform: translateY(-50%);
     font-size: 0.95rem;
-    color: #71717a;
+    color: var(--text-muted);
     pointer-events: none;
     transition: all 0.2s;
     background-color: transparent;
@@ -171,8 +174,8 @@
     left: 2.75rem;
     transform: translateY(-50%);
     font-size: 0.75rem;
-    color: #09090b;
-    background-color: #ffffff;
+    color: var(--text-main);
+    background-color: var(--bg-card);
     padding: 0 0.25rem;
     z-index: 2;
 }
@@ -184,7 +187,7 @@
     transform: translateY(-50%);
     display: flex;
     align-items: center;
-    color: #71717a;
+    color: var(--text-muted);
     background: none;
     border: none;
     cursor: pointer;
@@ -193,7 +196,7 @@
 }
 
 .rightIconBtn:hover {
-    color: #09090b;
+    color: var(--text-main);
 }
 
 .inputWithRightIcon {
@@ -209,8 +212,8 @@
     font-weight: 600;
     height: 3rem;
     width: 100%;
-    background-color: #09090b;
-    color: #ffffff;
+    background-color: var(--primary-black);
+    color: var(--primary-white);
     border: none;
     cursor: pointer;
     transition: background-color 0.2s;
@@ -238,7 +241,7 @@
 
 .dividerSpan {
     width: 100%;
-    border-top: 1px solid #e4e4e7;
+    border-top: 1px solid var(--border-color);
 }
 
 .dividerTextWrapper {
@@ -249,9 +252,9 @@
 }
 
 .dividerText {
-    background-color: #ffffff;
+    background-color: var(--bg-card);
     padding: 0 0.5rem;
-    color: #71717a;
+    color: var(--text-muted);
 }
 
 /* Social Buttons */
@@ -270,29 +273,29 @@
     font-weight: 500;
     height: 2.75rem;
     width: 100%;
-    border: 1px solid #e4e4e7;
-    background-color: #ffffff;
-    color: #09090b;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-card);
+    color: var(--text-main);
     cursor: pointer;
     transition: background-color 0.2s;
     gap: 0.5rem;
 }
 
 .socialBtn:hover {
-    background-color: #f4f4f5;
+    background-color: var(--bg-hover);
 }
 
 .footer {
     text-align: center;
     font-size: 0.875rem;
-    color: #71717a;
+    color: var(--text-muted);
     margin-top: 1rem;
 }
 
 .loginLink {
     text-decoration: underline;
     text-underline-offset: 4px;
-    color: #09090b;
+    color: var(--text-main);
     font-weight: 500;
 }
 
@@ -322,7 +325,7 @@
 .resendBtn {
     background: none;
     border: none;
-    color: #09090b;
+    color: var(--text-main);
     font-size: 0.875rem;
     font-weight: 500;
     text-decoration: underline;
@@ -357,18 +360,17 @@
     text-align: center;
     font-size: 1.5rem;
     font-weight: bold;
-    border: 1px solid #e4e4e7;
+    border: 1px solid var(--border-color);
     border-radius: 12px;
-    background-color: #f9f9f9;
+    background-color: var(--bg-hover);
+    color: var(--text-main);
     transition: all 0.2s ease;
 }
 
 .otpBox:focus {
-    border-color: #09090b;
-    background-color: #fff;
+    border-color: var(--primary-black);
+    background-color: var(--bg-card);
     outline: none;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    transform: translateY(-1px);
 }
 
 @media (max-width: 480px) {

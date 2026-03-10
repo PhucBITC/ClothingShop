@@ -2,13 +2,14 @@
     position: relative;
     min-width: 300px;
     max-width: 400px;
-    background: #fff;
+    background: var(--bg-card);
     border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-md);
     margin-bottom: 12px;
     overflow: hidden;
     pointer-events: auto;
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
 }
 
 .content {
@@ -33,13 +34,13 @@
     margin: 0;
     font-size: 0.95rem;
     font-weight: 600;
-    color: #1f2937;
+    color: var(--text-main);
 }
 
 .message {
     margin: 2px 0 0;
     font-size: 0.85rem;
-    color: #6b7280;
+    color: var(--text-muted);
     line-height: 1.4;
 }
 

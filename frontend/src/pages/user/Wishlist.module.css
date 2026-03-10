@@ -1,8 +1,9 @@
 .pageContainer {
     padding: 3rem 5%;
     font-family: 'Inter', sans-serif;
-    background: #f8f9fb;
+    background: var(--bg-page);
     min-height: 100vh;
+    transition: all 0.3s ease;
 }
 
 .pageTitle {
@@ -10,7 +11,7 @@
     font-weight: 700;
     margin-bottom: 2rem;
     font-family: 'Playfair Display', serif;
-    color: #131118;
+    color: var(--text-main);
 }
 
 .contentWrapper {
@@ -21,10 +22,11 @@
 
 .mainContent {
     flex: 1;
-    background: #fff;
+    background: var(--bg-card);
     border-radius: 8px;
     padding: 2rem;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
 }
 
 /* --- Wishlist Grid --- */
@@ -39,15 +41,15 @@
     display: flex;
     flex-direction: column;
     padding: 1rem;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--border-color);
     border-radius: 12px;
     transition: all 0.3s ease;
-    background: #fff;
+    background: var(--bg-card);
 }
 
 .wishlistCard:hover {
-    border-color: #131118;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+    border-color: var(--primary-black);
+    box-shadow: var(--shadow-md);
     transform: translateY(-4px);
 }
 
@@ -67,7 +69,6 @@
     width: 90%;
     height: 90%;
     object-fit: contain;
-    mix-blend-mode: multiply;
 }
 
 .deleteBtn {
@@ -76,15 +77,15 @@
     right: 10px;
     width: 30px;
     height: 30px;
-    background: #fff;
+    background: var(--bg-card);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #ff4d4f;
+    color: var(--accent-red);
     cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    border: none;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
     transition: transform 0.2s;
 }
 
@@ -96,7 +97,7 @@
     font-size: 0.95rem;
     font-weight: 700;
     margin: 0 0 0.3rem 0;
-    color: #131118;
+    color: var(--text-main);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -105,7 +106,7 @@
 .productBrand {
     font-size: 0.85rem;
     font-weight: 600;
-    color: #333;
+    color: var(--text-muted);
     margin-bottom: 0.2rem;
 }
 
@@ -118,21 +119,21 @@
 
 .price {
     font-weight: 700;
-    color: #131118;
+    color: var(--text-main);
 }
 
 .oldPrice {
     text-decoration: line-through;
-    color: #888;
+    color: var(--text-light);
     font-size: 0.9rem;
 }
 
 .moveToCartBtn {
     width: 100%;
     padding: 0.8rem;
-    background: #fff;
-    border: 1px solid #131118;
-    color: #131118;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
     font-weight: 600;
     font-size: 0.9rem;
     border-radius: 6px;
@@ -141,8 +142,8 @@
 }
 
 .moveToCartBtn:hover {
-    background: #131118;
-    color: #fff;
+    background: var(--primary-black);
+    color: var(--primary-white);
 }
 
 .emptyWishlist {
@@ -158,8 +159,8 @@
 .shopNowBtn {
     display: inline-block;
     padding: 0.8rem 2rem;
-    background: #000;
-    color: #fff;
+    background: var(--primary-black);
+    color: var(--primary-white);
     text-decoration: none;
     border-radius: 4px;
     font-weight: 600;

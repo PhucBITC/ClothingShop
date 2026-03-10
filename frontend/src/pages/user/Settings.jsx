@@ -2,14 +2,15 @@ import React, { useState, useEffect } from 'react';
 import UserSidebar from './UserSidebar';
 import styles from './Settings.module.css';
 import { useToast } from '../../components/common/toast/ToastContext';
+import { useTheme } from '../../context/ThemeContext';
 import axios from '../../api/axios';
 
 function Settings() {
     const toast = useToast();
+    const { theme, setTheme } = useTheme();
     const [toggles, setToggles] = useState(() => {
         const saved = localStorage.getItem('userSettings');
         return saved ? JSON.parse(saved) : {
-            appearance: 'Light',
             language: 'English',
             twoFactor: false,
             pushNotif: true,
@@ -26,7 +27,6 @@ function Settings() {
 
     useEffect(() => {
         localStorage.setItem('userSettings', JSON.stringify(toggles));
-        document.documentElement.setAttribute('data-theme', toggles.appearance);
     }, [toggles]);
 
     const handleToggle = (key) => {
@@ -35,8 +35,12 @@ function Settings() {
     };
 
     const handleChange = (key, value) => {
-        setToggles(prev => ({ ...prev, [key]: value }));
-        toast.info('Updated', `Theme changed to ${value}`);
+        if (key === 'appearance') {
+            setTheme(value);
+        } else {
+            setToggles(prev => ({ ...prev, [key]: value }));
+        }
+        toast.info('Updated', `${key} changed to ${value}`);
     };
 
     const handlePasswordChange = async (e) => {
@@ -78,7 +82,7 @@ function Settings() {
                             </div>
                             <select
                                 className={styles.selectInput}
-                                value={toggles.appearance}
+                                value={theme}
                                 onChange={(e) => handleChange('appearance', e.target.value)}
                             >
                                 <option value="Light">Light</option>

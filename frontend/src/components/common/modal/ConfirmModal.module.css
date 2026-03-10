@@ -14,34 +14,35 @@
 }
 
 .modalContent {
-    background: #fff;
+    background: var(--bg-card);
     padding: 2rem;
     border-radius: 12px;
     width: 400px;
     max-width: 90%;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow-xl);
     text-align: center;
     transform: translateY(0);
     animation: slideUp 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    border: 1px solid var(--border-color);
 }
 
 .modalTitle {
     font-size: 1.25rem;
     font-weight: 700;
-    color: #131118;
+    color: var(--text-main);
     margin-bottom: 1rem;
 }
 
 .modalMessage {
     font-size: 1rem;
-    color: #666;
+    color: var(--text-muted);
     line-height: 1.5;
     margin-bottom: 2rem;
 }
 
 .itemName {
     font-weight: 700;
-    color: #131118;
+    color: var(--text-main);
 }
 
 .modalActions {
@@ -53,10 +54,10 @@
 .cancelBtn {
     flex: 1;
     padding: 0.8rem;
-    border: none;
+    border: 1px solid var(--border-color);
     border-radius: 8px;
-    background: #f0f2f5;
-    color: #4b5563;
+    background: var(--bg-hover);
+    color: var(--text-main);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;

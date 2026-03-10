@@ -1,6 +1,7 @@
 .homeContainer {
     min-height: 100vh;
-    background-color: #fff;
+    background-color: var(--bg-page);
+    transition: background-color 0.3s ease;
 }
 
 .errorContainer {
@@ -13,9 +14,10 @@
 .brandStory {
     display: flex;
     padding: 6rem 10%;
-    background: #fff;
+    background: var(--bg-card);
     align-items: center;
     gap: 4rem;
+    transition: background 0.3s ease;
 }
 
 .storyContent {
@@ -25,7 +27,7 @@
 .storyLabel {
     font-size: 0.9rem;
     letter-spacing: 2px;
-    color: #888;
+    color: var(--text-light);
     display: block;
     margin-bottom: 1rem;
 }
@@ -35,23 +37,25 @@
     font-weight: 700;
     margin-bottom: 1.5rem;
     text-transform: uppercase;
+    color: var(--text-main);
 }
 
 .storyDesc {
     font-size: 1.1rem;
     line-height: 1.8;
-    color: #555;
+    color: var(--text-muted);
     margin-bottom: 2rem;
 }
 
 .storyBtn {
     padding: 12px 35px;
-    background: #000;
-    color: #fff;
+    background: var(--primary-black);
+    color: var(--primary-white);
     border: none;
     font-weight: 600;
     cursor: pointer;
     letter-spacing: 1px;
+    transition: all 0.3s ease;
 }
 
 .storyGallery {
@@ -77,6 +81,7 @@
     letter-spacing: 3px;
     margin-bottom: 3rem;
     font-weight: 700;
+    color: var(--text-main);
 }
 
 .socialGrid {

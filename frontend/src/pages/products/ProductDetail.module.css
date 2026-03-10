@@ -1,27 +1,27 @@
-/* ProductDetail.module.css */
 .detailContainer {
     font-family: 'Inter', sans-serif;
-    color: #131118;
-    background: #fff;
+    color: var(--text-main);
+    background: var(--bg-page);
     padding-bottom: 4rem;
+    transition: all 0.3s ease;
 }
 
 .breadcrumbs {
     padding: 1.5rem 5%;
     font-size: 0.9rem;
-    color: #555;
-    background-color: #f9f9f9;
+    color: var(--text-muted);
+    background-color: var(--bg-secondary);
     margin-bottom: 2rem;
 }
 
 .breadcrumbs a {
     text-decoration: none;
-    color: #131118;
+    color: var(--text-main);
     font-weight: 500;
 }
 
 .breadcrumbs span {
-    color: #888;
+    color: var(--text-light);
 }
 
 /* Loading & Error */
@@ -51,7 +51,7 @@
 }
 
 .mainImageWrapper {
-    background: #fff;
+    background: var(--bg-card);
     height: 500px;
     /* Reduced from 600px */
     display: flex;
@@ -59,7 +59,7 @@
     justify-content: center;
     border-radius: 12px;
     overflow: hidden;
-    border: 1px solid #e0e0e0;
+    border: 1px solid var(--border-color);
     position: relative;
     cursor: zoom-in;
 }
@@ -94,8 +94,8 @@
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    border: 1px solid #eee;
-    background: #fff;
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -103,13 +103,13 @@
     font-size: 1.5rem;
     transition: all 0.2s;
     flex-shrink: 0;
-    color: #131118;
+    color: var(--text-main);
 }
 
 .thumbArrow:hover:not(:disabled) {
-    background: #131118;
-    color: #fff;
-    border-color: #131118;
+    background: var(--primary-black);
+    color: var(--primary-white);
+    border-color: var(--primary-black);
 }
 
 .thumbArrow:disabled {
@@ -120,13 +120,13 @@
 .thumbnail {
     width: 80px;
     height: 80px;
-    background: #fff;
+    background: var(--bg-card);
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    border: 1px solid #eee;
+    border: 1px solid var(--border-color);
     transition: all 0.2s;
     flex-shrink: 0;
 }
@@ -157,7 +157,7 @@
 .categoryName {
     font-weight: 600;
     font-size: 0.9rem;
-    color: #888;
+    color: var(--text-light);
     text-transform: uppercase;
     letter-spacing: 1px;
 }
@@ -182,7 +182,7 @@
 
 .productTitle {
     font-size: 2.2rem;
-    color: #131118;
+    color: var(--text-main);
     margin-bottom: 1rem;
     font-weight: 700;
     line-height: 1.2;
@@ -212,7 +212,7 @@
 .currentPrice {
     font-size: 1.8rem;
     font-weight: 700;
-    color: #131118;
+    color: var(--text-main);
 }
 
 .originalPrice {
@@ -223,7 +223,7 @@
 
 .description {
     line-height: 1.6;
-    color: #555;
+    color: var(--text-muted);
     font-size: 1rem;
     margin-bottom: 2.5rem;
 }
@@ -237,7 +237,7 @@
     font-weight: 700;
     font-size: 0.95rem;
     margin-bottom: 1rem;
-    color: #131118;
+    color: var(--text-main);
 }
 
 .colorOptions,
@@ -251,13 +251,13 @@
 .sizeBtn {
     padding: 0.6rem 1.2rem;
     border-radius: 8px;
-    border: 1px solid #ddd;
-    background: #fff;
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
     cursor: pointer;
     font-weight: 600;
     font-size: 0.9rem;
     transition: all 0.2s ease;
-    color: #131118;
+    color: var(--text-main);
 }
 
 .colorBtn:hover,
@@ -267,10 +267,10 @@
 
 .colorBtn.selected,
 .sizeBtn.selected {
-    background: #131118;
-    color: #fff;
-    border-color: #131118;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    background: var(--primary-black);
+    color: var(--primary-white);
+    border-color: var(--primary-black);
+    box-shadow: var(--shadow-sm);
 }
 
 /* Actions */
@@ -285,7 +285,7 @@
 .quantityControl {
     display: flex;
     align-items: center;
-    border: 1.5px solid #eee;
+    border: 1.5px solid var(--border-color);
     border-radius: 12px;
     height: 54px;
     padding: 0 8px;
@@ -294,7 +294,7 @@
 .qtyBtn {
     width: 36px;
     height: 36px;
-    background: #f5f5f5;
+    background: var(--bg-hover);
     border: none;
     border-radius: 8px;
     font-size: 1.2rem;
@@ -303,6 +303,7 @@
     align-items: center;
     justify-content: center;
     transition: all 0.2s;
+    color: var(--text-main);
 }
 
 .qtyBtn:hover {
@@ -318,8 +319,8 @@
 
 .addToCartBtn {
     flex: 1;
-    background: #131118;
-    color: #fff;
+    background: var(--primary-black);
+    color: var(--primary-white);
     height: 54px;
     border-radius: 12px;
     font-weight: 700;
@@ -327,13 +328,15 @@
     border: none;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow-md);
 }
 
 .addToCartBtn:hover:not(:disabled) {
-    background: #333;
+    background: var(--bg-hover);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow-md);
 }
 
 .addToCartBtn:disabled {
@@ -346,20 +349,20 @@
     width: 54px;
     height: 54px;
     border-radius: 12px;
-    border: 1.5px solid #eee;
-    background: #fff;
+    border: 1.5px solid var(--border-color);
+    background: var(--bg-card);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.6rem;
     cursor: pointer;
     transition: all 0.2s;
-    color: #131118;
+    color: var(--text-main);
 }
 
 .wishlistBtn:hover {
-    border-color: #131118;
-    background: #f9f9f9;
+    border-color: var(--primary-black);
+    background: var(--bg-hover);
 }
 
 .wishlistBtn.active {
@@ -372,7 +375,7 @@
 .metaInfo {
     margin-top: 2rem;
     padding-top: 2rem;
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
     gap: 0.8rem;
@@ -386,7 +389,7 @@
 
 .metaLabel {
     font-weight: 700;
-    color: #131118;
+    color: var(--text-main);
 }
 
 .metaValue {
@@ -402,7 +405,7 @@
 .tabHeader {
     display: flex;
     gap: 4rem;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border-color);
     margin-bottom: 2.5rem;
 }
 
@@ -419,7 +422,7 @@
 }
 
 .tabBtn.active {
-    color: #131118;
+    color: var(--text-main);
 }
 
 .tabBtn.active::after {
@@ -429,7 +432,7 @@
     left: 0;
     width: 100%;
     height: 3px;
-    background: #131118;
+    background: var(--primary-black);
 }
 
 .tabContent {
@@ -458,7 +461,7 @@
 .infoLabel {
     width: 150px;
     font-weight: 700;
-    color: #131118;
+    color: var(--text-main);
     font-size: 0.95rem;
 }
 
@@ -478,7 +481,7 @@
     font-size: 2.4rem;
     font-weight: 800;
     margin-bottom: 3rem;
-    color: #131118;
+    color: var(--text-main);
 }
 
 .productGrid {
@@ -500,7 +503,7 @@
 }
 
 .relatedImgWrapper {
-    background: #fff;
+    background: var(--bg-card);
     height: 340px;
     border-radius: 8px;
     overflow: hidden;
@@ -508,7 +511,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid #eee;
+    border: 1px solid var(--border-color);
 }
 
 .relatedImg {
@@ -520,13 +523,13 @@
 .relatedBrand {
     font-size: 0.95rem;
     font-weight: 700;
-    color: #131118;
+    color: var(--text-main);
     margin-bottom: 0.3rem;
 }
 
 .relatedName {
     font-size: 0.9rem;
-    color: #555;
+    color: var(--text-muted);
     margin-bottom: 0.5rem;
     display: -webkit-box;
     -webkit-line-clamp: 1;
@@ -544,7 +547,7 @@
 .relatedPrice {
     font-size: 1rem;
     font-weight: 700;
-    color: #131118;
+    color: var(--text-main);
 }
 
 /* Services Section */
@@ -553,8 +556,8 @@
     grid-template-columns: repeat(4, 1fr);
     gap: 2rem;
     padding: 4rem 5%;
-    background-color: #fff;
-    border-top: 1px solid #eee;
+    background-color: var(--bg-card);
+    border-top: 1px solid var(--border-color);
 }
 
 .serviceItem {
@@ -566,7 +569,7 @@
 
 .serviceIcon {
     font-size: 2rem;
-    color: #131118;
+    color: var(--text-main);
 }
 
 .serviceText {
@@ -581,7 +584,7 @@
 }
 
 .serviceDesc {
-    color: #666;
+    color: var(--text-muted);
     font-size: 0.9rem;
     line-height: 1.4;
 }

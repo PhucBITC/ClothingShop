@@ -4,16 +4,19 @@
     align-items: center;
     min-height: 70vh;
     padding: 2rem;
+    background: var(--bg-page);
+    transition: all 0.3s ease;
 }
 
 .resultCard {
-    background: white;
+    background: var(--bg-card);
     padding: 3rem;
     border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-md);
     text-align: center;
     max-width: 500px;
     width: 100%;
+    border: 1px solid var(--border-color);
 }
 
 .successIcon {
@@ -48,12 +51,12 @@
 .title {
     font-size: 2rem;
     margin-bottom: 1rem;
-    color: #333;
+    color: var(--text-main);
 }
 
 .message {
     font-size: 1.1rem;
-    color: #666;
+    color: var(--text-muted);
     margin-bottom: 2rem;
 }
 
@@ -65,8 +68,8 @@
 
 .primaryBtn {
     padding: 0.8rem 1.5rem;
-    background: #333;
-    color: white;
+    background: var(--primary-black);
+    color: var(--primary-white);
     border: none;
     border-radius: 6px;
     cursor: pointer;
@@ -75,9 +78,9 @@
 
 .secondaryBtn {
     padding: 0.8rem 1.5rem;
-    background: #f5f5f5;
-    color: #333;
-    border: none;
+    background: var(--bg-hover);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
     border-radius: 6px;
     cursor: pointer;
     font-weight: 600;

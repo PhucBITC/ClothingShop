@@ -1,8 +1,10 @@
 .footer {
-    background-color: #131118;
-    color: #fff;
+    background-color: var(--primary-white);
+    color: var(--primary-black);
     padding: 4rem 4rem 2rem;
     margin-top: auto;
+    border-top: 1px solid var(--border-color);
+    transition: all 0.3s ease;
 }
 
 .topSection {
@@ -25,11 +27,11 @@
     font-size: 1.1rem;
     font-weight: 600;
     margin-bottom: 1.5rem;
-    color: #fff;
+    color: var(--text-main);
 }
 
 .contactInfo p {
-    color: #d0d0d0;
+    color: var(--text-muted);
     margin-bottom: 0.8rem;
     font-size: 0.95rem;
     line-height: 1.6;
@@ -113,7 +115,7 @@
     display: flex;
     gap: 1rem;
     font-size: 1.5rem;
-    color: #fff;
+    color: var(--text-main);
 }
 
 /* --- Responsive Design --- */

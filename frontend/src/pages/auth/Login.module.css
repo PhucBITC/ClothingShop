@@ -3,8 +3,9 @@
     display: flex;
     min-height: 100vh;
     font-family: 'Inter', 'Segoe UI', sans-serif;
-    background-color: #ffffff;
+    background-color: var(--bg-page);
     width: 100%;
+    transition: all 0.3s ease;
 }
 
 /* Left Column - Image */
@@ -66,18 +67,20 @@
     justify-content: center;
     align-items: center;
     padding: 2rem;
-    background-color: #ffffff;
+    background-color: var(--bg-page);
 }
 
 .loginContainer {
     width: 100%;
     max-width: 420px;
-    padding: 2rem;
-    /* No border or shadow needed in split view usually, closer to minimalist */
-    background-color: #ffffff;
+    padding: 2.5rem;
+    background-color: var(--bg-card);
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-md);
 }
 
 .header {
@@ -92,12 +95,12 @@
     /* text-3xl */
     font-weight: 700;
     letter-spacing: -0.025em;
-    color: #09090b;
+    color: var(--text-main);
 }
 
 .subtitle {
     font-size: 0.95rem;
-    color: #71717a;
+    color: var(--text-muted);
 }
 
 .formGrid {
@@ -113,7 +116,7 @@
 .label {
     font-size: 0.875rem;
     font-weight: 500;
-    color: #09090b;
+    color: var(--text-main);
 }
 
 .input {
@@ -122,18 +125,18 @@
     /* Slightly taller */
     width: 100%;
     border-radius: 0.5rem;
-    border: 1px solid #e4e4e7;
-    background-color: #ffffff;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-card);
     padding: 0.625rem 0.875rem;
     font-size: 0.95rem;
-    color: #09090b;
+    color: var(--text-main);
     transition: all 0.2s;
 }
 
 .input:focus {
     outline: none;
-    border-color: #09090b;
-    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+    border-color: var(--text-main);
+    box-shadow: 0 0 0 2px var(--bg-hover);
 }
 
 .passwordWrapper {
@@ -145,7 +148,7 @@
 .togglePassword {
     position: absolute;
     right: 0.875rem;
-    color: #71717a;
+    color: var(--text-muted);
     cursor: pointer;
     background: none;
     border: none;
@@ -155,13 +158,13 @@
 .forgotPassword {
     margin-left: auto;
     font-size: 0.875rem;
-    color: #71717a;
+    color: var(--text-muted);
     text-decoration: underline;
     cursor: pointer;
 }
 
 .forgotPassword:hover {
-    color: #09090b;
+    color: var(--text-main);
 }
 
 .submitBtn {
@@ -173,8 +176,8 @@
     font-weight: 600;
     height: 3rem;
     width: 100%;
-    background-color: #09090b;
-    color: #ffffff;
+    background-color: var(--primary-black);
+    color: var(--primary-white);
     border: none;
     cursor: pointer;
     transition: background-color 0.2s;
@@ -204,7 +207,7 @@
 
 .dividerSpan {
     width: 100%;
-    border-top: 1px solid #e4e4e7;
+    border-top: 1px solid var(--border-color);
 }
 
 .dividerTextWrapper {
@@ -216,9 +219,9 @@
 }
 
 .dividerText {
-    background-color: #ffffff;
+    background-color: var(--bg-card);
     padding: 0 0.5rem;
-    color: #71717a;
+    color: var(--text-muted);
 }
 
 /* Social Buttons */
@@ -237,29 +240,29 @@
     font-weight: 500;
     height: 2.75rem;
     width: 100%;
-    border: 1px solid #e4e4e7;
-    background-color: #ffffff;
-    color: #09090b;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-card);
+    color: var(--text-main);
     cursor: pointer;
     transition: background-color 0.2s;
     gap: 0.5rem;
 }
 
 .socialBtn:hover {
-    background-color: #f4f4f5;
+    background-color: var(--bg-hover);
 }
 
 .footer {
     text-align: center;
     font-size: 0.875rem;
-    color: #71717a;
+    color: var(--text-muted);
     padding: 0 2rem;
 }
 
 .signUpLink {
     text-decoration: underline;
     text-underline-offset: 4px;
-    color: #09090b;
+    color: var(--text-main);
     font-weight: 500;
 }
 
@@ -281,7 +284,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -352,18 +355,17 @@
     text-align: center;
     font-size: 1.5rem;
     font-weight: bold;
-    border: 1px solid #e4e4e7;
+    border: 1px solid var(--border-color);
     border-radius: 12px;
-    background-color: #f9f9f9;
+    background-color: var(--bg-hover);
+    color: var(--text-main);
     transition: all 0.2s ease;
 }
 
 .otpBox:focus {
-    border-color: #09090b;
-    background-color: #fff;
+    border-color: var(--primary-black);
+    background-color: var(--bg-card);
     outline: none;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    transform: translateY(-1px);
 }
 
 @media (max-width: 480px) {
