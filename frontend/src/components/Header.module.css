@@ -165,8 +165,8 @@
 }
 
 .loginBtn {
-    background-color: #131118;
-    color: #fff;
+    background-color: var(--primary-black);
+    color: var(--primary-white);
     padding: 0.6rem 2rem;
     border-radius: 8px;
     text-decoration: none;
@@ -214,8 +214,8 @@
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: #131118;
-    color: #fff;
+    background: var(--primary-black);
+    color: var(--primary-white);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -286,7 +286,7 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
-    border-top: 1px solid #f0f0f0;
+    border-top: 1px solid var(--border-color);
     margin-top: 0.5rem;
 }
 
@@ -378,14 +378,14 @@
     justify-content: space-between;
     align-items: center;
     padding-bottom: 0.8rem;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid var(--border-color);
     margin-bottom: 0.5rem;
 }
 
 .miniNotifHeader span {
     font-weight: 700;
     font-size: 0.95rem;
-    color: #131118;
+    color: var(--text-main);
 }
 
 .miniNotifItems {
@@ -400,13 +400,13 @@
     border-radius: 6px;
     transition: all 0.2s ease;
     cursor: pointer;
-    border-bottom: 1px solid #f0f0f0;
-    background: #fff;
+    border-bottom: 1px solid var(--border-color);
+    background: transparent;
     position: relative;
 }
 
 .miniNotifItem:hover {
-    background: #f8f9fa;
+    background: var(--bg-hover);
 }
 
 .miniNotifItem.unread::before {
@@ -424,7 +424,7 @@
 .miniNotifIcon {
     width: 36px;
     height: 36px;
-    background: #f0f0f0;
+    background: var(--bg-hover);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -449,7 +449,7 @@
 
 .miniNotifDesc {
     font-size: 0.75rem;
-    color: #888;
+    color: var(--text-muted);
     display: -webkit-box;
     -webkit-line-clamp: 2;
     line-clamp: 2;
@@ -487,7 +487,7 @@
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    color: #666;
+    color: var(--text-muted);
     font-size: 0.85rem;
     cursor: pointer;
     margin-bottom: 0.8rem;
@@ -496,20 +496,20 @@
 }
 
 .backBtn:hover {
-    color: #131118;
+    color: var(--text-main);
 }
 
 .detailTitle {
     font-size: 1rem;
     font-weight: 700;
-    color: #131118;
+    color: var(--text-main);
     margin-bottom: 0.5rem;
     line-height: 1.4;
 }
 
 .detailContent {
     font-size: 0.9rem;
-    color: #444;
+    color: var(--text-main);
     line-height: 1.6;
     margin-bottom: 1rem;
     word-wrap: break-word;
@@ -524,7 +524,7 @@
 .miniNotifFooter {
     margin-top: 0.5rem;
     padding-top: 0.8rem;
-    border-top: 1px solid #f0f0f0;
+    border-top: 1px solid var(--border-color);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -532,7 +532,7 @@
 
 .viewAllBtn {
     font-size: 0.85rem;
-    color: #131118;
+    color: var(--text-main);
     font-weight: 600;
 }
 
@@ -558,34 +558,34 @@
     justify-content: space-between;
     align-items: center;
     font-size: 0.9rem;
-    color: #666;
+    color: var(--text-muted);
     margin-bottom: 0.8rem;
     padding-bottom: 0.8rem;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid var(--border-color);
 }
 
 /* Shipping Progress in MiniCart */
 .miniShippingProgress {
-    background: #f0f7ff;
+    background: var(--bg-hover);
     padding: 0.8rem 1rem;
     border-radius: 8px;
     margin-bottom: 1rem;
 }
 
 .miniShippingProgress.unlocked {
-    background: #f6ffed;
+    background: var(--bg-hover);
 }
 
 .miniProgressText {
     font-size: 0.8rem;
     margin-bottom: 0.5rem;
     font-weight: 600;
-    color: #131118;
+    color: var(--text-main);
 }
 
 .miniProgressBar {
     height: 4px;
-    background: #e6e6e6;
+    background: var(--border-color);
     border-radius: 2px;
     overflow: hidden;
 }
@@ -614,7 +614,7 @@
 
 .clearAllBtn:hover {
     color: #d9363e;
-    background: #fff1f0;
+    background: var(--bg-hover);
 }
 
 .miniCartItems {
@@ -631,7 +631,8 @@
     gap: 0.8rem;
     position: relative;
     padding-bottom: 1rem;
-    border-bottom: 1px solid #f9f9f9;
+    border-bottom: 1px solid var(--border-color);
+    background: transparent;
 }
 
 .itemSelector {
@@ -643,14 +644,14 @@
     width: 16px;
     height: 16px;
     cursor: pointer;
-    accent-color: #131118;
+    accent-color: var(--primary-black);
 }
 
 .miniCartImg {
     width: 60px;
     height: 60px;
     object-fit: contain;
-    background: #f8f8f8;
+    background: var(--bg-hover);
     border-radius: 4px;
 }
 
@@ -661,21 +662,21 @@
 .miniCartTitle {
     font-size: 0.9rem;
     font-weight: 600;
-    color: #131118;
+    color: var(--text-main);
     margin: 0 0 0.3rem 0;
     line-height: 1.2;
 }
 
 .miniCartPrice {
     font-size: 0.9rem;
-    color: #333;
+    color: var(--text-main);
     font-weight: 500;
     margin-bottom: 0.2rem;
 }
 
 .miniCartSize {
     font-size: 0.8rem;
-    color: #888;
+    color: var(--text-muted);
 }
 
 .removeItemBtn {
@@ -695,14 +696,14 @@
 .miniCartFooter {
     margin-top: 1rem;
     padding-top: 1rem;
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--border-color);
 }
 
 .removeSelectedBtn {
     width: 100%;
-    background: #fff1f0;
+    background: var(--bg-hover);
     color: #ff4d4f;
-    border: 1px solid #ffccc7;
+    border: 1px solid var(--border-color);
     padding: 0.5rem;
     border-radius: 6px;
     font-size: 0.85rem;
@@ -744,18 +745,18 @@
 }
 
 .viewCartBtn {
-    background: #fff;
-    color: #131118;
-    border: 1px solid #131118;
+    background: var(--bg-card);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
 }
 
 .viewCartBtn:hover {
-    background: #f9f9f9;
+    background: var(--bg-hover);
 }
 
 .checkoutBtn {
-    background: #131118;
-    color: #fff;
+    background: var(--primary-black);
+    color: var(--primary-white);
     border: none;
 }
 
@@ -770,7 +771,7 @@
     border: none;
     font-size: 2rem;
     cursor: pointer;
-    color: #131118;
+    color: var(--text-main);
     z-index: 1100;
 }
 
@@ -797,7 +798,7 @@
         width: 80%;
         max-width: 300px;
         height: 100vh;
-        background: #fff;
+        background: var(--bg-card);
         flex-direction: column;
         align-items: flex-start;
         padding: 5rem 2rem 2rem;
@@ -814,7 +815,7 @@
     .navItem {
         width: 100%;
         padding: 1rem 0;
-        border-bottom: 1px solid #f0f0f0;
+        border-bottom: 1px solid var(--border-color);
     }
 
     /* Hide Mega Menu on Mobile for simplicity or adjust */
