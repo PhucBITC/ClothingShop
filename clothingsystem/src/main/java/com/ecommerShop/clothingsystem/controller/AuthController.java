@@ -16,6 +16,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import com.ecommerShop.clothingsystem.service.EmailService;
 import com.ecommerShop.clothingsystem.security.HashUtils;
+import com.ecommerShop.clothingsystem.dto.PasswordUpdateRequest;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -475,5 +477,23 @@ public class AuthController {
         }
 
         return ResponseEntity.ok(userRepository.save(user));
+    }
+    @PutMapping("/change-password")
+    public ResponseEntity<?> changePassword(
+            @AuthenticationPrincipal User user,
+            @RequestBody PasswordUpdateRequest request) {
+
+        if (user == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
+            return ResponseEntity.badRequest().body("Old password matches failed");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+
+        return ResponseEntity.ok("Password updated successfully");
     }
 }

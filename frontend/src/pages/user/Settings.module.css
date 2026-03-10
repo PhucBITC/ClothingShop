@@ -1,8 +1,9 @@
 .pageContainer {
     padding: 3rem 5%;
     font-family: 'Inter', sans-serif;
-    background: #f8f9fb;
+    background: var(--bg-page);
     min-height: 100vh;
+    transition: all 0.3s ease;
 }
 
 .pageTitle {
@@ -10,7 +11,7 @@
     font-weight: 700;
     margin-bottom: 2rem;
     font-family: 'Playfair Display', serif;
-    color: #131118;
+    color: var(--text-main);
 }
 
 .contentWrapper {
@@ -21,10 +22,11 @@
 
 .mainContent {
     flex: 1;
-    background: #fff;
+    background: var(--bg-card);
     border-radius: 8px;
-    padding: 2rem;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+    padding: 2.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
 }
 
 /* --- Settings List --- */
@@ -38,7 +40,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 1.5rem 0;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .settingItem:last-child {
@@ -48,26 +50,26 @@
 .settingTitle {
     font-size: 1rem;
     font-weight: 700;
-    color: #131118;
+    color: var(--text-main);
     margin-bottom: 0.3rem;
 }
 
 .settingDesc {
     font-size: 0.9rem;
-    color: #888;
+    color: var(--text-muted);
 }
 
 /* --- Controls --- */
 .selectInput {
-    padding: 0.5rem 1rem;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    background: #f9f9f9;
-    color: #333;
+    padding: 0.6rem 1.2rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-page);
+    color: var(--text-main);
     font-size: 0.9rem;
     outline: none;
     cursor: pointer;
-    min-width: 100px;
+    min-width: 120px;
 }
 
 /* Toggle Switch */
@@ -107,10 +109,94 @@
 }
 
 input:checked+.slider {
-    background-color: #38a169;
-    /* Green active color */
+    background-color: var(--accent-green);
 }
 
 input:checked+.slider:before {
     transform: translateX(22px);
+}
+
+/* --- New Sections --- */
+.sectionDivider {
+    margin: 3rem 0 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.sectionTitle {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 0.5rem;
+}
+
+.sectionSubtitle {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.passwordForm {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 400px;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.formGroup label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.formGroup input {
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-page);
+    color: var(--text-main);
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.formGroup input:focus {
+    border-color: var(--accent-blue);
+}
+
+.saveBtn {
+    padding: 0.8rem 1.5rem;
+    background: var(--primary-black);
+    color: var(--primary-white);
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    width: fit-content;
+    margin-top: 1rem;
+}
+
+.saveBtn:hover {
+    opacity: 0.9;
+}
+
+.deleteBtn {
+    padding: 0.6rem 1.2rem;
+    background: var(--bg-card);
+    color: #e53e3e;
+    border: 1px solid #e53e3e;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.deleteBtn:hover {
+    background: #e53e3e;
+    color: #fff;
 }

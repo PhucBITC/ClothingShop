@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App' // Thêm .jsx cho chắc chắn
+import App from './App'
+import './index.css'
 
 // THÊM DÒNG NÀY ĐỂ CHẠY ĐƯỢC BOOTSTRAP
 
