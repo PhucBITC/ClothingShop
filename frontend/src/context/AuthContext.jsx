@@ -23,6 +23,8 @@ export const AuthProvider = ({ children }) => {
             if (error.response?.status === 401) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('role');
+                localStorage.removeItem('cart');
+                localStorage.removeItem('wishlist');
                 setUser(null);
             }
         } finally {
@@ -43,6 +45,8 @@ export const AuthProvider = ({ children }) => {
     const logout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('role');
+        localStorage.removeItem('cart');
+        localStorage.removeItem('wishlist');
         setUser(null);
     };
 

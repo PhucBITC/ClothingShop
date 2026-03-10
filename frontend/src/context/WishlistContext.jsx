@@ -4,13 +4,29 @@ const WishlistContext = createContext();
 
 export const WishlistProvider = ({ children }) => {
     const [wishlistItems, setWishlistItems] = useState(() => {
+        const token = localStorage.getItem('token');
+        if (!token) return [];
         const saved = localStorage.getItem('wishlist');
         return saved ? JSON.parse(saved) : [];
     });
+    const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
+
+    // Check login status periodically
+    useEffect(() => {
+        const checkLogin = () => {
+            const token = localStorage.getItem('token');
+            setIsLoggedIn(!!token);
+            if (!token) setWishlistItems([]);
+        };
+        window.addEventListener('storage', checkLogin);
+        return () => window.removeEventListener('storage', checkLogin);
+    }, []);
 
     useEffect(() => {
-        localStorage.setItem('wishlist', JSON.stringify(wishlistItems));
-    }, [wishlistItems]);
+        if (isLoggedIn) {
+            localStorage.setItem('wishlist', JSON.stringify(wishlistItems));
+        }
+    }, [wishlistItems, isLoggedIn]);
 
     const addToWishlist = (product) => {
         setWishlistItems((prev) => {
