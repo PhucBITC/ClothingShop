@@ -98,63 +98,6 @@ function Settings() {
                             </select>
                         </div>
 
-                        {/* Push Notifications */}
-                        <div className={styles.settingItem}>
-                            <div className={styles.settingInfo}>
-                                <div className={styles.settingTitle}>Push Notifications</div>
-                                <div className={styles.settingDesc}>
-                                    Receive push notification
-                                </div>
-                            </div>
-
-                            <label className={styles.switch}>
-                                <input
-                                    type="checkbox"
-                                    checked={toggles.pushNotif}
-                                    onChange={() => handleToggle('pushNotif')}
-                                />
-                                <span className={styles.slider}></span>
-                            </label>
-                        </div>
-
-                        {/* Desktop Notification */}
-                        <div className={styles.settingItem}>
-                            <div className={styles.settingInfo}>
-                                <div className={styles.settingTitle}>Desktop Notification</div>
-                                <div className={styles.settingDesc}>
-                                    Receive push notification in desktop
-                                </div>
-                            </div>
-
-                            <label className={styles.switch}>
-                                <input
-                                    type="checkbox"
-                                    checked={toggles.desktopNotif}
-                                    onChange={() => handleToggle('desktopNotif')}
-                                />
-                                <span className={styles.slider}></span>
-                            </label>
-                        </div>
-
-                        {/* Email Notifications */}
-                        <div className={styles.settingItem}>
-                            <div className={styles.settingInfo}>
-                                <div className={styles.settingTitle}>Email Notifications</div>
-                                <div className={styles.settingDesc}>
-                                    Receive email notification
-                                </div>
-                            </div>
-
-                            <label className={styles.switch}>
-                                <input
-                                    type="checkbox"
-                                    checked={toggles.emailNotif}
-                                    onChange={() => handleToggle('emailNotif')}
-                                />
-                                <span className={styles.slider}></span>
-                            </label>
-                        </div>
-
                         {/* Security Section */}
                         <div className={styles.sectionDivider}>
                             <h2 className={styles.sectionTitle}>Security</h2>

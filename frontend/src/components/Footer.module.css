@@ -1,9 +1,9 @@
 .footer {
-    background-color: var(--primary-white);
-    color: var(--primary-black);
+    background-color: #131118; /* Fixed black */
+    color: #ffffff; /* Fixed white */
     padding: 4rem 4rem 2rem;
     margin-top: auto;
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.3s ease;
 }
 
@@ -20,6 +20,7 @@
     margin-bottom: 1.5rem;
     display: inline-block;
     font-family: 'Playfair Display', serif;
+    color: #ffffff;
 }
 
 .contactInfo h5,
@@ -27,11 +28,11 @@
     font-size: 1.1rem;
     font-weight: 600;
     margin-bottom: 1.5rem;
-    color: var(--text-main);
+    color: #ffffff;
 }
 
 .contactInfo p {
-    color: var(--text-muted);
+    color: #a0aec0;
     margin-bottom: 0.8rem;
     font-size: 0.95rem;
     line-height: 1.6;
@@ -115,7 +116,7 @@
     display: flex;
     gap: 1rem;
     font-size: 1.5rem;
-    color: var(--text-main);
+    color: #ffffff;
 }
 
 /* --- Responsive Design --- */
