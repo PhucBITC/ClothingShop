@@ -52,14 +52,55 @@ const HeroSection = () => {
                             <div className={styles.overlay}>
                                 <motion.div
                                     className={styles.content}
-                                    initial={{ x: 30, opacity: 0 }}
-                                    animate={{ x: 0, opacity: 1 }}
-                                    transition={{ delay: 0.3, duration: 0.8 }}
+                                    initial="hidden"
+                                    animate="visible"
+                                    variants={{
+                                        hidden: { opacity: 0 },
+                                        visible: {
+                                            opacity: 1,
+                                            transition: {
+                                                staggerChildren: 0.2,
+                                                delayChildren: 0.3
+                                            }
+                                        }
+                                    }}
                                 >
-                                    <h4 className={styles.subtitle}>{slides[currentIndex].subtitle}</h4>
-                                    <h1 className={styles.title}>{slides[currentIndex].title}</h1>
-                                    <h2 className={styles.offer}>{slides[currentIndex].offer}</h2>
-                                    <div className={styles.ctaBtn}>KHÁM PHÁ NGAY</div>
+                                    <motion.h4 
+                                        className={styles.subtitle}
+                                        variants={{
+                                            hidden: { opacity: 0, y: 20 },
+                                            visible: { opacity: 1, y: 0, transition: { duration: 0.8 } }
+                                        }}
+                                    >
+                                        {slides[currentIndex].subtitle}
+                                    </motion.h4>
+                                    <motion.h1 
+                                        className={styles.title}
+                                        variants={{
+                                            hidden: { opacity: 0, y: 30 },
+                                            visible: { opacity: 1, y: 0, transition: { duration: 1 } }
+                                        }}
+                                    >
+                                        {slides[currentIndex].title}
+                                    </motion.h1>
+                                    <motion.h2 
+                                        className={styles.offer}
+                                        variants={{
+                                            hidden: { opacity: 0, scale: 0.8 },
+                                            visible: { opacity: 1, scale: 1, transition: { duration: 0.8 } }
+                                        }}
+                                    >
+                                        {slides[currentIndex].offer}
+                                    </motion.h2>
+                                    <motion.div 
+                                        className={styles.ctaBtn}
+                                        variants={{
+                                            hidden: { opacity: 0, y: 20 },
+                                            visible: { opacity: 1, y: 0 }
+                                        }}
+                                    >
+                                        KHÁM PHÁ NGAY
+                                    </motion.div>
                                 </motion.div>
                             </div>
                         </Link>

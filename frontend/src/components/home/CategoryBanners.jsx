@@ -66,10 +66,10 @@ const CategoryBanners = () => {
                     <motion.div
                         key={currentIndex}
                         className={styles.sliderGrid}
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        transition={{ duration:0.4, ease: "easeInOut" }}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 1.05 }}
+                        transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
                     >
                         {displayCategories.map((cat) => (
                             <div key={cat.id} className={styles.banner}>
