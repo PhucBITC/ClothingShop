@@ -7,6 +7,10 @@ import ForgotPassword from "./pages/auth/Forgot-password";
 import ResetPassword from "./pages/auth/Reset-password";
 import VerifyOtp from "./pages/auth/Verify-otp";
 import Home from "./pages/Home";
+import OurStory from "./pages/OurStory";
+import Blog from "./pages/blog/Blog";
+import BlogDetail from "./pages/blog/BlogDetail";
+import Contact from "./pages/Contact";
 import ProductList from "./pages/products/ProductList";
 import ProductDetail from "./pages/products/ProductDetail";
 import Cart from "./pages/cart/Cart";
@@ -45,6 +49,12 @@ function AppLayout() {
       <Routes>
         {/* home */}
         <Route path="/" element={<Home />} />
+
+        {/* static pages */}
+        <Route path="/story" element={<OurStory />} />
+        <Route path="/blog" element={<Blog />} />
+        <Route path="/blog/:slug" element={<BlogDetail />} />
+        <Route path="/contact" element={<Contact />} />
 
         {/* products */}
         <Route path="/products" element={<ProductList />} />

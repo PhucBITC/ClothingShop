@@ -52,7 +52,11 @@ public class SecurityConfig {
                                                 .permitAll()
                                                 .requestMatchers(org.springframework.http.HttpMethod.GET,
                                                                 "/api/products/**", "/api/categories/**",
-                                                                "/api/orders/{id}")
+                                                                "/api/orders/{id}",
+                                                                "/api/blogs/**")
+                                                .permitAll()
+                                                .requestMatchers(org.springframework.http.HttpMethod.POST,
+                                                                "/api/contact")
                                                 .permitAll()
                                                 .requestMatchers("/api/orders/admin/**").hasRole("ADMIN")
                                                 .anyRequest().authenticated())

@@ -1,0 +1,472 @@
+.storyPage {
+  min-height: 100vh;
+  background-color: var(--bg-page);
+  transition: background-color 0.3s ease;
+}
+
+/* ===== HERO ===== */
+.hero {
+  position: relative;
+  height: 85vh;
+  min-height: 550px;
+  background: url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1400&q=80') center/cover no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.65) 0%,
+    rgba(0, 0, 0, 0.35) 50%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
+}
+
+.heroContent {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  color: #fff;
+  max-width: 700px;
+  padding: 0 2rem;
+}
+
+.heroLabel {
+  font-size: 0.85rem;
+  letter-spacing: 6px;
+  font-weight: 300;
+  display: block;
+  margin-bottom: 1.5rem;
+  opacity: 0.9;
+}
+
+.heroTitle {
+  font-size: 3.5rem;
+  font-weight: 200;
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+  letter-spacing: 1px;
+}
+
+.heroSubtitle {
+  font-size: 1.15rem;
+  font-weight: 300;
+  opacity: 0.85;
+  letter-spacing: 0.5px;
+}
+
+/* ===== BRAND STORY ===== */
+.brandStory {
+  display: flex;
+  align-items: center;
+  gap: 5rem;
+  padding: 7rem 10%;
+  background: var(--bg-card);
+  transition: background 0.3s ease;
+}
+
+.storyText {
+  flex: 1;
+}
+
+.sectionLabel {
+  font-size: 0.8rem;
+  letter-spacing: 3px;
+  color: var(--text-light);
+  display: block;
+  margin-bottom: 0.8rem;
+  font-weight: 500;
+}
+
+.sectionTitle {
+  font-size: 2.5rem;
+  font-weight: 300;
+  color: var(--text-main);
+  margin-bottom: 2rem;
+  letter-spacing: 0.5px;
+}
+
+.storyParagraph {
+  font-size: 1.05rem;
+  line-height: 1.9;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+
+.storyImage {
+  flex: 1;
+  position: relative;
+}
+
+.storyImage img {
+  width: 100%;
+  height: 520px;
+  object-fit: cover;
+  display: block;
+}
+
+.imageAccent {
+  position: absolute;
+  top: 2rem;
+  right: -1.5rem;
+  width: 100%;
+  height: 100%;
+  border: 1px solid var(--border-color);
+  z-index: -1;
+  transition: border-color 0.3s ease;
+}
+
+/* ===== MISSION & VISION ===== */
+.missionVision {
+  display: flex;
+  gap: 3rem;
+  padding: 7rem 10%;
+  background: var(--bg-page);
+}
+
+.mvCard {
+  flex: 1;
+  padding: 3rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.mvCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--text-main) 0%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.mvCard:hover::before {
+  opacity: 1;
+}
+
+.mvCard:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+}
+
+.mvIconWrap {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-secondary);
+  margin-bottom: 1.5rem;
+  border-radius: 50%;
+}
+
+.mvIcon {
+  font-size: 1.3rem;
+  color: var(--text-main);
+}
+
+.mvTitle {
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: var(--text-main);
+  margin-bottom: 1.2rem;
+  letter-spacing: 0.5px;
+}
+
+.mvText {
+  font-size: 1rem;
+  line-height: 1.85;
+  color: var(--text-muted);
+}
+
+/* ===== BRAND VALUES ===== */
+.valuesSection {
+  padding: 7rem 10%;
+  background: var(--bg-card);
+  transition: background 0.3s ease;
+}
+
+.valuesSectionHeader {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.valuesGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+}
+
+.valueCard {
+  text-align: center;
+  padding: 2.5rem 2rem;
+  background: var(--bg-page);
+  border: 1px solid var(--border-color);
+  transition: all 0.4s ease;
+  position: relative;
+}
+
+.valueCard:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-hover);
+}
+
+.valueIcon {
+  font-size: 2rem;
+  color: var(--text-main);
+  margin-bottom: 1.2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.valueTitle {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 1rem;
+  letter-spacing: 0.5px;
+}
+
+.valueDesc {
+  font-size: 0.92rem;
+  line-height: 1.75;
+  color: var(--text-muted);
+}
+
+/* ===== TEAM ===== */
+.teamSection {
+  padding: 7rem 10%;
+  background: var(--bg-page);
+}
+
+.teamHeader {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.teamSubtitle {
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  margin-top: 1rem;
+}
+
+.teamGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2.5rem;
+}
+
+.teamCard {
+  text-align: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 2rem;
+  transition: all 0.4s ease;
+}
+
+.teamCard:hover {
+  box-shadow: var(--shadow-lg);
+  border-color: var(--border-hover);
+}
+
+.teamImgWrap {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0 auto 1.5rem;
+  border: 3px solid var(--border-color);
+  transition: border-color 0.3s ease;
+}
+
+.teamCard:hover .teamImgWrap {
+  border-color: var(--text-main);
+}
+
+.teamImgWrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.teamName {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 0.4rem;
+}
+
+.teamRole {
+  font-size: 0.9rem;
+  color: var(--text-light);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-weight: 400;
+}
+
+/* ===== CTA ===== */
+.ctaSection {
+  padding: 8rem 10%;
+  background: url('https://images.unsplash.com/photo-1445205170230-053b83016050?w=1400&q=80') center/cover no-repeat;
+  position: relative;
+}
+
+.ctaSection::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.ctaContent {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  color: #fff;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.ctaLabel {
+  font-size: 0.8rem;
+  letter-spacing: 4px;
+  display: block;
+  margin-bottom: 1rem;
+  opacity: 0.8;
+}
+
+.ctaTitle {
+  font-size: 2.8rem;
+  font-weight: 300;
+  margin-bottom: 1.2rem;
+  letter-spacing: 1px;
+}
+
+.ctaDesc {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  opacity: 0.85;
+  margin-bottom: 2.5rem;
+}
+
+.ctaBtn {
+  display: inline-block;
+  padding: 14px 45px;
+  background: #fff;
+  color: #000;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-decoration: none;
+  transition: all 0.4s ease;
+}
+
+.ctaBtn:hover {
+  background: transparent;
+  color: #fff;
+  outline: 1px solid #fff;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  .heroTitle {
+    font-size: 2.8rem;
+  }
+
+  .brandStory {
+    flex-direction: column;
+    padding: 5rem 6%;
+    gap: 3rem;
+  }
+
+  .storyImage img {
+    height: 400px;
+  }
+
+  .imageAccent {
+    display: none;
+  }
+
+  .missionVision {
+    padding: 5rem 6%;
+    gap: 2rem;
+  }
+
+  .valuesGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .valuesSection {
+    padding: 5rem 6%;
+  }
+
+  .teamGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .teamSection {
+    padding: 5rem 6%;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    height: 65vh;
+  }
+
+  .heroTitle {
+    font-size: 2.2rem;
+  }
+
+  .sectionTitle {
+    font-size: 2rem;
+  }
+
+  .missionVision {
+    flex-direction: column;
+  }
+
+  .ctaTitle {
+    font-size: 2rem;
+  }
+
+  .teamGrid {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .heroTitle {
+    font-size: 1.8rem;
+  }
+
+  .heroLabel {
+    font-size: 0.75rem;
+  }
+
+  .valuesGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .brandStory, .missionVision, .valuesSection, .teamSection {
+    padding: 4rem 5%;
+  }
+
+  .ctaSection {
+    padding: 5rem 5%;
+  }
+}
