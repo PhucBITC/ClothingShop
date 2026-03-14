@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { FiInstagram, FiHeart } from 'react-icons/fi';
 import axios from '../api/axios';
 import HeroSection from '../components/home/HeroSection';
 import CategoryBanners from '../components/home/CategoryBanners';
@@ -83,13 +85,13 @@ function Home() {
             {...fadeInUp}
           >
             <div className={styles.storyContent}>
-              <span className={styles.storyLabel}>IVY MODA STORIES</span>
-              <h2 className={styles.storyTitle}>VẺ ĐẸP HIỆN ĐẠI</h2>
+              <span className={styles.storyLabel}>L&P STORIES</span>
+              <h2 className={styles.storyTitle}>MODERN ELEGANCE</h2>
               <p className={styles.storyDesc}>
-                Khám phá phong cách sống và cảm hứng thời trang dẫn đầu xu hướng 
-                từ các bộ sưu tập mang đậm dấu ấn sáng tạo và tinh thần đương đại.
+                Discover a lifestyle and fashion inspiration that leads the trends —
+                from collections bearing the hallmark of creativity and a contemporary spirit.
               </p>
-              <button className={styles.storyBtn}>XEM THÊM</button>
+              <Link to="/story" className={styles.storyBtn}>DISCOVER MORE</Link>
             </div>
             <motion.div 
               className={styles.storyGallery}
@@ -98,19 +100,25 @@ function Home() {
               viewport={{ once: false }}
               transition={{ duration: 1, delay: 0.2 }}
             >
-              <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=600&q=80" alt="Story 1" />
-              <img src="https://images.unsplash.com/photo-1441984904996-e0b6ba687e12?w=600&q=80" alt="Story 2" />
+              <div className={styles.galleryMain}>
+                <img src="https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600&q=80" alt="Fashion editorial" />
+              </div>
+              <div className={styles.galleryStack}>
+                <img src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=400&q=80" alt="Behind the scenes" />
+                <img src="https://images.unsplash.com/photo-1558171813-4c088753af8f?w=400&q=80" alt="Studio work" />
+              </div>
             </motion.div>
           </motion.section>
 
           {/* 5. Instagram / Social Feed */}
           <section className={styles.socialSection}>
-            <motion.h2 
-              className={styles.socialTitle}
-              {...fadeInUp}
-            >
-              #IVYmoda ON INSTAGRAM
-            </motion.h2>
+            <motion.div className={styles.socialHeader} {...fadeInUp}>
+              <FiInstagram className={styles.socialIcon} />
+              <h2 className={styles.socialTitle}>
+                @LighterPrincess
+              </h2>
+              <p className={styles.socialSubtitle}>Follow us for daily fashion inspiration</p>
+            </motion.div>
             <motion.div 
               className={styles.socialGrid}
               variants={staggerContainer}
@@ -118,14 +126,27 @@ function Home() {
               whileInView="whileInView"
               viewport={{ once: false }}
             >
-              {[1, 2, 3, 4, 5].map(i => (
-                <motion.div 
-                  key={i} 
+              {[
+                'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=400&q=80',
+                'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80',
+                'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=400&q=80',
+                'https://images.unsplash.com/photo-1581044777550-4cfa60707998?w=400&q=80',
+                'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=400&q=80'
+              ].map((src, i) => (
+                <motion.a 
+                  key={i}
+                  href="https://instagram.com" 
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className={styles.socialItem}
                   variants={itemFadeIn}
+                  whileHover={{ scale: 1.03 }}
                 >
-                  <img src={`https://images.unsplash.com/photo-1596483562305-64c39f139580?w=300&q=80`} alt="Insta" />
-                </motion.div>
+                  <img src={src} alt={`Instagram post ${i + 1}`} />
+                  <div className={styles.socialOverlay}>
+                    <FiHeart />
+                  </div>
+                </motion.a>
               ))}
             </motion.div>
           </section>

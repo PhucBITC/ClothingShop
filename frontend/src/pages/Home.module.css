@@ -10,13 +10,13 @@
     color: #ff4d4f;
 }
 
-/* Brand Story Section */
+/* ===== Brand Story Section ===== */
 .brandStory {
     display: flex;
-    padding: 6rem 10%;
+    padding: 7rem 10%;
     background: var(--bg-card);
     align-items: center;
-    gap: 4rem;
+    gap: 5rem;
     transition: background 0.3s ease;
 }
 
@@ -25,89 +25,189 @@
 }
 
 .storyLabel {
-    font-size: 0.9rem;
-    letter-spacing: 2px;
+    font-size: 0.8rem;
+    letter-spacing: 3px;
     color: var(--text-light);
     display: block;
     margin-bottom: 1rem;
+    font-weight: 500;
 }
 
 .storyTitle {
     font-size: 2.5rem;
-    font-weight: 700;
+    font-weight: 300;
     margin-bottom: 1.5rem;
-    text-transform: uppercase;
+    letter-spacing: 1px;
     color: var(--text-main);
 }
 
 .storyDesc {
-    font-size: 1.1rem;
-    line-height: 1.8;
+    font-size: 1.05rem;
+    line-height: 1.9;
     color: var(--text-muted);
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
 }
 
 .storyBtn {
-    padding: 12px 35px;
+    display: inline-block;
+    padding: 14px 38px;
     background: var(--primary-black);
     color: var(--primary-white);
     border: none;
     font-weight: 600;
     cursor: pointer;
-    letter-spacing: 1px;
-    transition: all 0.3s ease;
+    letter-spacing: 2px;
+    font-size: 0.8rem;
+    text-decoration: none;
+    transition: all 0.4s ease;
 }
 
+.storyBtn:hover {
+    opacity: 0.85;
+    letter-spacing: 3px;
+}
+
+/* Gallery — masonry-style layout */
 .storyGallery {
-    flex: 1.2;
+    flex: 1.3;
     display: flex;
-    gap: 1.5rem;
+    gap: 1rem;
+    height: 520px;
 }
 
-.storyGallery img {
-    width: 50%;
-    height: 500px;
+.galleryMain {
+    flex: 1.2;
+}
+
+.galleryMain img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
+    display: block;
 }
 
-/* Social Section */
+.galleryStack {
+    flex: 0.8;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.galleryStack img {
+    width: 100%;
+    flex: 1;
+    object-fit: cover;
+    display: block;
+}
+
+/* ===== Social / Instagram Section ===== */
 .socialSection {
     padding: 5rem 5%;
     text-align: center;
 }
 
-.socialTitle {
-    font-size: 1.5rem;
-    letter-spacing: 3px;
+.socialHeader {
     margin-bottom: 3rem;
-    font-weight: 700;
+}
+
+.socialIcon {
+    font-size: 2rem;
     color: var(--text-main);
+    margin-bottom: 0.8rem;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.socialTitle {
+    font-size: 1.6rem;
+    letter-spacing: 2px;
+    font-weight: 300;
+    color: var(--text-main);
+    margin-bottom: 0.5rem;
+}
+
+.socialSubtitle {
+    font-size: 0.95rem;
+    color: var(--text-light);
+    letter-spacing: 0.5px;
 }
 
 .socialGrid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 10px;
+    gap: 6px;
+}
+
+.socialItem {
+    position: relative;
+    overflow: hidden;
+    display: block;
+    cursor: pointer;
 }
 
 .socialItem img {
     width: 100%;
     aspect-ratio: 1/1;
     object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
 }
 
+.socialItem:hover img {
+    transform: scale(1.08);
+}
+
+.socialOverlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+}
+
+.socialItem:hover .socialOverlay {
+    opacity: 1;
+}
+
+.socialOverlay svg {
+    color: #fff;
+    font-size: 1.8rem;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+}
+
+/* ===== RESPONSIVE ===== */
 @media (max-width: 1024px) {
     .brandStory {
         flex-direction: column;
-        padding: 4rem 5%;
+        padding: 5rem 6%;
+        gap: 3rem;
     }
 
-    .storyGallery img {
+    .storyGallery {
         height: 400px;
+        width: 100%;
     }
 
     .socialGrid {
         grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .storyTitle {
+        font-size: 2rem;
+    }
+
+    .storyGallery {
+        height: 320px;
+    }
+
+    .socialTitle {
+        font-size: 1.3rem;
     }
 }
 
@@ -116,7 +216,28 @@
         font-size: 1.8rem;
     }
 
+    .storyGallery {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .galleryMain img {
+        height: 280px;
+    }
+
+    .galleryStack {
+        flex-direction: row;
+    }
+
+    .galleryStack img {
+        height: 160px;
+    }
+
     .socialGrid {
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    .brandStory {
+        padding: 4rem 5%;
     }
 }
