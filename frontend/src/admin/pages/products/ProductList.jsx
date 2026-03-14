@@ -182,7 +182,7 @@ const ProductList = () => {
             const primary = product.images.find(img => img.primary);
             return primary ? primary.imageUrl : product.images[0].imageUrl;
         }
-        return 'https://via.placeholder.com/48';
+        return 'https://placehold.co/48x48?text=No+Image';
     };
 
     const getStockInfo = (product) => {
@@ -269,7 +269,14 @@ const ProductList = () => {
                                                                     src={imageUrl}
                                                                     alt={product.name}
                                                                     className={styles.productImage}
-                                                                    onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/48' }}
+                                                                    onError={(e) => { 
+                                                                        if (!e.target.dataset.errorCalled) {
+                                                                            e.target.dataset.errorCalled = 'true';
+                                                                            e.target.src = 'https://placehold.co/48x48?text=No+Image';
+                                                                        } else {
+                                                                            e.target.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+                                                                        }
+                                                                    }}
                                                                 />
                                                                 <div>
                                                                     <div className={styles.productName}>{product.name}</div>
