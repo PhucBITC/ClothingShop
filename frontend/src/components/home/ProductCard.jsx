@@ -19,9 +19,16 @@ const ProductCard = ({ product }) => {
     const getProductImage = (product) => {
         if (product.images && product.images.length > 0) {
             const primary = product.images.find(img => img.primary);
-            return primary ? primary.imageUrl : product.images[0].imageUrl;
+            const imageUrl = primary ? primary.imageUrl : product.images[0].imageUrl;
+            
+            // Nếu là URL đầy đủ thì giữ nguyên
+            if (imageUrl.startsWith('http')) return imageUrl;
+            
+            // Nếu chỉ là tên file, thêm prefix API files
+            // Sử dụng URL tuyệt đối để tránh nhầm lẫn route
+            return `http://localhost:8080/api/files/${imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl}`;
         }
-        return 'https://via.placeholder.com/400x533?text=No+Image';
+        return 'https://placehold.co/400x533?text=No+Image';
     };
 
     const handleViewDetails = (e) => {
@@ -67,7 +74,7 @@ const ProductCard = ({ product }) => {
                     loading="lazy"
                     onError={(e) => {
                         e.target.onerror = null;
-                        e.target.src = 'https://via.placeholder.com/400x533?text=Product+Image';
+                        e.target.src = 'https://placehold.co/400x533?text=Product+Image';
                     }}
                 />
 

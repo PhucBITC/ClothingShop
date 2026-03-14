@@ -165,7 +165,17 @@ public class ProductServiceImpl implements ProductService {
             for (ProductRequest.ImageDTO imgDto : request.getImages()) {
                 ProductImage image = new ProductImage();
                 image.setProduct(product);
-                image.setImageUrl(imgDto.getImageUrl());
+                
+                String url = imgDto.getImageUrl();
+                // Nếu URL chỉ là tên file hoặc đường dẫn tương đối, hãy gắn thêm domain/prefix
+                if (url != null && !url.startsWith("http") && !url.startsWith("/api/files/")) {
+                    url = ServletUriComponentsBuilder.fromCurrentContextPath()
+                            .path("/api/files/")
+                            .path(url)
+                            .toUriString();
+                }
+                
+                image.setImageUrl(url);
                 image.setPrimary(imgDto.isPrimary());
                 product.getImages().add(image);
             }
