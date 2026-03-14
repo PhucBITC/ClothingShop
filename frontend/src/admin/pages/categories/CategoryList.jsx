@@ -9,6 +9,7 @@ const CategoryList = () => {
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [activeTab, setActiveTab] = useState('ALL');
 
     // Modal state
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -67,6 +68,12 @@ const CategoryList = () => {
     if (loading) return <div className={styles.loading}>Loading categories...</div>;
     if (error) return <div className={styles.error}><BiError /> {error}</div>;
 
+    const types = ['ALL', ...new Set(categories.map(cat => cat.categoryType).filter(Boolean))];
+
+    const filteredCategories = activeTab === 'ALL' 
+        ? categories 
+        : categories.filter(cat => cat.categoryType === activeTab);
+
     return (
         <div className={styles.container}>
             <div className={styles.header}>
@@ -74,6 +81,18 @@ const CategoryList = () => {
                 <Link to="/admin/categories/add" className={styles.addButton}>
                     <BiPlus size={20} /> Add Category
                 </Link>
+            </div>
+
+            <div className={styles.tabs}>
+                {types.map(type => (
+                    <button
+                        key={type}
+                        className={`${styles.tab} ${activeTab === type ? styles.activeTab : ''}`}
+                        onClick={() => setActiveTab(type)}
+                    >
+                        {type}
+                    </button>
+                ))}
             </div>
 
             <div className={styles.tableContainer}>
@@ -87,8 +106,8 @@ const CategoryList = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {categories.length > 0 ? (
-                            categories.map((category) => (
+                        {filteredCategories.length > 0 ? (
+                            filteredCategories.map((category) => (
                                 <tr key={category.id}>
                                     <td className={styles.categoryName}>{category.name}</td>
                                     <td>
