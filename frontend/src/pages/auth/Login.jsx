@@ -22,6 +22,10 @@ const Login = () => {
   const [resendTimer, setResendTimer] = useState(0);
   const [isResending, setIsResending] = useState(false);
 
+  // Recovery State
+  const [showRestoreModal, setShowRestoreModal] = useState(false);
+  const [restoreEmail, setRestoreEmail] = useState('');
+
   // Ref to control input focus
   const inputRefs = useRef([]);
 
@@ -103,7 +107,12 @@ const Login = () => {
       setIsLoading(false);
       console.error('Login error:', err);
       if (err.response && err.response.data) {
-        toast.error("Login Failed", err.response.data.message || 'Invalid email or password!');
+        if (err.response.data.isDeleted) {
+          setRestoreEmail(err.response.data.email);
+          setShowRestoreModal(true);
+        } else {
+          toast.error("Login Failed", err.response.data.message || err.response.data || 'Invalid email or password!');
+        }
       } else {
         toast.error("Error", 'An error occurred while connecting to the server.');
       }
@@ -166,6 +175,23 @@ const Login = () => {
     }
   };
 
+  const handleRequestRestore = async () => {
+    setIsLoading(true);
+    setShowRestoreModal(false);
+    try {
+      const response = await axios.post('http://localhost:8080/api/auth/request-restore', {
+        email: restoreEmail
+      });
+      toast.success("Success", "Recovery request submitted successfully, please wait for verification.");
+    } catch (err) {
+      const errMsg = err.response?.data?.message || err.response?.data || "Failed to submit recovery request.";
+      toast.error("Error", errMsg);
+    } finally {
+      setIsLoading(false);
+      setRestoreEmail('');
+    }
+  };
+
   return (
     <div className={styles.loginWrapper}>
       {/* Loader Overlay */}
@@ -177,6 +203,38 @@ const Login = () => {
               <div className={styles.squareDot} style={{ top: 0, right: 0, animationDuration: '1.2s', animationDelay: '0.15s' }}></div>
               <div className={styles.squareDot} style={{ bottom: 0, right: 0, animationDuration: '1.2s', animationDelay: '0.3s' }}></div>
               <div className={styles.squareDot} style={{ bottom: 0, left: 0, animationDuration: '1.2s', animationDelay: '0.45s' }}></div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Restore Account Modal */}
+      {showRestoreModal && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <div className={styles.modalHeader}>
+              <h3 className={styles.modalTitle}>Account Deleted</h3>
+            </div>
+            <div className={styles.modalBody}>
+              <p style={{ marginBottom: '10px' }}>This account has been deleted or disabled.</p>
+              <p style={{ marginBottom: '10px' }}>Would you like to send a recovery request to the administration team?</p>
+              <p style={{ fontSize: '0.9rem', color: '#718096' }}><strong>Note:</strong> Please check your email after 24 hours or contact our hotline <strong>1900 1809</strong> for the fastest support.</p>
+            </div>
+            <div className={styles.modalFooter}>
+              <button
+                className={styles.cancelBtn}
+                onClick={() => setShowRestoreModal(false)}
+                disabled={isLoading}
+              >
+                Cancel
+              </button>
+              <button
+                className={styles.confirmBtn}
+                onClick={handleRequestRestore}
+                disabled={isLoading}
+              >
+                Send Request
+              </button>
             </div>
           </div>
         </div>

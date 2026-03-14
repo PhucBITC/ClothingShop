@@ -220,6 +220,16 @@ public class AuthController {
             if ("PENDING".equals(user.getStatus())) {
                 return ResponseEntity.badRequest().body("Please verify your email first.");
             }
+            if ("DELETED".equals(user.getStatus())) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("error", "Account has been deleted");
+                errorResponse.put("isDeleted", true);
+                errorResponse.put("email", email);
+                return ResponseEntity.status(403).body(errorResponse);
+            }
+            if ("RESTORE_PENDING".equals(user.getStatus())) {
+                return ResponseEntity.status(403).body("Your account recovery request is pending admin approval.");
+            }
             // Instead of returning token immediately, create 2FA OTP
             String otp = String.valueOf((int) (Math.random() * 900000) + 100000);
             // Format: HASHED_OTP:ATTEMPTS:RESENDS:TIMESTAMP
@@ -495,5 +505,33 @@ public class AuthController {
         userRepository.save(user);
 
         return ResponseEntity.ok("Password updated successfully");
+    }
+    @DeleteMapping("/delete-account")
+    public ResponseEntity<?> deleteAccount(@AuthenticationPrincipal User user) {
+        if (user == null) {
+            return ResponseEntity.status(401).build();
+        }
+        user.setStatus("DELETED");
+        userRepository.save(user);
+        return ResponseEntity.ok("Account deleted successfully");
+    }
+
+    @PostMapping("/request-restore")
+    public ResponseEntity<?> requestRestore(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        User user = userRepository.findByEmail(email).orElse(null);
+        
+        if (user == null) {
+            return ResponseEntity.badRequest().body("User not found");
+        }
+
+        if (!"DELETED".equals(user.getStatus())) {
+            return ResponseEntity.badRequest().body("This account is not in a deleted state.");
+        }
+
+        user.setStatus("RESTORE_PENDING");
+        userRepository.save(user);
+
+        return ResponseEntity.ok("Recovery request submitted successfully. Please wait for admin approval.");
     }
 }

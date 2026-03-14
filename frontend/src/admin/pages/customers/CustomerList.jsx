@@ -10,7 +10,9 @@ import {
     BiPlus,
     BiEdit,
     BiX,
-    BiUser
+    BiUser,
+    BiTime,
+    BiRefresh
 } from 'react-icons/bi';
 import { useToast } from '../../../components/common/toast/ToastContext';
 import styles from './CustomerList.module.css';
@@ -299,6 +301,16 @@ const CustomerList = () => {
         });
     };
 
+    const handleRestoreUser = async (userId) => {
+        try {
+            await axios.put(`/admin/users/${userId}/restore`);
+            toast.success("Success", "Account restored successfully.");
+            fetchCustomers();
+        } catch (err) {
+            toast.error("Error", err.response?.data || "Failed to restore account.");
+        }
+    };
+
     if (loading && customers.length === 0) return <div className={styles.loading}>Loading customers...</div>;
 
     return (
@@ -339,9 +351,10 @@ const CustomerList = () => {
                                     <td>{user.email}</td>
                                     <td><span className={styles.roleBadge}>{user.role}</span></td>
                                     <td>
-                                        {user.status === 'ACTIVE' ?
-                                            <span className={styles.statusActive}><BiCheckCircle /> Active</span> :
-                                            <span className={styles.statusInactive}><BiXCircle /> Inactive</span>}
+                                        {user.status === 'ACTIVE' && <span className={styles.statusActive}><BiCheckCircle /> Active</span>}
+                                        {user.status === 'INACTIVE' && <span className={styles.statusInactive}><BiXCircle /> Inactive</span>}
+                                        {user.status === 'DELETED' && <span className={styles.statusDeleted}><BiTrash /> Deleted</span>}
+                                        {user.status === 'RESTORE_PENDING' && <span className={styles.statusRestorePending}><BiTime /> Restore Pending</span>}
                                     </td>
                                     <td>
                                         <div className={styles.actions}>
@@ -352,9 +365,15 @@ const CustomerList = () => {
                                             <button className={styles.addressBtn} onClick={() => handleOpenUserModal(user)}>
                                                 <BiEdit /> Edit
                                             </button>
-                                            <button className={styles.deleteBtn} onClick={() => confirmDeleteUser(user.id)}>
-                                                <BiTrash />
-                                            </button>
+                                            {(user.status === 'DELETED' || user.status === 'RESTORE_PENDING') ? (
+                                                <button className={styles.restoreBtn} onClick={() => handleRestoreUser(user.id)}>
+                                                    <BiRefresh size={16} /> Restore
+                                                </button>
+                                            ) : (
+                                                <button className={styles.deleteBtn} onClick={() => confirmDeleteUser(user.id)}>
+                                                    <BiTrash />
+                                                </button>
+                                            )}
                                         </div>
                                     </td>
                                 </tr>

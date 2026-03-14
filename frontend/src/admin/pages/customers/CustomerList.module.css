@@ -105,6 +105,25 @@
     font-size: 0.85rem;
 }
 
+.statusRestorePending {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: #f59e0b; /* Amber/Orange */
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.statusDeleted {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: #94a3b8; /* Slate gray */
+    font-weight: 500;
+    font-size: 0.85rem;
+    text-decoration: line-through;
+}
+
 .actions {
     display: flex;
     gap: 8px;
@@ -145,6 +164,23 @@
     background: #ef4444;
     color: white;
     border-color: #ef4444;
+}
+
+.restoreBtn {
+    padding: 8px 12px;
+    background: #fff;
+    border: 1px solid #10b981;
+    color: #10b981;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.restoreBtn:hover {
+    background: #10b981;
+    color: white;
 }
 
 /* Expansion Row */

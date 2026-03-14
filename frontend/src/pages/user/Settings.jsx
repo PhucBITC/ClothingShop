@@ -3,11 +3,17 @@ import UserSidebar from './UserSidebar';
 import styles from './Settings.module.css';
 import { useToast } from '../../components/common/toast/ToastContext';
 import { useTheme } from '../../context/ThemeContext';
+import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import axios from '../../api/axios';
 
 function Settings() {
     const toast = useToast();
     const { theme, setTheme } = useTheme();
+    const { user, logout } = useAuth();
+    const navigate = useNavigate();
+
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     const [toggles, setToggles] = useState(() => {
         const saved = localStorage.getItem('userSettings');
@@ -67,8 +73,46 @@ function Settings() {
         }
     };
 
+    const confirmDeleteAccount = async () => {
+        try {
+            await axios.delete('/auth/delete-account');
+            toast.success('Success', 'Account deleted successfully');
+            logout();
+            navigate('/');
+        } catch (error) {
+            toast.error('Error', error.response?.data || 'Failed to delete account');
+        } finally {
+            setShowDeleteModal(false);
+        }
+    };
+
     return (
         <div className={styles.pageContainer}>
+            {showDeleteModal && (
+                <div className={styles.modalOverlay}>
+                    <div className={styles.deleteModalContent}>
+                        <h2 className={styles.deleteModalTitle}>Confirm Delete</h2>
+                        <p className={styles.deleteModalText}>
+                            Are you sure you want to delete <strong>{user?.fullName || 'this account'}</strong>?
+                        </p>
+                        <div className={styles.deleteModalActions}>
+                            <button 
+                                className={styles.cancelModalBtn} 
+                                onClick={() => setShowDeleteModal(false)}
+                            >
+                                Cancel
+                            </button>
+                            <button 
+                                className={styles.confirmModalBtn} 
+                                onClick={confirmDeleteAccount}
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <h1 className={styles.pageTitle}>My Profile</h1>
 
             <div className={styles.contentWrapper}>
@@ -182,7 +226,7 @@ function Settings() {
                                 </div>
                             </div>
 
-                            <button className={styles.deleteBtn}>
+                            <button className={styles.deleteBtn} onClick={() => setShowDeleteModal(true)}>
                                 Delete
                             </button>
 

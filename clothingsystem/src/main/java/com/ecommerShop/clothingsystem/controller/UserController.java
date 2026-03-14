@@ -25,6 +25,9 @@ public class UserController {
     @Autowired
     private com.ecommerShop.clothingsystem.service.FileStorageService fileStorageService;
 
+    @Autowired
+    private com.ecommerShop.clothingsystem.service.EmailService emailService;
+
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userRepository.findAll());
@@ -78,7 +81,44 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        userRepository.deleteById(id);
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        user.setStatus("DELETED");
+        userRepository.save(user);
         return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{id}/restore")
+    public ResponseEntity<?> restoreUser(@PathVariable Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        
+        if ("ACTIVE".equals(user.getStatus())) {
+            return ResponseEntity.badRequest().body("User is already active.");
+        }
+
+        user.setStatus("ACTIVE");
+        userRepository.save(user);
+
+        // Send confirmation email
+        try {
+            String emailContent = "<div style='font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; padding: 20px; border-radius: 8px;'>"
+                    + "<h2 style='color: #4CAF50; text-align: center;'>Account Restored</h2>"
+                    + "<p>Hello <strong>" + user.getFullName() + "</strong>,</p>"
+                    + "<p>Your account recovery request has been successfully approved by the administration team. Your account is now reactivated.</p>"
+                    + "<p>You can now log in with your current password.</p>"
+                    + "<div style='text-align: center; margin: 30px 0;'>"
+                    + "<a href='http://localhost:5173/login' style='background-color: #000; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold;'>Login Now</a>"
+                    + "</div>"
+                    + "<p>Welcome back!</p>"
+                    + "<hr style='border: none; border-top: 1px solid #eee; margin-top: 20px;' />"
+                    + "<p style='font-size: 12px; color: #888; text-align: center;'>This is an automated email. Please do not reply.</p>"
+                    + "</div>";
+            
+            emailService.sendHtmlMessage(user.getEmail(), "Your account has been successfully restored", emailContent);
+        } catch (Exception e) {
+            System.err.println("Failed to send restore email: " + e.getMessage());
+            // Proceed even if email fails
+        }
+
+        return ResponseEntity.ok("User restored successfully");
     }
 }
