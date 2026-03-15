@@ -300,7 +300,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Page<Product> searchProducts(String keyword, Long categoryId, Double minPrice, Double maxPrice, String tag,
-            List<String> colors, List<String> sizes, Pageable pageable) {
+            String status, List<String> colors, List<String> sizes, Pageable pageable) {
         Specification<Product> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -326,6 +326,10 @@ public class ProductServiceImpl implements ProductService {
             if (StringUtils.hasText(tag)) {
                 predicates.add(cb.like(cb.lower(root.get("tags")), "%" + tag.toLowerCase() + "%"));
             }
+            
+            if (StringUtils.hasText(status)) {
+                predicates.add(cb.equal(root.get("status"), status));
+            }
 
             // JOIN with Variants for Color and Size filtering
             if ((colors != null && !colors.isEmpty()) || (sizes != null && !sizes.isEmpty())) {
@@ -350,6 +354,18 @@ public class ProductServiceImpl implements ProductService {
     }
 
     // --- Helpers ---
+
+    @Override
+    @Transactional
+    public Product toggleActive(Long id) {
+        Product product = getProductById(id);
+        if ("ACTIVE".equalsIgnoreCase(product.getStatus())) {
+            product.setStatus("HIDDEN");
+        } else {
+            product.setStatus("ACTIVE");
+        }
+        return productRepository.save(product);
+    }
 
     private String generateUniqueSlug(String name) {
         if (name == null)

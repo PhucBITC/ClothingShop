@@ -129,6 +129,7 @@ function ProductList() {
                 categoryId: filters.categoryId,
                 minPrice: filters.minPrice,
                 maxPrice: filters.maxPrice,
+                status: 'ACTIVE',
                 sortBy: filters.sortBy,
                 direction: filters.direction,
                 colors: filters.colors.join(','), // Assuming backend handles comma-separated lists or multiple params

@@ -62,6 +62,9 @@ public class ProductController {
         try {
             productService.deleteProduct(id);
             return ResponseEntity.ok().build();
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.CONFLICT)
+                    .body("Cannot delete product as it is referenced in other records (like orders).");
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
@@ -98,6 +101,7 @@ public class ProductController {
             @RequestParam(required = false) Double minPrice,
             @RequestParam(required = false) Double maxPrice,
             @RequestParam(required = false) String tag,
+            @RequestParam(required = false) String status,
             @RequestParam(required = false) List<String> colors,
             @RequestParam(required = false) List<String> sizes,
             @RequestParam(defaultValue = "0") int page,
@@ -108,8 +112,18 @@ public class ProductController {
         Sort.Direction dir = Sort.Direction.fromString(direction.equalsIgnoreCase("asc") ? "ASC" : "DESC");
         Pageable pageable = PageRequest.of(page, size, Sort.by(dir, sortBy));
 
-        Page<Product> products = productService.searchProducts(keyword, categoryId, minPrice, maxPrice, tag, colors,
+        Page<Product> products = productService.searchProducts(keyword, categoryId, minPrice, maxPrice, tag, status, colors,
                 sizes, pageable);
         return ResponseEntity.ok(products);
+    }
+
+    @PatchMapping("/{id}/toggle-active")
+    public ResponseEntity<Product> toggleActive(@PathVariable Long id) {
+        try {
+            Product updated = productService.toggleActive(id);
+            return ResponseEntity.ok(updated);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

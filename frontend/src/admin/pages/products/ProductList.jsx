@@ -10,7 +10,9 @@ import {
     BiSearch,
     BiFilter,
     BiChevronLeft,
-    BiChevronRight
+    BiChevronRight,
+    BiShow,
+    BiHide
 } from 'react-icons/bi';
 import { useToast } from '../../../components/common/toast/ToastContext';
 import styles from './ProductList.module.css';
@@ -37,6 +39,7 @@ const ProductList = () => {
 
     // Modal state
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showHideSuggestion, setShowHideSuggestion] = useState(false);
     const [productToDelete, setProductToDelete] = useState(null);
     const [isProcessing, setIsProcessing] = useState(false);
 
@@ -143,6 +146,29 @@ const ProductList = () => {
         }
     };
 
+    const handleToggleActive = async (product) => {
+        if (isProcessing) return;
+        setIsProcessing(true);
+        const isCurrentlyActive = product.status === 'ACTIVE';
+        const newState = !isCurrentlyActive;
+        const actionText = newState ? 'Activating' : 'Deactivating';
+        const toastId = toast.loading(`${actionText}...`, `${product.name} will be ${newState ? 'visible' : 'hidden'}`);
+
+        try {
+            // Explicitly set to a state rather than just toggling if we have a target
+            // But since backend only has toggleActive, we check state here first
+            // To be more robust, we should ideally have setStatus(id, status)
+            await axios.patch(`/products/${product.id}/toggle-active`);
+            toast.success('Updated', `Product is now ${newState ? 'Active' : 'Hidden'}`, { id: toastId });
+            fetchProducts(); // Refresh list
+        } catch (err) {
+            console.error(err);
+            toast.error('Update Failed', 'Failed to update product status', { id: toastId });
+        } finally {
+            setIsProcessing(false);
+        }
+    };
+
     const confirmDelete = (product) => {
         setProductToDelete(product);
         setShowDeleteModal(true);
@@ -167,7 +193,19 @@ const ProductList = () => {
             setIsProcessing(false);
         } catch (err) {
             clearTimeout(safetyTimeout);
-            toast.error('Delete Failed', 'Failed to delete product', { id: toastId });
+            console.error(err);
+            
+            // Handle foreign key constraint error specifically
+            const errorStatus = err.response?.status;
+            const errorMsg = (err.response?.data?.message || err.response?.data || err.message || "").toLowerCase();
+            
+            if (errorStatus === 409 || errorStatus === 500 || errorMsg.includes("foreign key") || errorMsg.includes("referenced")) {
+                toast.remove(toastId); // Remove the deleting toast
+                setShowDeleteModal(false); // Close the original delete modal
+                setShowHideSuggestion(true); // Open the new suggestion modal
+            } else {
+                toast.error('Delete Failed', 'An unexpected error occurred', { id: toastId });
+            }
             setIsProcessing(false);
         }
     };
@@ -254,6 +292,7 @@ const ProductList = () => {
                                                 <th>Category</th>
                                                 <th>Price</th>
                                                 <th>Stock</th>
+                                                <th>Status</th>
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
@@ -293,7 +332,19 @@ const ProductList = () => {
                                                                 </span>
                                                             </td>
                                                             <td>
+                                                                <span className={`${styles.stockBadge} ${product.status === 'ACTIVE' ? styles.activeBadge : styles.inactiveBadge}`}>
+                                                                    {product.status === 'ACTIVE' ? 'Active' : 'Hidden'}
+                                                                </span>
+                                                            </td>
+                                                            <td>
                                                                 <div className={styles.actions}>
+                                                                    <button 
+                                                                        className={`${styles.actionButton} ${styles.toggleBtn}`} 
+                                                                        title={product.status === 'ACTIVE' ? "Hide Product" : "Show Product"}
+                                                                        onClick={() => handleToggleActive(product)}
+                                                                    >
+                                                                        {product.status === 'ACTIVE' ? <BiShow size={18} /> : <BiHide size={18} />}
+                                                                    </button>
                                                                     <button className={`${styles.actionButton} ${styles.editBtn}`} title="Duplicate" onClick={() => handleDuplicate(product)}>
                                                                         <BiCopy size={18} />
                                                                     </button>
@@ -375,6 +426,46 @@ const ProductList = () => {
                         <div className={styles.modalActions}>
                             <button className={styles.cancelBtn} onClick={cancelDelete}>Cancel</button>
                             <button className={styles.confirmBtn} onClick={handleDelete}>Delete</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Hide Suggestion Modal */}
+            {showHideSuggestion && (
+                <div className={styles.modalOverlay}>
+                    <div className={styles.modalContent}>
+                        <h3>Delete Restricted</h3>
+                        <p>
+                            We cannot permanently delete <strong>{productToDelete?.name}</strong> because it is part of past customer orders. To keep your sales records accurate, this product must remain in the system.
+                            <br /><br />
+                            {productToDelete?.status === 'HIDDEN'
+                                ? "It's already HIDDEN, so it won't be visible to your customers."
+                                : "Would you like to HIDE it from your store instead? Customers won't see it, but your order history will stay intact."}
+                        </p>
+                        <div className={styles.modalActions}>
+                            <button
+                                className={styles.cancelBtn}
+                                onClick={() => {
+                                    setShowHideSuggestion(false);
+                                    setProductToDelete(null);
+                                }}
+                            >
+                                {productToDelete?.status === 'HIDDEN' ? 'Close' : 'Not Now'}
+                            </button>
+                            {productToDelete?.status !== 'HIDDEN' && (
+                                <button 
+                                    className={styles.confirmBtn} 
+                                    style={{ backgroundColor: '#FF8800' }}
+                                    onClick={() => {
+                                        handleToggleActive(productToDelete);
+                                        setShowHideSuggestion(false);
+                                        setProductToDelete(null);
+                                    }}
+                                >
+                                    Yes, Hide Product
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>

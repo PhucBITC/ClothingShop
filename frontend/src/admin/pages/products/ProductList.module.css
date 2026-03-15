@@ -302,6 +302,17 @@
     color: #9B1C1C;
 }
 
+.activeBadge {
+    background-color: #DEF7EC;
+    color: #03543F;
+}
+
+.inactiveBadge {
+    background-color: #F3F4F6;
+    color: #6B7280;
+}
+
+
 .actions {
     display: flex;
     gap: 8px;
@@ -326,6 +337,12 @@
     background-color: #FEF2F2;
     color: #DC2626;
 }
+
+.toggleBtn:hover {
+    background-color: #F3F4F6;
+    color: #374151;
+}
+
 
 .loading,
 .error {

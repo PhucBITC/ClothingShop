@@ -17,7 +17,9 @@ function Home() {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const response = await axios.get('/products');
+        const response = await axios.get('/products/search', {
+          params: { status: 'ACTIVE', size: 8 }
+        });
         const data = Array.isArray(response.data) ? response.data : response.data.content;
         if (data) setProducts(data);
         setError(null);

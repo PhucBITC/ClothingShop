@@ -67,7 +67,7 @@ const ProductDetail = () => {
                 // Fetch related products (same category)
                 if (data.category?.id) {
                     const relatedRes = await axios.get('/products/search', {
-                        params: { categoryId: data.category.id, size: 4 }
+                        params: { categoryId: data.category.id, status: 'ACTIVE', size: 4 }
                     });
                     setRelatedProducts(relatedRes.data.content.filter(p => p.id !== parseInt(id)));
                 }
