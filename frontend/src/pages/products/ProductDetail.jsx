@@ -96,17 +96,57 @@ const ProductDetail = () => {
     const salePrice = currentVariant?.salePrice;
     const stockCount = currentVariant?.stock || 0;
 
+    const handleQuantityChange = (e) => {
+        const val = e.target.value;
+        if (val === '') {
+            setQuantity('');
+            return;
+        }
+
+        const num = parseInt(val);
+        if (isNaN(num) || num < 1) {
+            return;
+        }
+
+        if (num > stockCount) {
+            toast.warning("Stock Limit", `The requested quantity exceeds stock. Only ${stockCount} items available.`);
+            setQuantity(stockCount);
+            return;
+        }
+
+        setQuantity(num);
+    };
+
+    const handleBlur = () => {
+        if (quantity === '' || quantity < 1) {
+            setQuantity(1);
+        }
+    };
+
     const handleAddToCart = () => {
+        const finalQty = parseInt(quantity);
+        if (isNaN(finalQty) || finalQty < 1) {
+            toast.error("Invalid Quantity", "Please enter a valid quantity.");
+            return;
+        }
+
         if (!selectedColor || !selectedSize) {
             toast.error("Selection Required", "Please select color and size.");
             return;
         }
+
+        if (finalQty > stockCount) {
+            toast.error("Stock Error", `Requested quantity exceeds stock. Only ${stockCount} items left.`);
+            setQuantity(stockCount);
+            return;
+        }
+
         if (stockCount <= 0) {
             toast.error("Out of Stock", "This variant is currently unavailable.");
             return;
         }
 
-        addToCart(product, currentVariant, quantity);
+        addToCart(product, currentVariant, finalQty);
         toast.success("Added to Cart", `${product.name} (${selectedSize}, ${selectedColor}) added to your cart.`);
     };
 
@@ -172,8 +212,14 @@ const ProductDetail = () => {
                 <div className={styles.productInfo}>
                     <div className={styles.headerRow}>
                         <h2 className={styles.categoryName}>{product.category?.name || 'Uncategorized'}</h2>
-                        <div className={stockCount > 0 ? styles.stockBadge : styles.outOfStockBadge}>
-                            {stockCount > 0 ? `In Stock (${stockCount})` : 'Out of Stock'}
+                        <div className={
+                            stockCount <= 0 ? styles.outOfStockBadge : 
+                            stockCount < 10 ? styles.lowStockBadge : 
+                            styles.stockBadge
+                        }>
+                            {stockCount <= 0 ? 'Out of Stock' : 
+                             stockCount < 10 ? `Only ${stockCount} left` : 
+                             `${stockCount} in stock`}
                         </div>
                     </div>
 
@@ -246,8 +292,14 @@ const ProductDetail = () => {
                     <div className={styles.actionRow}>
                         <div className={styles.quantityControl}>
                             <button className={styles.qtyBtn} onClick={() => setQuantity(q => Math.max(1, q - 1))}>-</button>
-                            <div className={styles.qtyValue}>{quantity}</div>
-                            <button className={styles.qtyBtn} onClick={() => setQuantity(q => q + 1)}>+</button>
+                            <input 
+                                type="text" 
+                                className={styles.qtyInput} 
+                                value={quantity} 
+                                onChange={handleQuantityChange}
+                                onBlur={handleBlur}
+                            />
+                            <button className={styles.qtyBtn} onClick={() => setQuantity(q => (q === '' ? 1 : Math.min(stockCount, q + 1)))}>+</button>
                         </div>
 
                         <button

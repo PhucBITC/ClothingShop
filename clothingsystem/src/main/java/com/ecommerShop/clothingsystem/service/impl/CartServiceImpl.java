@@ -19,8 +19,6 @@ public class CartServiceImpl implements CartService {
     @Autowired
     private CartRepository cartRepository;
 
-    @Autowired
-    private CartItemRepository cartItemRepository;
 
     @Autowired
     private ProductVariantRepository variantRepository;

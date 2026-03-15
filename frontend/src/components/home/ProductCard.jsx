@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { BiCartAlt, BiShow, BiSync } from 'react-icons/bi';
@@ -6,9 +6,11 @@ import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { useWishlist } from '../../context/WishlistContext';
 import { useCart } from '../../context/CartContext';
 import { useToast } from '../common/toast/ToastContext';
+import QuickViewModal from '../products/QuickViewModal';
 import styles from './ProductCard.module.css';
 
 const ProductCard = ({ product }) => {
+    const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
     const navigate = useNavigate();
     const { toggleWishlist, isInWishlist } = useWishlist();
     const { addToCart } = useCart();
@@ -43,20 +45,7 @@ const ProductCard = ({ product }) => {
 
     const handleQuickAddToCart = (e) => {
         e.stopPropagation();
-        if (!product.variants || product.variants.length === 0) {
-            toast.error("Error", "No variants available for this product.");
-            return;
-        }
-
-        const firstAvailable = product.variants.find(v => v.stock > 0) || product.variants[0];
-
-        if (firstAvailable.stock <= 0) {
-            toast.error("Out of Stock", "This product is currently unavailable.");
-            return;
-        }
-
-        addToCart(product, firstAvailable, 1);
-        toast.success("Added to Cart", `${product.name} (${firstAvailable.size}, ${firstAvailable.color}) added to your cart.`);
+        setIsQuickViewOpen(true);
     };
 
     return (
@@ -90,7 +79,7 @@ const ProductCard = ({ product }) => {
                     <button className={styles.actionBtn} aria-label="Compare">
                         <BiSync />
                     </button>
-                    <button className={styles.actionBtn} onClick={handleViewDetails} aria-label="Quick View">
+                    <button className={styles.actionBtn} onClick={(e) => { e.stopPropagation(); setIsQuickViewOpen(true); }} aria-label="Quick View">
                         <BiShow />
                     </button>
                 </div>
@@ -117,6 +106,11 @@ const ProductCard = ({ product }) => {
                     )}
                 </div>
             </div>
+            <QuickViewModal 
+                product={product} 
+                isOpen={isQuickViewOpen} 
+                onClose={() => setIsQuickViewOpen(false)} 
+            />
         </motion.div>
     );
 };

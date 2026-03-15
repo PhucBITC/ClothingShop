@@ -100,7 +100,7 @@ function AppLayout() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
-        <Route path="*" element={<h2 className="text-center mt-5">404 - Không tìm thấy trang</h2>} />
+        <Route path="*" element={<h2 className="text-center mt-5">404 - Page Not Found</h2>} />
       </Routes>
       {!isAuthPage && !isAdminPage && <Footer />}
     </>

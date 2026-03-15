@@ -291,7 +291,7 @@ const ProductList = () => {
                                                 <th>Product</th>
                                                 <th>Category</th>
                                                 <th>Price</th>
-                                                <th>Stock</th>
+                                                <th title="Total stock of all size/color variants">Total Stock</th>
                                                 <th>Status</th>
                                                 <th>Actions</th>
                                             </tr>
@@ -328,7 +328,7 @@ const ProductList = () => {
                                                             </td>
                                                             <td>
                                                                 <span className={`${styles.stockBadge} ${stock > 0 ? styles.inStock : styles.outOfStock}`}>
-                                                                    {stock}
+                                                                    {stock} items
                                                                 </span>
                                                             </td>
                                                             <td>

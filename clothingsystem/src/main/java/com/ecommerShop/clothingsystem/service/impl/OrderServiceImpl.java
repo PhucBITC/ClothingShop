@@ -25,6 +25,9 @@ public class OrderServiceImpl implements OrderService {
     private CartRepository cartRepository;
 
     @Autowired
+    private ProductVariantRepository productVariantRepository;
+
+    @Autowired
     private ShippingAddressRepository addressRepository;
 
     @Autowired
@@ -103,6 +106,9 @@ public class OrderServiceImpl implements OrderService {
         if ("COD".equalsIgnoreCase(paymentMethod)) {
             System.out.println("Clearing cart for COD order");
             cartService.clearCart(user);
+
+            // Decrement stock for COD
+            decrementStock(order);
 
             // Trigger Notification for COD
             notificationService.createNotification(
@@ -198,6 +204,9 @@ public class OrderServiceImpl implements OrderService {
         payment.setPaymentStatus("COMPLETED");
         paymentRepository.save(payment);
 
+        // Decrement stock for Online Payment
+        decrementStock(order);
+
         // Clear cart for online payments now that it's successful
         cartService.clearCart(order.getUser());
 
@@ -208,6 +217,24 @@ public class OrderServiceImpl implements OrderService {
                 "Payment for order " + order.getOrderCode() + " has been received successfully.",
                 Notification.NotificationType.ORDER,
                 true);
+    }
+
+    @Transactional
+    protected void decrementStock(Order order) {
+        for (OrderItem item : order.getItems()) {
+            ProductVariant variant = item.getProductVariant();
+            int currentStock = variant.getStock();
+            int orderQty = item.getQuantity();
+
+            if (currentStock < orderQty) {
+                // In a real system, we should have checked this at checkout start too
+                throw new RuntimeException("Insufficient stock for variant: " + variant.getSku());
+            }
+
+            variant.setStock(currentStock - orderQty);
+            productVariantRepository.save(variant);
+            System.out.println("Decremented stock for " + variant.getSku() + ": " + currentStock + " -> " + (currentStock - orderQty));
+        }
     }
 
     // --- Helpers & Migration ---

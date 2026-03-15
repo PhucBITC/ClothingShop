@@ -1,7 +1,6 @@
 package com.ecommerShop.clothingsystem.controller;
 
 import com.ecommerShop.clothingsystem.model.Category;
-import com.ecommerShop.clothingsystem.model.Product;
 import com.ecommerShop.clothingsystem.repository.CategoryRepository;
 import com.ecommerShop.clothingsystem.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;

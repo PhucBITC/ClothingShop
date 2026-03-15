@@ -310,11 +310,32 @@
     background: #e5e5e5;
 }
 
-.qtyValue {
-    width: 50px;
+.qtyValue,
+.qtyInput {
+    width: 60px;
     text-align: center;
     font-weight: 700;
     font-size: 1.1rem;
+    border: none;
+    background: transparent;
+    outline: none;
+    color: var(--text-main);
+}
+
+.qtyInput::-webkit-inner-spin-button,
+.qtyInput::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.lowStockBadge {
+    background: #fff8e1;
+    color: #f57c00;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    box-shadow: 0 2px 4px rgba(245, 124, 0, 0.1);
 }
 
 .addToCartBtn {
