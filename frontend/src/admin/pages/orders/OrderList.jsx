@@ -19,6 +19,7 @@ const OrderList = () => {
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [selectedIds, setSelectedIds] = useState([]);
     const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
+    const [viewMode, setViewMode] = useState('ALL'); // 'ALL' or 'BY_CUSTOMER'
 
     useEffect(() => {
         fetchOrders();
@@ -117,18 +118,64 @@ const OrderList = () => {
         }
     };
 
-    const filteredOrders = Array.isArray(orders) ? orders.filter(order => {
-        const matchesSearch =
-            (order.id?.toString() || '').includes(searchTerm) ||
-            (order.receiverName?.toLowerCase() || '').includes(searchTerm.toLowerCase());
-
-        // Case-insensitive status matching for robustness
-        const currentStatus = (order.status || '').toUpperCase();
+    const filteredOrders = React.useMemo(() => {
+        if (!Array.isArray(orders)) return [];
+        
+        const search = searchTerm.toLowerCase();
         const filterStatus = statusFilter.toUpperCase();
-        const matchesStatus = filterStatus === 'ALL' || currentStatus === filterStatus;
 
-        return matchesSearch && matchesStatus;
-    }) : [];
+        return orders.filter(order => {
+            const matchesSearch =
+                (order.orderCode?.toLowerCase() || '').includes(search) ||
+                (order.id?.toString() || '').includes(search) ||
+                (order.receiverName?.toLowerCase() || '').includes(search) ||
+                (order.receiverPhone?.toLowerCase() || '').includes(search);
+
+            const currentStatus = (order.status || '').toUpperCase();
+            const matchesStatus = filterStatus === 'ALL' || currentStatus === filterStatus;
+
+            return matchesSearch && matchesStatus;
+        });
+    }, [orders, searchTerm, statusFilter]);
+
+    // --- Customer Aggregation Logic ---
+    const aggregatedCustomers = React.useMemo(() => {
+        if (viewMode !== 'BY_CUSTOMER') return [];
+
+        const groups = {};
+        filteredOrders.forEach(order => {
+            const key = `${order.receiverName}-${order.receiverPhone}`;
+            if (!groups[key]) {
+                groups[key] = {
+                    name: order.receiverName || 'Unknown',
+                    phone: order.receiverPhone || 'N/A',
+                    totalOrders: 0,
+                    totalSpent: 0,
+                    lastOrderDate: order.createdAt,
+                    orders: []
+                };
+            }
+            groups[key].totalOrders += 1;
+            groups[key].totalSpent += (order.totalPrice || 0);
+            if (new Date(order.createdAt) > new Date(groups[key].lastOrderDate)) {
+                groups[key].lastOrderDate = order.createdAt;
+            }
+            groups[key].orders.push(order);
+        });
+
+        return Object.values(groups).sort((a, b) => b.totalSpent - a.totalSpent);
+    }, [filteredOrders, viewMode]);
+
+    const handleViewCustomerHistory = (name) => {
+        setSearchTerm(name);
+        setStatusFilter('ALL');
+        setViewMode('ALL');
+    };
+
+    const handleResetAllFilters = () => {
+        setSearchTerm('');
+        setStatusFilter('ALL');
+    };
 
     if (loading) return <div className={styles.loading}>Loading orders...</div>;
 
@@ -137,7 +184,22 @@ const OrderList = () => {
             <div className={styles.header}>
                 <div className={styles.headerLeft}>
                     <h2 className={styles.title}>All Orders</h2>
-                    <span className={styles.count}>{filteredOrders.length} orders found</span>
+                    <span className={styles.count}>{viewMode === 'ALL' ? filteredOrders.length : aggregatedCustomers.length} {viewMode === 'ALL' ? 'orders' : 'customers'} found</span>
+                </div>
+
+                <div className={styles.viewToggle}>
+                    <button
+                        className={`${styles.toggleBtn} ${viewMode === 'ALL' ? styles.toggleActive : ''}`}
+                        onClick={() => setViewMode('ALL')}
+                    >
+                        All Orders
+                    </button>
+                    <button
+                        className={`${styles.toggleBtn} ${viewMode === 'BY_CUSTOMER' ? styles.toggleActive : ''}`}
+                        onClick={() => setViewMode('BY_CUSTOMER')}
+                    >
+                        By Customer
+                    </button>
                 </div>
                 <div className={styles.actions}>
                     <div className={styles.searchBox}>
@@ -148,6 +210,11 @@ const OrderList = () => {
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
+                        {searchTerm && (
+                            <button className={styles.clearSearch} onClick={() => setSearchTerm('')}>
+                                <BiXCircle />
+                            </button>
+                        )}
                     </div>
                     <div className={styles.filterBox}>
                         <BiFilterAlt />
@@ -160,6 +227,11 @@ const OrderList = () => {
                             <option value="CANCELLED">Cancelled</option>
                         </select>
                     </div>
+                    {(searchTerm || statusFilter !== 'ALL') && (
+                        <button className={styles.resetFiltersBtn} onClick={handleResetAllFilters}>
+                            Reset Filters
+                        </button>
+                    )}
                     {selectedIds.length > 0 && (
                         <button
                             className={styles.bulkDeleteBtn}
@@ -174,95 +246,134 @@ const OrderList = () => {
             <div className={styles.tableCard}>
                 <table className={styles.table}>
                     <thead>
-                        <tr>
-                            <th className={styles.checkboxCol}>
-                                <input
-                                    type="checkbox"
-                                    onChange={handleSelectAll}
-                                    checked={selectedIds.length > 0 && selectedIds.length === filteredOrders.length}
-                                />
-                            </th>
-                            <th>Order ID</th>
-                            <th>Customer</th>
-                            <th>Date</th>
-                            <th>Total Price</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
+                        {viewMode === 'ALL' ? (
+                            <tr>
+                                <th className={styles.checkboxCol}>
+                                    <input
+                                        type="checkbox"
+                                        onChange={handleSelectAll}
+                                        checked={selectedIds.length > 0 && selectedIds.length === filteredOrders.length}
+                                    />
+                                </th>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Date</th>
+                                <th>Total Price</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        ) : (
+                            <tr>
+                                <th>Customer Name</th>
+                                <th>Phone Number</th>
+                                <th>Total Orders</th>
+                                <th>Total Spent</th>
+                                <th>Last Purchase</th>
+                                <th>Actions</th>
+                            </tr>
+                        )}
                     </thead>
                     <tbody>
-                        {filteredOrders.length > 0 ? (
-                            filteredOrders.map((order) => (
-                                <tr key={order.id} className={selectedIds.includes(order.id) ? styles.selectedRow : ''}>
-                                    <td className={styles.checkboxCol}>
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedIds.includes(order.id)}
-                                            onChange={() => handleSelectOrder(order.id)}
-                                        />
-                                    </td>
-                                    <td className={styles.orderId}>{order.orderCode}</td>
-                                    <td>
-                                        <div className={styles.customerInfo}>
-                                            <span className={styles.customerName}>{order.receiverName || 'Unknown'}</span>
-                                            <span className={styles.customerPhone}>{order.receiverPhone || 'N/A'}</span>
-                                        </div>
-                                    </td>
-                                    <td>{order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}</td>
-                                    <td className={styles.totalPrice}>${(order.totalPrice || 0).toFixed(2)}</td>
-                                    <td>
-                                        <span className={`${styles.statusBadge} ${getStatusColor(order.status)}`}>
-                                            {order.status || 'UNKNOWN'}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <div className={styles.actionButtons}>
-                                            <div className={styles.moreMenuWrapper}>
-                                                <button
-                                                    className={`${styles.moreBtn} ${activeMenu === order.id ? styles.moreBtnActive : ''}`}
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setActiveMenu(activeMenu === order.id ? null : order.id);
-                                                    }}
-                                                >
-                                                    <BiDotsVerticalRounded />
-                                                </button>
-                                                {activeMenu === order.id && (
-                                                    <div className={styles.dropdownMenu} onClick={(e) => e.stopPropagation()}>
-                                                        <button onClick={() => navigate(`/admin/orders/${order.id}`)}>
-                                                            <BiShow /> View Details
-                                                        </button>
-                                                        {order.status !== 'CANCELLED' && order.status !== 'DELIVERED' && (
+                        {viewMode === 'ALL' ? (
+                            filteredOrders.length > 0 ? (
+                                filteredOrders.map((order) => (
+                                    <tr key={order.id} className={selectedIds.includes(order.id) ? styles.selectedRow : ''}>
+                                        <td className={styles.checkboxCol}>
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedIds.includes(order.id)}
+                                                onChange={() => handleSelectOrder(order.id)}
+                                            />
+                                        </td>
+                                        <td className={styles.orderId}>{order.orderCode}</td>
+                                        <td>
+                                            <div className={styles.customerInfo}>
+                                                <span className={styles.customerName}>{order.receiverName || 'Unknown'}</span>
+                                                <span className={styles.customerPhone}>{order.receiverPhone || 'N/A'}</span>
+                                            </div>
+                                        </td>
+                                        <td>{order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}</td>
+                                        <td className={styles.totalPrice}>${(order.totalPrice || 0).toFixed(2)}</td>
+                                        <td>
+                                            <span className={`${styles.statusBadge} ${getStatusColor(order.status)}`}>
+                                                {order.status || 'UNKNOWN'}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div className={styles.actionButtons}>
+                                                <div className={styles.moreMenuWrapper}>
+                                                    <button
+                                                        className={`${styles.moreBtn} ${activeMenu === order.id ? styles.moreBtnActive : ''}`}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setActiveMenu(activeMenu === order.id ? null : order.id);
+                                                        }}
+                                                    >
+                                                        <BiDotsVerticalRounded />
+                                                    </button>
+                                                    {activeMenu === order.id && (
+                                                        <div className={styles.dropdownMenu} onClick={(e) => e.stopPropagation()}>
+                                                            <button onClick={() => navigate(`/admin/orders/${order.id}`)}>
+                                                                <BiShow /> View Details
+                                                            </button>
+                                                            {order.status !== 'CANCELLED' && order.status !== 'DELIVERED' && (
+                                                                <button
+                                                                    className={styles.cancelAction}
+                                                                    onClick={() => {
+                                                                        openConfirmModal(order, 'cancel');
+                                                                        setActiveMenu(null);
+                                                                    }}
+                                                                >
+                                                                    <BiXCircle /> Cancel Order
+                                                                </button>
+                                                            )}
                                                             <button
-                                                                className={styles.cancelAction}
+                                                                className={styles.deleteAction}
                                                                 onClick={() => {
-                                                                    openConfirmModal(order, 'cancel');
+                                                                    openConfirmModal(order, 'delete');
                                                                     setActiveMenu(null);
                                                                 }}
                                                             >
-                                                                <BiXCircle /> Cancel Order
+                                                                <BiTrash /> Delete Order
                                                             </button>
-                                                        )}
-                                                        <button
-                                                            className={styles.deleteAction}
-                                                            onClick={() => {
-                                                                openConfirmModal(order, 'delete');
-                                                                setActiveMenu(null);
-                                                            }}
-                                                        >
-                                                            <BiTrash /> Delete Order
-                                                        </button>
-                                                    </div>
-                                                )}
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
-                                        </div>
-                                    </td>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="7" className={styles.noData}>No orders found matching your criteria.</td>
                                 </tr>
-                            ))
+                            )
                         ) : (
-                            <tr>
-                                <td colSpan="6" className={styles.noData}>No orders found matching your criteria.</td>
-                            </tr>
+                            aggregatedCustomers.length > 0 ? (
+                                aggregatedCustomers.map((customer, idx) => (
+                                    <tr key={idx}>
+                                        <td>
+                                            <div className={styles.customerNameLarge}>{customer.name}</div>
+                                        </td>
+                                        <td>{customer.phone}</td>
+                                        <td style={{ fontWeight: 600 }}>{customer.totalOrders} orders</td>
+                                        <td className={styles.totalPrice}>${customer.totalSpent.toFixed(2)}</td>
+                                        <td>{new Date(customer.lastOrderDate).toLocaleDateString()}</td>
+                                        <td>
+                                            <button
+                                                className={styles.historyBtn}
+                                                onClick={() => handleViewCustomerHistory(customer.name)}
+                                            >
+                                                <BiSearch /> View History
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="6" className={styles.noData}>No customers found matching your criteria.</td>
+                                </tr>
+                            )
                         )}
                     </tbody>
                 </table>
