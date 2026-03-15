@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { BiTrash, BiCheck } from 'react-icons/bi';
 import { useCart } from '../../context/CartContext';
 import { useToast } from '../../components/common/toast/ToastContext';
@@ -89,7 +89,7 @@ function Cart() {
         <div className={styles.cartContainer}>
             {/* Breadcrumbs */}
             <div className={styles.breadcrumbs}>
-                Home &gt; <span>Cart</span>
+                <Link to="/">Home</Link> &gt; <span>Cart</span>
             </div>
 
             <h1 className={styles.pageTitle}>Cart</h1>

@@ -108,6 +108,78 @@
     flex: 1;
 }
 
+/* Hierarchical Categories */
+.categoryGroup {
+    margin: 4px 0;
+}
+
+.parentCategory {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--text-main);
+    transition: all 0.2s;
+}
+
+.parentTitle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.parentCategory svg {
+    font-size: 1.2rem;
+    color: var(--text-light);
+}
+
+.subCategoryList {
+    list-style: none;
+    padding-left: 24px;
+    margin: 4px 0 12px;
+    border-left: 1.5px solid var(--border-color);
+    animation: slideDown 0.3s ease-out;
+}
+
+.subCategoryItem {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    transition: all 0.2s;
+}
+
+.subCategoryItem:hover {
+    color: var(--text-main);
+    transform: translateX(3px);
+}
+
+.activeSub {
+    color: var(--text-main);
+    font-weight: 600;
+}
+
+.activeSub span {
+    color: var(--primary-black);
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        max-height: 500px;
+        transform: translateY(0);
+    }
+}
+
 /* Color Filter */
 .colorLeft {
     display: flex;
@@ -138,6 +210,77 @@
 .itemCount {
     color: #aaa;
     font-size: 0.85rem;
+}
+
+/* No Results Found Styling */
+.noResults {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 6rem 2rem;
+    background: var(--bg-card);
+    border-radius: 20px;
+    border: 2px dashed var(--border-color);
+    margin: 2rem 0;
+    text-align: center;
+}
+
+.noResultsContent {
+    max-width: 450px;
+}
+
+.noResultsIcon {
+    width: 100px;
+    height: 100px;
+    background: var(--bg-hover);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    color: var(--text-light);
+}
+
+.noResultsContent h3 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    color: var(--text-main);
+}
+
+.noResultsContent p {
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+.clearBtnLarge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 28px;
+    background: var(--primary-black);
+    color: var(--primary-white);
+    border: none;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--shadow-md);
+}
+
+.clearBtnLarge:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+    background: var(--bg-hover);
+    color: var(--text-main);
+}
+
+.clearBtnLarge:active {
+    transform: translateY(-1px);
 }
 
 /* Price Filter */

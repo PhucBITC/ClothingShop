@@ -53,6 +53,9 @@ function ProductList() {
         size: false
     });
 
+    // Expanded parent categories in sidebar
+    const [expandedCategories, setExpandedCategories] = useState({});
+
     const colors = [
         { name: 'Red', hex: '#FF0000', count: 10 },
         { name: 'Blue', hex: '#4169E1', count: 14 },
@@ -173,6 +176,13 @@ function ProductList() {
         setCollapsed(prev => ({ ...prev, [section]: !prev[section] }));
     };
 
+    const toggleCategoryGroup = (type) => {
+        setExpandedCategories(prev => ({
+            ...prev,
+            [type]: !prev[type]
+        }));
+    };
+
     const handleApplyPriceFilter = () => {
         setPage(0);
         fetchProducts();
@@ -230,19 +240,53 @@ function ProductList() {
                             <ul className={styles.filterList}>
                                 <li
                                     className={`${styles.filterItem} ${filters.categoryId === '' ? styles.activeFilter : ''}`}
-                                    onClick={() => setFilters({ ...filters, categoryId: '' })}
+                                    onClick={() => {
+                                        setFilters({ ...filters, categoryId: '' });
+                                        setPage(0);
+                                    }}
                                 >
                                     <input type="checkbox" checked={filters.categoryId === ''} readOnly />
                                     <span>All Products</span>
                                 </li>
-                                {categories.map((cat) => (
-                                    <li
-                                        key={cat.id}
-                                        className={`${styles.filterItem} ${filters.categoryId == cat.id ? styles.activeFilter : ''}`}
-                                        onClick={() => setFilters({ ...filters, categoryId: cat.id })}
-                                    >
-                                        <input type="checkbox" checked={filters.categoryId == cat.id} readOnly />
-                                        <span>{cat.name}</span>
+
+                                {Object.entries(
+                                    categories.reduce((acc, cat) => {
+                                        const type = cat.categoryType || 'Other';
+                                        if (!acc[type]) acc[type] = [];
+                                        acc[type].push(cat);
+                                        return acc;
+                                    }, {})
+                                ).map(([type, items]) => (
+                                    <li key={type} className={styles.categoryGroup}>
+                                        <div
+                                            className={`${styles.parentCategory} ${expandedCategories[type] ? styles.activeParent : ''}`}
+                                            onClick={() => toggleCategoryGroup(type)}
+                                        >
+                                            <div className={styles.parentTitle}>
+                                                {expandedCategories[type] ? <BiChevronDown /> : <BiChevronRight />}
+                                                <span>{type}</span>
+                                            </div>
+                                            <span className={styles.itemCount}>({items.length})</span>
+                                        </div>
+
+                                        {expandedCategories[type] && (
+                                            <ul className={styles.subCategoryList}>
+                                                {items.map(cat => (
+                                                    <li
+                                                        key={cat.id}
+                                                        className={`${styles.subCategoryItem} ${filters.categoryId == cat.id ? styles.activeSub : ''}`}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setFilters({ ...filters, categoryId: cat.id });
+                                                            setPage(0);
+                                                        }}
+                                                    >
+                                                        <input type="checkbox" checked={filters.categoryId == cat.id} readOnly />
+                                                        <span>{cat.name}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )}
                                     </li>
                                 ))}
                             </ul>
@@ -377,8 +421,16 @@ function ProductList() {
                                 ))
                             ) : (
                                 <div className={styles.noResults}>
-                                    <BiSearch size={50} />
-                                    <p>No products found matching your filters.</p>
+                                    <div className={styles.noResultsContent}>
+                                        <div className={styles.noResultsIcon}>
+                                            <BiSearch size={60} />
+                                        </div>
+                                        <h3>Oops! No products found</h3>
+                                        <p>We couldn't find any products matching your current filters. Try adjusting your search or clearing the filters to see more results.</p>
+                                        <button className={styles.clearBtnLarge} onClick={handleResetFilters}>
+                                            <BiReset size={20} /> Clear All Filters
+                                        </button>
+                                    </div>
                                 </div>
                             )}
                         </div>
