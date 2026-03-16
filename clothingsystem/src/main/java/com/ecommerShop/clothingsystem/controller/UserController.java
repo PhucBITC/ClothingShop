@@ -132,9 +132,9 @@ public class UserController {
                 return ResponseEntity.ok("User deleted permanently.");
             }
         } else {
-            user.setStatus("DELETED");
+            user.setStatus("BANNED");
             userRepository.save(user);
-            return ResponseEntity.ok("User moved to trash.");
+            return ResponseEntity.ok("Customer has been suspended/banned. They can request recovery from the login page.");
         }
     }
 

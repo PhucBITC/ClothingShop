@@ -12,7 +12,8 @@ import {
     BiX,
     BiUser,
     BiTime,
-    BiRefresh
+    BiRefresh,
+    BiNoEntry
 } from 'react-icons/bi';
 import { useToast } from '../../../components/common/toast/ToastContext';
 import styles from './CustomerList.module.css';
@@ -399,6 +400,7 @@ const CustomerList = () => {
                                         {user.status === 'ACTIVE' && <span className={styles.statusActive}><BiCheckCircle /> Active</span>}
                                         {user.status === 'INACTIVE' && <span className={styles.statusInactive}><BiXCircle /> Inactive</span>}
                                         {user.status === 'DELETED' && <span className={styles.statusDeleted}><BiTrash /> Deleted</span>}
+                                        {user.status === 'BANNED' && <span className={styles.statusBanned}><BiNoEntry /> Suspended</span>}
                                         {user.status === 'RESTORE_PENDING' && <span className={styles.statusRestorePending}><BiTime /> Restore Pending</span>}
                                     </td>
                                     <td>
@@ -410,7 +412,7 @@ const CustomerList = () => {
                                             <button className={styles.addressBtn} onClick={() => handleOpenUserModal(user)}>
                                                 <BiEdit /> Edit
                                             </button>
-                                            {(user.status === 'DELETED' || user.status === 'RESTORE_PENDING') ? (
+                                            {(user.status === 'DELETED' || user.status === 'BANNED' || user.status === 'RESTORE_PENDING') ? (
                                                 <button className={styles.restoreBtn} onClick={() => handleRestoreUser(user.id)}>
                                                     <BiRefresh size={16} /> Restore
                                                 </button>

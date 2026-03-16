@@ -1,10 +1,12 @@
 package com.ecommerShop.clothingsystem.controller;
 
 import com.ecommerShop.clothingsystem.model.AuthProvider;
+import com.ecommerShop.clothingsystem.model.Notification;
 import com.ecommerShop.clothingsystem.model.Role;
 import com.ecommerShop.clothingsystem.model.User;
 import com.ecommerShop.clothingsystem.repository.UserRepository;
 import com.ecommerShop.clothingsystem.service.JwtService;
+import com.ecommerShop.clothingsystem.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import com.ecommerShop.clothingsystem.service.EmailService;
@@ -37,6 +40,9 @@ public class AuthController {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private NotificationService notificationService;
 
     // Temporary storage for pending registrations: email -> OTP metadata
     private static final Map<String, String> pendingOtpStore = new ConcurrentHashMap<>();
@@ -222,13 +228,20 @@ public class AuthController {
             }
             if ("DELETED".equals(user.getStatus())) {
                 Map<String, Object> errorResponse = new HashMap<>();
-                errorResponse.put("error", "Account has been deleted");
+                errorResponse.put("error", "Your account has been deleted. You can request recovery below.");
                 errorResponse.put("isDeleted", true);
                 errorResponse.put("email", email);
                 return ResponseEntity.status(403).body(errorResponse);
             }
+            if ("BANNED".equals(user.getStatus())) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("error", "Your account has been suspended by an administrator. Please request recovery or contact support.");
+                errorResponse.put("isBanned", true);
+                errorResponse.put("email", email);
+                return ResponseEntity.status(403).body(errorResponse);
+            }
             if ("RESTORE_PENDING".equals(user.getStatus())) {
-                return ResponseEntity.status(403).body("Your account recovery request is pending admin approval.");
+                return ResponseEntity.status(403).body("Your account recovery request is pending admin approval. We will notify you via email once processed.");
             }
             // Instead of returning token immediately, create 2FA OTP
             String otp = String.valueOf((int) (Math.random() * 900000) + 100000);
@@ -525,13 +538,27 @@ public class AuthController {
             return ResponseEntity.badRequest().body("User not found");
         }
 
-        if (!"DELETED".equals(user.getStatus())) {
-            return ResponseEntity.badRequest().body("This account is not in a deleted state.");
+        if (!"DELETED".equals(user.getStatus()) && !"BANNED".equals(user.getStatus())) {
+            return ResponseEntity.badRequest().body("This account is not in a deletable or banned state.");
         }
 
         user.setStatus("RESTORE_PENDING");
         userRepository.save(user);
 
-        return ResponseEntity.ok("Recovery request submitted successfully. Please wait for admin approval.");
+        // Notify all admins
+        try {
+            List<User> admins = userRepository.findByRole(Role.ADMIN);
+            for (User admin : admins) {
+                String title = "Account Restoration Request";
+                String content = String.format("User %s (%s) has requested to restore their account (Status: %s).", 
+                    user.getFullName(), user.getEmail(), user.getStatus());
+                
+                notificationService.createNotification(admin, title, content, Notification.NotificationType.SYSTEM, true);
+            }
+        } catch (Exception e) {
+            System.err.println("Error notifying admins: " + e.getMessage());
+        }
+
+        return ResponseEntity.ok("Recovery request submitted successfully. Our administration team has been notified and will process your request shortly.");
     }
 }

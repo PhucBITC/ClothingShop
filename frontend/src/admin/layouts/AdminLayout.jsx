@@ -15,17 +15,26 @@ const AdminLayout = () => {
     const [unreadMessages, setUnreadMessages] = useState(0);
     const [recentMessages, setRecentMessages] = useState([]);
     const [isMessageDropdownOpen, setIsMessageDropdownOpen] = useState(false);
+    const [unreadNotifications, setUnreadNotifications] = useState(0);
+    const [recentNotifications, setRecentNotifications] = useState([]);
+    const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] = useState(false);
     const [viewingMessage, setViewingMessage] = useState(null);
 
     const refreshAllCounts = async () => {
         try {
+            // Messages
             const unreadRes = await axios.get('/contact/unread-count');
             setUnreadMessages(unreadRes.data);
-            
             const recentRes = await axios.get('/contact');
             setRecentMessages(recentRes.data.slice(0, 5));
+
+            // Notifications
+            const unreadNotifRes = await axios.get('/notifications/unread-count');
+            setUnreadNotifications(unreadNotifRes.data);
+            const recentNotifRes = await axios.get('/notifications');
+            setRecentNotifications(recentNotifRes.data.slice(0, 5));
         } catch (error) {
-            console.error('Error refreshing message counts:', error);
+            console.error('Error refreshing admin counts:', error);
         }
     };
 
@@ -147,7 +156,82 @@ const AdminLayout = () => {
                         <div className={styles.actionIconContainer}>
                             <button 
                                 className={styles.actionIcon} 
-                                onClick={() => setIsMessageDropdownOpen(!isMessageDropdownOpen)}
+                                onClick={() => {
+                                    setIsNotificationDropdownOpen(!isNotificationDropdownOpen);
+                                    setIsMessageDropdownOpen(false);
+                                }}
+                            >
+                                <BiBell />
+                                {unreadNotifications > 0 && (
+                                    <span className={styles.notificationBadge}>
+                                        {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                                    </span>
+                                )}
+                            </button>
+
+                            {isNotificationDropdownOpen && (
+                                <>
+                                    <div className={styles.dropdownOverlay} onClick={() => setIsNotificationDropdownOpen(false)} />
+                                    <div className={styles.messageDropdown}>
+                                        <div className={styles.dropdownHeader}>
+                                            <h3>Notifications</h3>
+                                            <button 
+                                                className={styles.markAllReadBtn}
+                                                onClick={async () => {
+                                                    try {
+                                                        await axios.post('/notifications/mark-all-read');
+                                                        refreshAllCounts();
+                                                    } catch (err) {
+                                                        console.error("Error marking all as read:", err);
+                                                    }
+                                                }}
+                                            >
+                                                Mark all as read
+                                            </button>
+                                        </div>
+                                        <div className={styles.dropdownBody}>
+                                            {recentNotifications.length > 0 ? (
+                                                recentNotifications.map(notif => (
+                                                    <div 
+                                                        key={notif.id} 
+                                                        className={`${styles.dropdownItem} ${!notif.isRead ? styles.unread : ''}`}
+                                                        onClick={async () => {
+                                                            if (!notif.isRead) {
+                                                                try {
+                                                                    await axios.patch(`/notifications/${notif.id}/read`);
+                                                                    refreshAllCounts();
+                                                                } catch (err) {
+                                                                    console.error("Error marking notif as read:", err);
+                                                                }
+                                                            }
+                                                            setIsNotificationDropdownOpen(false);
+                                                        }}
+                                                    >
+                                                        <div className={styles.itemHeader}>
+                                                            <span className={styles.itemName}>{notif.title}</span>
+                                                            <span className={styles.itemDate}>
+                                                                {new Date(notif.createdAt).toLocaleDateString()}
+                                                            </span>
+                                                        </div>
+                                                        <p className={styles.itemSnippet}>{notif.content}</p>
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <div className={styles.emptyDropdown}>No notifications yet</div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+
+                        <div className={styles.actionIconContainer}>
+                            <button 
+                                className={styles.actionIcon} 
+                                onClick={() => {
+                                    setIsMessageDropdownOpen(!isMessageDropdownOpen);
+                                    setIsNotificationDropdownOpen(false);
+                                }}
                             >
                                 <BiMessageDetail />
                                 {unreadMessages > 0 && (

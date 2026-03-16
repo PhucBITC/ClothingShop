@@ -107,11 +107,13 @@ const Login = () => {
       setIsLoading(false);
       console.error('Login error:', err);
       if (err.response && err.response.data) {
-        if (err.response.data.isDeleted) {
+        if (err.response.data.isDeleted || err.response.data.isBanned) {
           setRestoreEmail(err.response.data.email);
           setShowRestoreModal(true);
         } else {
-          toast.error("Login Failed", err.response.data.message || err.response.data || 'Invalid email or password!');
+          // Fix: Ensure we don't try to render an object in a toast
+          const errorMsg = err.response.data.error || err.response.data.message || (typeof err.response.data === 'string' ? err.response.data : 'Invalid email or password!');
+          toast.error("Login Failed", errorMsg);
         }
       } else {
         toast.error("Error", 'An error occurred while connecting to the server.');
@@ -213,10 +215,10 @@ const Login = () => {
         <div className={styles.modalOverlay}>
           <div className={styles.modalContent}>
             <div className={styles.modalHeader}>
-              <h3 className={styles.modalTitle}>Account Deleted</h3>
+              <h3 className={styles.modalTitle}>Account Status</h3>
             </div>
             <div className={styles.modalBody}>
-              <p style={{ marginBottom: '10px' }}>This account has been deleted or disabled.</p>
+              <p style={{ marginBottom: '10px' }}>This account has been deleted or suspended by an administrator.</p>
               <p style={{ marginBottom: '10px' }}>Would you like to send a recovery request to the administration team?</p>
               <p style={{ fontSize: '0.9rem', color: '#718096' }}><strong>Note:</strong> Please check your email after 24 hours or contact our hotline <strong>1900 1809</strong> for the fastest support.</p>
             </div>
