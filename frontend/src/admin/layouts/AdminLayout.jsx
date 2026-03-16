@@ -71,7 +71,7 @@ const AdminLayout = () => {
         if (pathname.includes('/admin/products')) return 'Products';
         if (pathname.includes('/admin/categories')) return 'Categories';
         if (pathname.includes('/admin/customers')) return 'Customers';
-        if (pathname.includes('/admin/messages')) return 'Messages';
+        if (pathname.includes('/admin/notifications')) return 'Notifications';
         if (pathname === '/admin') return 'Dashboard';
         return 'Dashboard';
     };
@@ -84,7 +84,7 @@ const AdminLayout = () => {
         { name: 'Products', path: '/admin/products', icon: <BiPackage /> },
         { name: 'Categories', path: '/admin/categories', icon: <BiGridAlt /> },
         { name: 'Customers', path: '/admin/customers', icon: <BiUser /> },
-        { name: 'Messages', path: '/admin/messages', icon: <BiMessageDetail /> },
+        { name: 'Notifications', path: '/admin/notifications', icon: <BiBell /> },
         { name: 'Reports', path: '/admin/reports', icon: <BiFile /> },
         { name: 'Discounts', path: '/admin/discounts', icon: <BiPurchaseTag /> },
         { name: 'Integrations', path: '/admin/integrations', icon: <BiLink /> },
@@ -158,13 +158,12 @@ const AdminLayout = () => {
                                 className={styles.actionIcon} 
                                 onClick={() => {
                                     setIsNotificationDropdownOpen(!isNotificationDropdownOpen);
-                                    setIsMessageDropdownOpen(false);
                                 }}
                             >
                                 <BiBell />
-                                {unreadNotifications > 0 && (
+                                {(unreadNotifications + unreadMessages) > 0 && (
                                     <span className={styles.notificationBadge}>
-                                        {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                                        {(unreadNotifications + unreadMessages) > 9 ? '9+' : (unreadNotifications + unreadMessages)}
                                     </span>
                                 )}
                             </button>
@@ -174,20 +173,10 @@ const AdminLayout = () => {
                                     <div className={styles.dropdownOverlay} onClick={() => setIsNotificationDropdownOpen(false)} />
                                     <div className={styles.messageDropdown}>
                                         <div className={styles.dropdownHeader}>
-                                            <h3>Notifications</h3>
-                                            <button 
-                                                className={styles.markAllReadBtn}
-                                                onClick={async () => {
-                                                    try {
-                                                        await axios.post('/notifications/mark-all-read');
-                                                        refreshAllCounts();
-                                                    } catch (err) {
-                                                        console.error("Error marking all as read:", err);
-                                                    }
-                                                }}
-                                            >
-                                                Mark all as read
-                                            </button>
+                                            <h3>Notifications Hub</h3>
+                                            <NavLink to="/admin/notifications" onClick={() => setIsNotificationDropdownOpen(false)}>
+                                                View All
+                                            </NavLink>
                                         </div>
                                         <div className={styles.dropdownBody}>
                                             {recentNotifications.length > 0 ? (
@@ -220,69 +209,18 @@ const AdminLayout = () => {
                                                 <div className={styles.emptyDropdown}>No notifications yet</div>
                                             )}
                                         </div>
-                                    </div>
-                                </>
-                            )}
-                        </div>
-
-                        <div className={styles.actionIconContainer}>
-                            <button 
-                                className={styles.actionIcon} 
-                                onClick={() => {
-                                    setIsMessageDropdownOpen(!isMessageDropdownOpen);
-                                    setIsNotificationDropdownOpen(false);
-                                }}
-                            >
-                                <BiMessageDetail />
-                                {unreadMessages > 0 && (
-                                    <span className={styles.messageBadge}>
-                                        {unreadMessages > 9 ? '9++' : unreadMessages}
-                                    </span>
-                                )}
-                            </button>
-
-                            {isMessageDropdownOpen && (
-                                <>
-                                    <div className={styles.dropdownOverlay} onClick={() => setIsMessageDropdownOpen(false)} />
-                                    <div className={styles.messageDropdown}>
-                                        <div className={styles.dropdownHeader}>
-                                            <h3>Recent Inquiries</h3>
-                                            <NavLink to="/admin/messages" onClick={() => setIsMessageDropdownOpen(false)}>
-                                                View All
-                                            </NavLink>
-                                        </div>
-                                        <div className={styles.dropdownBody}>
-                                            {recentMessages.length > 0 ? (
-                                                recentMessages.map(msg => (
-                                                    <div 
-                                                        key={msg.id} 
-                                                        className={`${styles.dropdownItem} ${!msg.isRead ? styles.unread : ''}`}
-                                                        onClick={() => handleViewMessage(msg)}
-                                                    >
-                                                        <div className={styles.itemHeader}>
-                                                            <span className={styles.itemName}>{msg.name}</span>
-                                                            <span className={styles.itemDate}>
-                                                                {new Date(msg.createdAt).toLocaleDateString()}
-                                                            </span>
-                                                        </div>
-                                                        <p className={styles.itemSnippet}>{msg.message}</p>
-                                                    </div>
-                                                ))
-                                            ) : (
-                                                <div className={styles.emptyDropdown}>No messages yet</div>
-                                            )}
-                                        </div>
                                         <NavLink 
-                                            to="/admin/messages" 
+                                            to="/admin/notifications" 
                                             className={styles.dropdownFooter}
-                                            onClick={() => setIsMessageDropdownOpen(false)}
+                                            onClick={() => setIsNotificationDropdownOpen(false)}
                                         >
-                                            See everything in Inbox
+                                            View all in Notifications Center
                                         </NavLink>
                                     </div>
                                 </>
                             )}
                         </div>
+
 
                         <div className={styles.userProfile}>
                             <img src="https://i.pravatar.cc/150?img=12" alt="Admin" className={styles.avatar} />
@@ -317,11 +255,11 @@ const AdminLayout = () => {
                         </div>
                         <div className={styles.modalFooterContent}>
                             <NavLink 
-                                to="/admin/messages" 
+                                to="/admin/notifications" 
                                 className={styles.goToInboxBtn}
                                 onClick={() => setViewingMessage(null)}
                             >
-                                Go to Inbox
+                                Go to Center
                             </NavLink>
                             <button className={styles.closeBtn} onClick={() => setViewingMessage(null)}>
                                 Close

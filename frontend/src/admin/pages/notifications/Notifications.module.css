@@ -20,6 +20,62 @@
     color: var(--text-light);
 }
 
+/* Tabs */
+.tabsWrapper {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    border-bottom: 1.5px solid var(--border-color);
+    padding-bottom: 8px;
+}
+
+.tabBtn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border: none;
+    background: none;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-light);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.tabBtn:hover {
+    background: var(--bg-hover);
+    color: var(--primary-black);
+}
+
+.activeTab {
+    color: var(--primary-black);
+    background: #f1f5f9;
+}
+
+.activeTab::after {
+    content: '';
+    position: absolute;
+    bottom: -9.5px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--primary-black);
+    border-radius: 3px;
+}
+
+.tabBadge {
+    background: #FF3B30;
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+}
+
 /* Controls */
 .controls {
     display: flex;
@@ -112,6 +168,27 @@
     background: #333;
     color: white;
     border-color: #333;
+}
+
+.markAllReadBtnMain {
+    padding: 10px 15px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f1f5f9;
+    color: #475569;
+    border: 1.5px solid #cbd5e1;
+    transition: all 0.2s;
+}
+
+.markAllReadBtnMain:hover {
+    background: white;
+    border-color: #64748b;
+    color: #1e293b;
 }
 
 .filterSelect {
