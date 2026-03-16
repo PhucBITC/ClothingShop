@@ -1,7 +1,6 @@
 package com.ecommerShop.clothingsystem.repository;
 
 import com.ecommerShop.clothingsystem.model.Order;
-import com.ecommerShop.clothingsystem.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,5 +12,5 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     boolean existsByOrderCode(String orderCode);
 
-    long countByUser(User user);
+    long countByUserId(Long userId);
 }

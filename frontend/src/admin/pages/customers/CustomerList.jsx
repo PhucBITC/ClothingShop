@@ -126,6 +126,40 @@ const CustomerList = () => {
         return `http://localhost:8080/api/files/${filename}`;
     };
 
+    const formatLocationName = (name) => {
+        if (!name) return '';
+        
+        const types = [
+            { vn: 'Thành phố', en: 'city' },
+            { vn: 'Tỉnh', en: 'Province' },
+            { vn: 'Quận', en: 'District' },
+            { vn: 'Huyện', en: 'District' },
+            { vn: 'Thị xã', en: 'Town' },
+            { vn: 'Phường', en: 'Ward' },
+            { vn: 'Xã', en: 'Ward' },
+            { vn: 'Thị trấn', en: 'Township' }
+        ];
+
+        let foundType = '';
+        let cleanName = name;
+
+        for (const t of types) {
+            if (name.startsWith(t.vn)) {
+                foundType = t.en;
+                cleanName = name.replace(t.vn, '').trim();
+                break;
+            }
+        }
+
+        const transliterated = cleanName
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/đ/g, "d")
+            .replace(/Đ/g, "D");
+
+        return transliterated + (foundType ? ' ' + foundType : '');
+    };
+
     // --- User CRUD ---
     const handleOpenUserModal = (user = null) => {
         setAvatarFile(null);
@@ -402,8 +436,8 @@ const CustomerList = () => {
                                                                     {(addr.default || addr.isDefault) && <span className={styles.defaultLabel}>Default</span>}
                                                                 </div>
                                                                 <p>{addr.phone}</p>
-                                                                <p>{addr.streetAddress}, {addr.ward}</p>
-                                                                <p>{addr.district}, {addr.province}</p>
+                                                                <p>{addr.streetAddress}, {formatLocationName(addr.ward)}</p>
+                                                                <p>{formatLocationName(addr.district)}, {formatLocationName(addr.province)}</p>
                                                                 <div className={styles.cardActions}>
                                                                     <button onClick={() => handleOpenAddressModal(user.id, addr)}><BiEdit /> Edit</button>
                                                                     <button className={styles.remove} onClick={() => confirmDeleteAddress(user.id, addr.id)}><BiTrash /> Remove</button>
@@ -519,14 +553,14 @@ const CustomerList = () => {
                                     <label>Province</label>
                                     <select name="province" className={styles.input} required value={formData.province} onChange={handleAddressInputChange}>
                                         <option value="">-- Select Province --</option>
-                                        {provinces.map(p => <option key={p.code} value={p.name}>{p.name}</option>)}
+                                        {provinces.map(p => <option key={p.code} value={p.name}>{formatLocationName(p.name)}</option>)}
                                     </select>
                                 </div>
                                 <div className={styles.formGroup}>
                                     <label>District</label>
                                     <select name="district" className={styles.input} required value={formData.district} onChange={handleAddressInputChange} disabled={!formData.province}>
                                         <option value="">-- Select District --</option>
-                                        {districts.map(d => <option key={d.code} value={d.name}>{d.name}</option>)}
+                                        {districts.map(d => <option key={d.code} value={d.name}>{formatLocationName(d.name)}</option>)}
                                     </select>
                                 </div>
                             </div>
@@ -535,7 +569,7 @@ const CustomerList = () => {
                                     <label>Ward</label>
                                     <select name="ward" className={styles.input} required value={formData.ward} onChange={handleAddressInputChange} disabled={!formData.district}>
                                         <option value="">-- Select Ward --</option>
-                                        {wards.map(w => <option key={w.code} value={w.name}>{w.name}</option>)}
+                                        {wards.map(w => <option key={w.code} value={w.name}>{formatLocationName(w.name)}</option>)}
                                     </select>
                                 </div>
                                 <div className={styles.formGroup}>

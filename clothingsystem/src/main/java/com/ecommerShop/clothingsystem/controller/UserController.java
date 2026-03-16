@@ -105,16 +105,16 @@ public class UserController {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         
         if (permanent) {
-            long orderCount = orderRepository.countByUser(user);
+            long orderCount = orderRepository.countByUserId(id);
             if (orderCount > 0) {
                 // Professional Anonymization for users with history
-                user.setFullName("Người dùng đã xóa");
+                user.setFullName("Anonymized User");
                 user.setEmail("deleted_user_" + id + "_" + System.currentTimeMillis() + "@deleted.com");
                 user.setPhoneNumber(null);
                 user.setStatus("ANONYMIZED");
                 user.setAvatarUrl(null);
                 userRepository.save(user);
-                return ResponseEntity.ok("Tài khoản đã được vô danh hóa để bảo toàn lịch sử đơn hàng. Email cũ hiện đã có thể dùng để đăng ký mới.");
+                return ResponseEntity.ok("Account has been anonymized to preserve order history. The original email is now available for new registration.");
             } else {
                 // Hard Purge for users with no history
                 // 1. Delete Shipping Addresses first
