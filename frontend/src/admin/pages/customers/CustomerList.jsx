@@ -281,20 +281,31 @@ const CustomerList = () => {
         });
     };
 
-    const confirmDeleteUser = (userId) => {
+    const confirmDeleteUser = (user) => {
         setConfirmModal({
             show: true,
             title: 'Delete Customer',
-            message: 'Caution! This will permanently remove this customer and all their associated data. This action cannot be undone.',
-            confirmText: 'Delete Permanently',
-            type: 'danger',
+            message: `Choose how you want to remove ${user.fullName}. Permanent deletion is only allowed if they have no transaction history.`,
+            confirmText: 'Move to Trash',
+            type: 'warning',
             onConfirm: async () => {
                 try {
-                    await axios.delete(`/admin/users/${userId}`);
-                    toast.success("Success", "Customer deleted.");
+                    await axios.delete(`/admin/users/${user.id}`);
+                    toast.success("Success", "Customer moved to trash.");
                     fetchCustomers();
                 } catch (err) {
                     toast.error("Error", "Failed to delete customer.");
+                }
+                setConfirmModal(prev => ({ ...prev, show: false }));
+            },
+            showPermanent: true,
+            onPermanentConfirm: async () => {
+                try {
+                    await axios.delete(`/admin/users/${user.id}?permanent=true`);
+                    toast.success("Success", "Customer deleted permanently.");
+                    fetchCustomers();
+                } catch (err) {
+                    toast.error("Error", err.response?.data || "Failed to delete permanently.");
                 }
                 setConfirmModal(prev => ({ ...prev, show: false }));
             }
@@ -370,7 +381,7 @@ const CustomerList = () => {
                                                     <BiRefresh size={16} /> Restore
                                                 </button>
                                             ) : (
-                                                <button className={styles.deleteBtn} onClick={() => confirmDeleteUser(user.id)}>
+                                                <button className={styles.deleteBtn} onClick={() => confirmDeleteUser(user)}>
                                                     <BiTrash />
                                                 </button>
                                             )}
@@ -559,11 +570,19 @@ const CustomerList = () => {
                         <div className={styles.confirmActions}>
                             <button className={styles.cancelBtnConfirm} onClick={() => setConfirmModal(prev => ({ ...prev, show: false }))}>Cancel</button>
                             <button
-                                className={confirmModal.type === 'danger' ? styles.dangerBtn : styles.warnBtn}
+                                className={styles.warnBtn}
                                 onClick={confirmModal.onConfirm}
                             >
                                 {confirmModal.confirmText}
                             </button>
+                            {confirmModal.showPermanent && (
+                                <button
+                                    className={styles.dangerBtn}
+                                    onClick={confirmModal.onPermanentConfirm}
+                                >
+                                    Delete Permanently
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>

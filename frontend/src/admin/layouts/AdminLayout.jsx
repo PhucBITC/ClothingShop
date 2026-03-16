@@ -6,10 +6,48 @@ import {
     BiCog, BiSearch, BiBell, BiMessageDetail, BiChevronDown
 } from 'react-icons/bi';
 import styles from './AdminLayout.module.css';
-import logo from '../../assets/logo.png'; // Updated relative path
+import logo from '../../assets/logo.png';
+import axios from '../../api/axios';
 
 const AdminLayout = () => {
+    const location = useLocation();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [unreadMessages, setUnreadMessages] = useState(0);
+    const [recentMessages, setRecentMessages] = useState([]);
+    const [isMessageDropdownOpen, setIsMessageDropdownOpen] = useState(false);
+    const [viewingMessage, setViewingMessage] = useState(null);
+
+    const refreshAllCounts = async () => {
+        try {
+            const unreadRes = await axios.get('/contact/unread-count');
+            setUnreadMessages(unreadRes.data);
+            
+            const recentRes = await axios.get('/contact');
+            setRecentMessages(recentRes.data.slice(0, 5));
+        } catch (error) {
+            console.error('Error refreshing message counts:', error);
+        }
+    };
+
+    const handleViewMessage = async (msg) => {
+        setViewingMessage(msg);
+        setIsMessageDropdownOpen(false);
+        if (!msg.isRead) {
+            try {
+                await axios.put(`/contact/${msg.id}/read`);
+                refreshAllCounts();
+            } catch (error) {
+                console.error('Error marking as read:', error);
+            }
+        }
+    };
+
+    useEffect(() => {
+        refreshAllCounts();
+        // Refresh every 30 seconds
+        const interval = setInterval(refreshAllCounts, 30000);
+        return () => clearInterval(interval);
+    }, []);
 
     // Close sidebar when navigating on mobile
     useEffect(() => {
@@ -24,6 +62,7 @@ const AdminLayout = () => {
         if (pathname.includes('/admin/products')) return 'Products';
         if (pathname.includes('/admin/categories')) return 'Categories';
         if (pathname.includes('/admin/customers')) return 'Customers';
+        if (pathname.includes('/admin/messages')) return 'Messages';
         if (pathname === '/admin') return 'Dashboard';
         return 'Dashboard';
     };
@@ -36,6 +75,7 @@ const AdminLayout = () => {
         { name: 'Products', path: '/admin/products', icon: <BiPackage /> },
         { name: 'Categories', path: '/admin/categories', icon: <BiGridAlt /> },
         { name: 'Customers', path: '/admin/customers', icon: <BiUser /> },
+        { name: 'Messages', path: '/admin/messages', icon: <BiMessageDetail /> },
         { name: 'Reports', path: '/admin/reports', icon: <BiFile /> },
         { name: 'Discounts', path: '/admin/discounts', icon: <BiPurchaseTag /> },
         { name: 'Integrations', path: '/admin/integrations', icon: <BiLink /> },
@@ -104,12 +144,60 @@ const AdminLayout = () => {
                     </div>
 
                     <div className={styles.topbarActions}>
-                        <div className={styles.actionIcon}>
-                            <BiMessageDetail />
-                        </div>
-                        <div className={styles.actionIcon}>
-                            <BiBell />
-                            <div className={styles.notificationBadge}></div>
+                        <div className={styles.actionIconContainer}>
+                            <button 
+                                className={styles.actionIcon} 
+                                onClick={() => setIsMessageDropdownOpen(!isMessageDropdownOpen)}
+                            >
+                                <BiMessageDetail />
+                                {unreadMessages > 0 && (
+                                    <span className={styles.messageBadge}>
+                                        {unreadMessages > 9 ? '9++' : unreadMessages}
+                                    </span>
+                                )}
+                            </button>
+
+                            {isMessageDropdownOpen && (
+                                <>
+                                    <div className={styles.dropdownOverlay} onClick={() => setIsMessageDropdownOpen(false)} />
+                                    <div className={styles.messageDropdown}>
+                                        <div className={styles.dropdownHeader}>
+                                            <h3>Recent Inquiries</h3>
+                                            <NavLink to="/admin/messages" onClick={() => setIsMessageDropdownOpen(false)}>
+                                                View All
+                                            </NavLink>
+                                        </div>
+                                        <div className={styles.dropdownBody}>
+                                            {recentMessages.length > 0 ? (
+                                                recentMessages.map(msg => (
+                                                    <div 
+                                                        key={msg.id} 
+                                                        className={`${styles.dropdownItem} ${!msg.isRead ? styles.unread : ''}`}
+                                                        onClick={() => handleViewMessage(msg)}
+                                                    >
+                                                        <div className={styles.itemHeader}>
+                                                            <span className={styles.itemName}>{msg.name}</span>
+                                                            <span className={styles.itemDate}>
+                                                                {new Date(msg.createdAt).toLocaleDateString()}
+                                                            </span>
+                                                        </div>
+                                                        <p className={styles.itemSnippet}>{msg.message}</p>
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <div className={styles.emptyDropdown}>No messages yet</div>
+                                            )}
+                                        </div>
+                                        <NavLink 
+                                            to="/admin/messages" 
+                                            className={styles.dropdownFooter}
+                                            onClick={() => setIsMessageDropdownOpen(false)}
+                                        >
+                                            See everything in Inbox
+                                        </NavLink>
+                                    </div>
+                                </>
+                            )}
                         </div>
 
                         <div className={styles.userProfile}>
@@ -125,9 +213,39 @@ const AdminLayout = () => {
 
                 {/* Dynamic Page Content */}
                 <div className={styles.content}>
-                    <Outlet />
+                    <Outlet context={{ refreshMessages: refreshAllCounts }} />
                 </div>
             </main>
+            {/* Quick View Modal */}
+            {viewingMessage && (
+                <div className={styles.modalOverlay} onClick={() => setViewingMessage(null)}>
+                    <div className={styles.modal} onClick={e => e.stopPropagation()}>
+                        <button className={styles.modalClose} onClick={() => setViewingMessage(null)}>&times;</button>
+                        <div className={styles.modalHeader}>
+                            <h2 className={styles.modalTitle}>Message Quick-View</h2>
+                        </div>
+                        <div className={styles.modalInfo}>
+                            <p><strong>From:</strong> {viewingMessage.name} ({viewingMessage.email})</p>
+                            <p><strong>Date:</strong> {new Date(viewingMessage.createdAt).toLocaleString()}</p>
+                        </div>
+                        <div className={styles.modalBodyContent}>
+                            {viewingMessage.message}
+                        </div>
+                        <div className={styles.modalFooterContent}>
+                            <NavLink 
+                                to="/admin/messages" 
+                                className={styles.goToInboxBtn}
+                                onClick={() => setViewingMessage(null)}
+                            >
+                                Go to Inbox
+                            </NavLink>
+                            <button className={styles.closeBtn} onClick={() => setViewingMessage(null)}>
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

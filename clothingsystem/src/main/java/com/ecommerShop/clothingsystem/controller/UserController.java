@@ -20,6 +20,9 @@ public class UserController {
     private UserRepository userRepository;
 
     @Autowired
+    private com.ecommerShop.clothingsystem.repository.OrderRepository orderRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -80,11 +83,21 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<?> deleteUser(@PathVariable Long id, @RequestParam(defaultValue = "false") boolean permanent) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-        user.setStatus("DELETED");
-        userRepository.save(user);
-        return ResponseEntity.ok().build();
+        
+        if (permanent) {
+            long orderCount = orderRepository.countByUser(user);
+            if (orderCount > 0) {
+                return ResponseEntity.badRequest().body("Cannot delete permanently: User has transaction history. Use soft-delete instead.");
+            }
+            userRepository.delete(user);
+            return ResponseEntity.ok("User deleted permanently.");
+        } else {
+            user.setStatus("DELETED");
+            userRepository.save(user);
+            return ResponseEntity.ok("User moved to trash.");
+        }
     }
 
     @PutMapping("/{id}/restore")

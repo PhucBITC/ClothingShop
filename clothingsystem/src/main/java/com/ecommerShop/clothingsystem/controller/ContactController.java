@@ -36,6 +36,12 @@ public class ContactController {
         return contactMessageRepository.findAllByOrderByCreatedAtDesc();
     }
 
+    // Get unread count (Admin)
+    @GetMapping("/unread-count")
+    public long getUnreadCount() {
+        return contactMessageRepository.countByIsRead(false);
+    }
+
     // Mark as read (Admin)
     @PutMapping("/{id}/read")
     public ResponseEntity<?> markAsRead(@PathVariable Long id) {
@@ -56,5 +62,29 @@ public class ContactController {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    // Bulk delete (Admin)
+    @DeleteMapping("/bulk-delete")
+    public ResponseEntity<?> bulkDelete(@RequestBody List<Long> ids) {
+        try {
+            contactMessageRepository.deleteAllById(ids);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Failed to delete messages"));
+        }
+    }
+
+    // Bulk mark as read (Admin)
+    @PutMapping("/bulk-read")
+    public ResponseEntity<?> bulkMarkAsRead(@RequestBody List<Long> ids) {
+        try {
+            List<ContactMessage> messages = contactMessageRepository.findAllById(ids);
+            messages.forEach(msg -> msg.setIsRead(true));
+            contactMessageRepository.saveAll(messages);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Failed to mark messages as read"));
+        }
     }
 }

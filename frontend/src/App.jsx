@@ -34,6 +34,7 @@ import CategoryForm from "./admin/pages/categories/CategoryForm";
 import CustomerList from "./admin/pages/customers/CustomerList";
 import OrderList from "./admin/pages/orders/OrderList";
 import OrderDetail from "./admin/pages/orders/OrderDetail";
+import AdminMessages from "./admin/pages/messages/Messages";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function AppLayout() {
@@ -88,6 +89,7 @@ function AppLayout() {
             <Route path="categories/add" element={<CategoryForm />} />
             <Route path="categories/edit/:id" element={<CategoryForm />} />
             <Route path="customers" element={<CustomerList />} />
+            <Route path="messages" element={<AdminMessages />} />
             <Route path="orders" element={<OrderList />} />
             <Route path="orders/:id" element={<OrderDetail />} />
           </Route>

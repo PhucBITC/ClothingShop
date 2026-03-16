@@ -185,21 +185,171 @@
     font-size: 14px;
 }
 
-.actionIcon {
-    font-size: 22px;
-    color: var(--text-gray);
-    cursor: pointer;
+.actionIconContainer {
     position: relative;
 }
 
-.notificationBadge {
+.actionIcon {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: white;
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.actionIcon:hover {
+    background-color: var(--bg-hover);
+    color: var(--primary-orange);
+}
+
+.messageBadge {
     position: absolute;
-    top: -2px;
-    right: -2px;
-    background: red;
-    width: 8px;
-    height: 8px;
+    top: -8px;
+    right: -8px;
+    background: #FF3B30;
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    min-width: 18px;
+    height: 18px;
     border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    border: 2px solid white;
+    box-shadow: 0 2px 5px rgba(255, 59, 48, 0.3);
+}
+
+/* Dropdown */
+.dropdownOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 998;
+}
+
+.messageDropdown {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    width: 320px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--border-color);
+    z-index: 999;
+    overflow: hidden;
+    animation: dropdownSlide 0.2s ease-out;
+}
+
+@keyframes dropdownSlide {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdownHeader {
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dropdownHeader h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.dropdownHeader a {
+    font-size: 0.8rem;
+    color: var(--primary-orange);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.dropdownBody {
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+.dropdownItem {
+    padding: 15px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.2s;
+    cursor: pointer;
+}
+
+.dropdownItem:hover {
+    background: #f0f4f8; /* Highlight on hover */
+}
+
+.dropdownItem.unread {
+    background: #fff9f5;
+}
+
+.dropdownItem.unread:hover {
+    background: #ffede0;
+}
+
+.itemHeader {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.itemName {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.itemDate {
+    font-size: 0.75rem;
+    color: var(--text-gray);
+}
+
+.itemSnippet {
+    font-size: 0.85rem;
+    color: var(--text-gray);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.emptyDropdown {
+    padding: 30px;
+    text-align: center;
+    color: var(--text-gray);
+    font-size: 0.9rem;
+}
+
+.dropdownFooter {
+    display: block;
+    padding: 12px;
+    text-align: center;
+    background: var(--secondary-bg);
+    color: var(--text-gray);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.dropdownFooter:hover {
+    background: #e9eaef;
+    color: var(--text-dark);
 }
 
 .userProfile {
@@ -317,4 +467,96 @@
     .logo {
         height: 60px;
     }
+}
+/* Quick View Modal Styles */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.modal {
+    background: white;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 12px;
+    padding: 30px;
+    position: relative;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    animation: modalScale 0.2s ease-out;
+}
+
+@keyframes modalScale {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.modalClose {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: var(--text-gray);
+}
+
+.modalTitle {
+    margin: 0 0 20px 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.modalInfo {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+}
+
+.modalInfo p {
+    margin: 5px 0;
+}
+
+.modalBodyContent {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--text-dark);
+    margin-bottom: 25px;
+    white-space: pre-wrap;
+}
+
+.modalFooterContent {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 20px;
+}
+
+.closeBtn {
+    padding: 10px 20px;
+    border: 1px solid var(--border-color);
+    background: white;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.goToInboxBtn {
+    padding: 10px 20px;
+    background: var(--primary-orange);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
 }
