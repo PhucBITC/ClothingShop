@@ -1,11 +1,19 @@
 package com.ecommerShop.clothingsystem.controller;
 
+import com.ecommerShop.clothingsystem.model.ShippingAddress;
 import com.ecommerShop.clothingsystem.model.User;
+import com.ecommerShop.clothingsystem.repository.CartRepository;
+import com.ecommerShop.clothingsystem.repository.NotificationRepository;
+import com.ecommerShop.clothingsystem.repository.OrderRepository;
+import com.ecommerShop.clothingsystem.repository.ShippingAddressRepository;
 import com.ecommerShop.clothingsystem.repository.UserRepository;
+import com.ecommerShop.clothingsystem.service.EmailService;
+import com.ecommerShop.clothingsystem.service.FileStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,16 +28,25 @@ public class UserController {
     private UserRepository userRepository;
 
     @Autowired
-    private com.ecommerShop.clothingsystem.repository.OrderRepository orderRepository;
+    private OrderRepository orderRepository;
+
+    @Autowired
+    private ShippingAddressRepository shippingAddressRepository;
+
+    @Autowired
+    private CartRepository cartRepository;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private com.ecommerShop.clothingsystem.service.FileStorageService fileStorageService;
+    private FileStorageService fileStorageService;
 
     @Autowired
-    private com.ecommerShop.clothingsystem.service.EmailService emailService;
+    private EmailService emailService;
 
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
@@ -83,16 +100,37 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
+    @Transactional
     public ResponseEntity<?> deleteUser(@PathVariable Long id, @RequestParam(defaultValue = "false") boolean permanent) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         
         if (permanent) {
             long orderCount = orderRepository.countByUser(user);
             if (orderCount > 0) {
-                return ResponseEntity.badRequest().body("Cannot delete permanently: User has transaction history. Use soft-delete instead.");
+                // Professional Anonymization for users with history
+                user.setFullName("Người dùng đã xóa");
+                user.setEmail("deleted_user_" + id + "_" + System.currentTimeMillis() + "@deleted.com");
+                user.setPhoneNumber(null);
+                user.setStatus("ANONYMIZED");
+                user.setAvatarUrl(null);
+                userRepository.save(user);
+                return ResponseEntity.ok("Tài khoản đã được vô danh hóa để bảo toàn lịch sử đơn hàng. Email cũ hiện đã có thể dùng để đăng ký mới.");
+            } else {
+                // Hard Purge for users with no history
+                // 1. Delete Shipping Addresses first
+                List<ShippingAddress> addresses = shippingAddressRepository.findByUser(user);
+                shippingAddressRepository.deleteAll(addresses);
+                
+                // 2. Delete Cart (Cascade will handle CartItems if set to CascadeType.ALL)
+                cartRepository.findByUserId(id).ifPresent(cart -> cartRepository.delete(cart));
+                
+                // 3. Delete Notifications
+                notificationRepository.findByUserIdOrderByCreatedAtDesc(id).forEach(n -> notificationRepository.delete(n));
+                
+                // 4. Delete User
+                userRepository.delete(user);
+                return ResponseEntity.ok("User deleted permanently.");
             }
-            userRepository.delete(user);
-            return ResponseEntity.ok("User deleted permanently.");
         } else {
             user.setStatus("DELETED");
             userRepository.save(user);

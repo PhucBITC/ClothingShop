@@ -134,7 +134,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<Order> getMyOrders(User user) {
-        return orderRepository.findByUserOrderByCreatedAtDesc(user);
+        return orderRepository.findByUserIdOrderByCreatedAtDesc(user.getId());
     }
 
     @Override

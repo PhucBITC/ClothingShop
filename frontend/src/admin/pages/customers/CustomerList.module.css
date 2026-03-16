@@ -589,7 +589,29 @@
     font-size: 0.95rem;
     color: #64748b;
     line-height: 1.6;
-    margin-bottom: 32px;
+    margin-bottom: 24px;
+}
+
+.explanationList {
+    text-align: left;
+    margin: 0 auto 32px;
+    max-width: 360px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.explanationItem {
+    display: flex;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: #64748b;
+    line-height: 1.5;
+}
+
+.explanationItem strong {
+    color: #334155;
+    font-weight: 700;
 }
 
 .confirmActions {
