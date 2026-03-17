@@ -1,6 +1,6 @@
 .container {
     padding: 2rem;
-    background-color: #f8fafc;
+    background-color: var(--admin-bg);
     min-height: 100vh;
     font-family: 'Inter', sans-serif;
 }
@@ -23,13 +23,13 @@
 }
 
 .backBtn:hover {
-    color: #131118;
+    color: var(--admin-text-main);
 }
 
 .title {
     font-size: 1.8rem;
     font-weight: 700;
-    color: #1e293b;
+    color: var(--admin-text-main);
     margin-bottom: 0.25rem;
 }
 
@@ -45,11 +45,11 @@
 }
 
 .card {
-    background: #fff;
+    background: var(--admin-card-bg);
     border-radius: 16px;
     padding: 1.5rem;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--admin-border);
     margin-bottom: 1.5rem;
 }
 
@@ -58,19 +58,19 @@
     align-items: center;
     gap: 0.75rem;
     margin-bottom: 1.25rem;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--admin-border);
     padding-bottom: 0.75rem;
 }
 
 .cardHeader h3 {
     font-size: 1.1rem;
     font-weight: 700;
-    color: #1e293b;
+    color: var(--admin-text-main);
 }
 
 .cardHeader svg {
     font-size: 1.4rem;
-    color: #131118;
+    color: var(--admin-text-main);
 }
 
 /* Items List Styling */
@@ -85,7 +85,7 @@
     justify-content: space-between;
     align-items: center;
     padding-bottom: 1rem;
-    border-bottom: 1px solid #f8fafc;
+    border-bottom: 1px solid var(--admin-border);
 }
 
 .itemMain {
@@ -110,7 +110,7 @@
 
 .itemName {
     font-weight: 600;
-    color: #1e293b;
+    color: var(--admin-text-main);
     margin-bottom: 0.2rem;
 }
 
@@ -133,13 +133,13 @@
 
 .totalPer {
     font-weight: 700;
-    color: #131118;
+    color: var(--admin-text-main);
     font-size: 1rem;
 }
 
 .orderSummary {
     margin-top: 1.5rem;
-    background: #f8fafc;
+    background: var(--admin-bg);
     padding: 1.25rem;
     border-radius: 12px;
 }
@@ -155,8 +155,8 @@
 .grandTotal {
     margin-top: 0.75rem;
     padding-top: 0.75rem;
-    border-top: 2px dashed #e2e8f0;
-    color: #131118;
+    border-top: 2px dashed var(--admin-border);
+    color: var(--admin-text-main);
     font-weight: 800;
     font-size: 1.2rem;
 }
@@ -184,11 +184,11 @@
 .statusUpdate select {
     padding: 0.75rem;
     border-radius: 8px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--admin-border);
     font-weight: 600;
-    color: #1e293b;
+    color: var(--admin-text-main);
     cursor: pointer;
-    background-color: #f8fafc;
+    background-color: var(--admin-bg);
 }
 
 .statusBadge {
@@ -236,12 +236,12 @@
 }
 
 .value {
-    color: #1e293b;
+    color: var(--admin-text-main);
     font-weight: 600;
 }
 
 .addressBox p {
-    color: #1e293b;
+    color: var(--admin-text-main);
     line-height: 1.6;
 }
 

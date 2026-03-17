@@ -24,20 +24,21 @@
 .span3 { grid-column: span 3; }
 
 
-.card {
-    background: var(--white);
-    border-radius: 12px;
+.statCard {
+    background: var(--admin-card-bg);
     padding: 24px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     display: flex;
-    flex-direction: column;
     justify-content: space-between;
-    transition: transform 0.2s;
+    align-items: flex-start;
+    transition: all 0.3s ease;
+    border: 1px solid var(--admin-border);
 }
 
-.card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+.statCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
 }
 
 .cardHeader {
@@ -59,10 +60,11 @@
     font-size: 16px;
 }
 
-.statsValue {
+.statValue {
     font-size: 28px;
     font-weight: 700;
-    color: var(--text-dark);
+    margin-bottom: 4px;
+    color: var(--admin-text-main);
 }
 
 .statsChange {
@@ -93,10 +95,11 @@
 
 
 .chartCard {
-    background: var(--white);
-    border-radius: 12px;
+    background: var(--admin-card-bg);
+    border-radius: 20px;
     padding: 24px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    border: 1px solid var(--admin-border);
     min-height: 300px;
 }
 
@@ -110,6 +113,7 @@
 .cardTitle {
     font-size: 18px;
     font-weight: 700;
+    color: var(--admin-text-main);
 }
 
 .seeAllLink {
@@ -132,18 +136,18 @@
 .timeFilter {
     padding: 6px 14px;
     border-radius: 8px;
-    border: 1px solid #E0E0E0;
+    border: 1px solid var(--admin-border);
     font-size: 12px;
     font-weight: 600;
-    background: #fff;
-    color: var(--text-gray);
+    background: var(--admin-card-bg);
+    color: var(--admin-text-muted);
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .timeFilter:hover {
-    background: #f8f9fa;
-    border-color: #ccc;
+    background: var(--admin-bg);
+    border-color: var(--primary-orange);
 }
 
 .timeFilter.active {
@@ -171,12 +175,13 @@
 }
 
 .dateInput {
-    padding: 8px 12px;
-    border: 1px solid #E0E0E0;
-    border-radius: 8px;
-    font-size: 13px;
+    padding: 6px 12px;
+    border: 1px solid var(--admin-border);
+    border-radius: 6px;
+    font-size: 12px;
+    background: var(--admin-card-bg);
+    color: var(--admin-text-main);
     outline: none;
-    color: #333;
     font-family: inherit;
 }
 
@@ -234,9 +239,15 @@
     z-index: 0;
 }
 
+.revenueChart {
+    height: 300px;
+    width: 100%;
+}
+
 .categoryChart {
     position: relative;
     width: 100%;
+    height: 240px;
 }
 
 .gridLine {

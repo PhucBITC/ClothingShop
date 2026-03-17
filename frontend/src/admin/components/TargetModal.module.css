@@ -13,13 +13,13 @@
 }
 
 .modal {
-    background: white;
+    background: var(--admin-card-bg);
     width: 100%;
     max-width: 440px;
     border-radius: 20px;
     padding: 24px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid var(--admin-border);
 }
 
 .modalHeader {
@@ -38,8 +38,8 @@
 .iconWrapper {
     width: 48px;
     height: 48px;
-    background: #FFF0E0;
-    color: #FF8800;
+    background: var(--admin-bg);
+    color: var(--primary-orange);
     border-radius: 14px;
     display: flex;
     align-items: center;
@@ -51,13 +51,13 @@
     margin: 0;
     font-size: 1.25rem;
     font-weight: 700;
-    color: #1a1a1a;
+    color: var(--admin-text-main);
 }
 
 .subtitle {
     margin: 2px 0 0 0;
     font-size: 0.85rem;
-    color: #7a7a7a;
+    color: var(--admin-text-muted);
 }
 
 .closeBtn {
@@ -73,8 +73,8 @@
 }
 
 .closeBtn:hover {
-    background: #F5F6FA;
-    color: #1a1a1a;
+    background: var(--admin-bg);
+    color: var(--admin-text-main);
 }
 
 .modalBody {
@@ -88,7 +88,7 @@
     font-size: 0.9rem;
     font-weight: 600;
     margin-bottom: 8px;
-    color: #333;
+    color: var(--admin-text-main);
 }
 
 .inputWrapper {
@@ -107,17 +107,19 @@
 .input {
     width: 100%;
     padding: 12px 12px 12px 40px;
-    border: 2px solid #F0F0F0;
+    border: 2px solid var(--admin-border);
     border-radius: 12px;
     font-size: 1rem;
     font-weight: 500;
     transition: all 0.2s;
     outline: none;
+    background: var(--admin-bg);
+    color: var(--admin-text-main);
 }
 
 .input:focus {
-    border-color: #FF8800;
-    background: #FFF8F0;
+    border-color: var(--primary-orange);
+    background: var(--admin-card-bg);
     box-shadow: 0 0 0 4px rgba(255, 136, 0, 0.1);
 }
 
@@ -137,8 +139,8 @@
     flex: 1;
     padding: 12px;
     border: none;
-    background: #F5F6FA;
-    color: #7a7a7a;
+    background: var(--admin-bg);
+    color: var(--admin-text-muted);
     border-radius: 12px;
     font-weight: 700;
     cursor: pointer;

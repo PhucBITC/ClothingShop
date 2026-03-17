@@ -35,6 +35,7 @@ import CustomerList from "./admin/pages/customers/CustomerList";
 import OrderList from "./admin/pages/orders/OrderList";
 import OrderDetail from "./admin/pages/orders/OrderDetail";
 import AdminNotifications from "./admin/pages/notifications/Notifications";
+import AdminProfile from "./admin/pages/AdminProfile";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function AppLayout() {
@@ -92,6 +93,7 @@ function AppLayout() {
             <Route path="notifications" element={<AdminNotifications />} />
             <Route path="orders" element={<OrderList />} />
             <Route path="orders/:id" element={<OrderDetail />} />
+            <Route path="profile" element={<AdminProfile />} />
           </Route>
         </Route>
 

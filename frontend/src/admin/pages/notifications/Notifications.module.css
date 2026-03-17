@@ -1,6 +1,6 @@
 .messagesContainer {
     padding: 24px;
-    background-color: var(--bg-body);
+    background-color: var(--admin-bg);
     min-height: 100%;
 }
 
@@ -11,7 +11,7 @@
 .title {
     font-size: 1.8rem;
     font-weight: 700;
-    color: var(--primary-black);
+    color: var(--admin-text-main);
     margin-bottom: 8px;
 }
 
@@ -25,7 +25,7 @@
     display: flex;
     gap: 12px;
     margin-bottom: 24px;
-    border-bottom: 1.5px solid var(--border-color);
+    border-bottom: 1.5px solid var(--admin-border);
     padding-bottom: 8px;
 }
 
@@ -46,13 +46,13 @@
 }
 
 .tabBtn:hover {
-    background: var(--bg-hover);
-    color: var(--primary-black);
+    background: var(--admin-hover-bg);
+    color: var(--admin-text-main);
 }
 
 .activeTab {
-    color: var(--primary-black);
-    background: #f1f5f9;
+    color: var(--admin-text-main);
+    background: var(--admin-bg);
 }
 
 .activeTab::after {
@@ -62,7 +62,7 @@
     left: 0;
     right: 0;
     height: 3px;
-    background: var(--primary-black);
+    background: var(--primary-orange);
     border-radius: 3px;
 }
 
@@ -90,8 +90,8 @@
     position: relative;
     display: flex;
     align-items: center;
-    background: white;
-    border: 1.5px solid var(--border-color);
+    background: var(--admin-card-bg);
+    border: 1.5px solid var(--admin-border);
     border-radius: 10px;
     padding: 0 12px;
     flex: 1;
@@ -110,6 +110,7 @@
     width: 100%;
     font-size: 0.9rem;
     background: transparent;
+    color: var(--admin-text-main);
 }
 
 .clearSearch {
@@ -159,9 +160,9 @@
 }
 
 .deleteAllBtn {
-    background: white;
-    color: var(--text-light);
-    border: 1.5px solid var(--border-color);
+    background: var(--admin-card-bg);
+    color: var(--admin-text-muted);
+    border: 1.5px solid var(--admin-border);
 }
 
 .deleteAllBtn:hover {
@@ -179,35 +180,36 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    background: #f1f5f9;
-    color: #475569;
-    border: 1.5px solid #cbd5e1;
+    background: var(--admin-bg);
+    color: var(--admin-text-main);
+    border: 1.5px solid var(--admin-border);
     transition: all 0.2s;
 }
 
 .markAllReadBtnMain:hover {
-    background: white;
-    border-color: #64748b;
-    color: #1e293b;
+    background: var(--admin-card-bg);
+    border-color: var(--primary-orange);
+    color: var(--primary-orange);
 }
 
 .filterSelect {
     padding: 10px 15px;
-    border: 1.5px solid var(--border-color);
+    border: 1.5px solid var(--admin-border);
     border-radius: 10px;
-    background: white;
+    background: var(--admin-card-bg);
     font-size: 0.9rem;
-    color: var(--text-main);
+    color: var(--admin-text-main);
     outline: none;
     cursor: pointer;
 }
 
 /* Table Styles */
 .tableContainer {
-    background: white;
+    background: var(--admin-card-bg);
     border-radius: 15px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     overflow: hidden;
+    border: 1px solid var(--admin-border);
 }
 
 .table {
@@ -218,18 +220,18 @@
 
 .table th {
     padding: 15px 20px;
-    background: var(--bg-light);
-    color: var(--text-light);
+    background: var(--admin-bg);
+    color: var(--admin-text-muted);
     font-weight: 600;
     font-size: 0.85rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    border-bottom: 1.5px solid var(--border-color);
+    border-bottom: 1.5px solid var(--admin-border);
 }
 
 .table td {
     padding: 18px 20px;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--admin-border);
     vertical-align: middle;
 }
 
@@ -238,11 +240,11 @@
 }
 
 .table tr:hover {
-    background: var(--bg-hover);
+    background: var(--admin-bg);
 }
 
 .selectedRow {
-    background: #f8fafc !important;
+    background: var(--admin-bg) !important;
 }
 
 .table input[type="checkbox"] {
@@ -255,7 +257,7 @@
 /* Specific Cells */
 .nameCell {
     font-weight: 600;
-    color: var(--primary-black);
+    color: var(--admin-text-main);
 }
 
 .emailCell {
@@ -307,10 +309,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--admin-border);
     border-radius: 8px;
-    background: white;
-    color: var(--text-main);
+    background: var(--admin-card-bg);
+    color: var(--admin-text-main);
     cursor: pointer;
     transition: all 0.2s;
 }
@@ -443,7 +445,7 @@
 .confirmTitle {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #1a1a1a;
+    color: var(--admin-text-main);
     margin-bottom: 20px;
 }
 

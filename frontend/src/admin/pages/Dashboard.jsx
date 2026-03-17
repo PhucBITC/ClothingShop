@@ -8,6 +8,8 @@ import {
 import { BiDollar, BiCart, BiUser, BiDotsHorizontalRounded } from 'react-icons/bi';
 import styles from './Dashboard.module.css';
 import api from '../../api/axios';
+import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import TargetModal from '../components/TargetModal';
 
 const Dashboard = () => {
@@ -16,9 +18,20 @@ const Dashboard = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const { user } = useAuth();
+    const { theme } = useTheme();
     const [period, setPeriod] = useState('WEEK');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
+
+    const isDarkMode = theme === 'Dark';
+    const chartColors = {
+        grid: isDarkMode ? '#2a2830' : '#E0E0E0',
+        text: isDarkMode ? '#a0aec0' : '#9ea6b9',
+        tooltipBg: isDarkMode ? '#131118' : '#ffffff',
+        tooltipBorder: isDarkMode ? '#2a2830' : '#E0E0E0',
+        pieEmpty: isDarkMode ? '#1a1820' : '#f0f2f5'
+    };
 
     const fetchStats = async () => {
         try {
@@ -213,11 +226,17 @@ const Dashboard = () => {
                                             <stop offset="95%" stopColor="#FF8800" stopOpacity={0} />
                                         </linearGradient>
                                     </defs>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E0E0E0" />
-                                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#9ea6b9', fontSize: 12 }} dy={10} />
-                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#9ea6b9', fontSize: 12 }} />
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartColors.grid} />
+                                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: chartColors.text, fontSize: 12 }} dy={10} />
+                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: chartColors.text, fontSize: 12 }} />
                                     <Tooltip
-                                        contentStyle={{ borderRadius: 8, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                                        contentStyle={{ 
+                                            borderRadius: 8, 
+                                            border: `1px solid ${chartColors.tooltipBorder}`, 
+                                            background: chartColors.tooltipBg,
+                                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)' 
+                                        }}
+                                        itemStyle={{ color: isDarkMode ? '#f0f0f0' : '#131118' }}
                                     />
                                     <Area type="monotone" dataKey="revenue" stroke="#FF8800" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
                                     <Area type="monotone" dataKey="order" stroke="#FFDCA8" strokeWidth={2} strokeDasharray="5 5" fill="none" />
@@ -252,9 +271,8 @@ const Dashboard = () => {
                                         paddingAngle={0}
                                         dataKey="value"
                                     >
-                                        {targetData.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={entry.color} />
-                                        ))}
+                                        <Cell fill="#FF8800" stroke="none" />
+                                        <Cell fill={chartColors.pieEmpty} stroke="none" />
                                     </Pie>
                                 </PieChart>
                             </ResponsiveContainer>

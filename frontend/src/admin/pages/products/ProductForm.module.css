@@ -23,7 +23,7 @@
 .title {
     font-size: 1.8rem;
     font-weight: 700;
-    color: #111827;
+    color: var(--admin-text-main);
     margin-bottom: 2rem;
     text-align: left;
 }
@@ -38,21 +38,21 @@
 
 /* Card Styling */
 .section {
-    background: #ffffff;
+    background: var(--admin-card-bg);
     border-radius: 12px;
     padding: 24px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     /* Softer shadow */
     margin-bottom: 24px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--admin-border);
 }
 
 .section h3 {
     font-size: 1.1rem;
-    color: #111827;
+    color: var(--admin-text-main);
     margin-bottom: 1.5rem;
     font-weight: 600;
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: 1px solid var(--admin-border);
     padding-bottom: 12px;
 }
 
@@ -65,7 +65,7 @@
     display: block;
     font-weight: 500;
     font-size: 0.9rem;
-    color: #374151;
+    color: var(--admin-text-muted);
     margin-bottom: 6px;
 }
 
@@ -74,11 +74,11 @@
 .textarea {
     width: 100%;
     padding: 10px 12px;
-    border: 1px solid #d1d5db;
+    border: 1px solid var(--admin-border);
     border-radius: 6px;
     font-size: 0.95rem;
-    color: #111827;
-    background-color: #fff;
+    color: var(--admin-text-main);
+    background-color: var(--admin-bg);
     transition: all 0.2s;
 }
 
@@ -124,10 +124,10 @@
     grid-template-columns: 1fr 1fr 100px 120px 120px 50px;
     gap: 12px;
     align-items: center;
-    background: #f9fafb;
+    background: var(--admin-bg);
     padding: 12px;
     border-radius: 8px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--admin-border);
     transition: background 0.2s;
 }
 
@@ -158,16 +158,16 @@
 }
 
 .btnAdd:hover {
-    background-color: #e5e7eb;
-    color: #111827;
+    background-color: var(--admin-hover-bg);
+    color: var(--primary-orange);
 }
 
 .btnDanger {
     width: 36px;
     height: 36px;
     border-radius: 6px;
-    border: 1px solid #fee2e2;
-    background: white;
+    border: 1px solid var(--admin-border);
+    background: var(--admin-card-bg);
     color: #ef4444;
     cursor: pointer;
     display: flex;
@@ -205,9 +205,9 @@
 /* Image Upload */
 .fileInput {
     padding: 40px;
-    border: 2px dashed #d1d5db;
+    border: 2px dashed var(--admin-border);
     border-radius: 8px;
-    background: #f9fafb;
+    background: var(--admin-bg);
     text-align: center;
     cursor: pointer;
     transition: all 0.2s;
@@ -291,9 +291,9 @@
 .btnSecondary {
     width: 100%;
     padding: 12px;
-    background: white;
-    color: #374151;
-    border: 1px solid #d1d5db;
+    background: var(--admin-bg);
+    color: var(--admin-text-main);
+    border: 1px solid var(--admin-border);
     border-radius: 8px;
     font-weight: 500;
     cursor: pointer;
@@ -354,8 +354,8 @@
 
 /* Category-specific Size Options */
 .categorySpecialOptions {
-    background: #f8fafc;
-    border: 1px dashed #cbd5e1;
+    background: var(--admin-bg);
+    border: 1px dashed var(--admin-border);
     border-radius: 8px;
     padding: 12px 16px;
     margin-bottom: 16px;
@@ -366,7 +366,7 @@
     display: flex;
     align-items: center;
     font-size: 0.9rem;
-    color: #475569;
+    color: var(--admin-text-muted);
 }
 
 .radioGroup label {

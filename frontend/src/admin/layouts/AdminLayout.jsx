@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { NavLink, Outlet, useLocation, Link, useNavigate } from 'react-router-dom';
 import {
     BiGridAlt, BiCart, BiPackage, BiUser,
     BiFile, BiPurchaseTag, BiLink, BiHelpCircle,
-    BiCog, BiSearch, BiBell, BiMessageDetail, BiChevronDown
+    BiCog, BiSearch, BiBell, BiMessageDetail, BiChevronDown, BiLogOut, BiStore,
+    BiSun, BiMoon
 } from 'react-icons/bi';
 import styles from './AdminLayout.module.css';
 import logo from '../../assets/logo.png';
 import axios from '../../api/axios';
+import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 
 const AdminLayout = () => {
     const location = useLocation();
@@ -18,7 +21,11 @@ const AdminLayout = () => {
     const [unreadNotifications, setUnreadNotifications] = useState(0);
     const [recentNotifications, setRecentNotifications] = useState([]);
     const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] = useState(false);
+    const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
     const [viewingMessage, setViewingMessage] = useState(null);
+    const { user, logout } = useAuth();
+    const { theme, toggleTheme } = useTheme();
+    const navigate = useNavigate();
 
     const refreshAllCounts = async () => {
         try {
@@ -92,6 +99,12 @@ const AdminLayout = () => {
         { name: 'Settings', path: '/admin/settings', icon: <BiCog /> },
     ];
 
+    const getAvatarUrl = (url) => {
+        if (!url) return "https://i.pravatar.cc/150?img=12";
+        if (url.startsWith('http')) return url;
+        return `http://localhost:8080/api/files/${url}`;
+    };
+
     return (
         <div className={styles.adminContainer}>
             {/* Mobile Overlay */}
@@ -105,8 +118,9 @@ const AdminLayout = () => {
             {/* Sidebar */}
             <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.showSidebar : ''}`}>
                 <div className={styles.logoContainer}>
-                    <img src={logo} alt="Logo" className={styles.logo} />
-                    {/* <span className={styles.brandName}>EzMart</span> User wants the real logo, text might be in logo */}
+                    <Link to="/" className={styles.logoLink}>
+                        <img src={logo} alt="Logo" className={styles.logo} />
+                    </Link>
                     <button
                         className={styles.closeSidebarBtn}
                         onClick={() => setIsSidebarOpen(false)}
@@ -153,6 +167,15 @@ const AdminLayout = () => {
                     </div>
 
                     <div className={styles.topbarActions}>
+                        {/* Theme Toggle */}
+                        <button 
+                            className={styles.actionIcon} 
+                            onClick={toggleTheme}
+                            title={theme === 'Light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+                        >
+                            {theme === 'Light' ? <BiMoon /> : <BiSun />}
+                        </button>
+
                         <div className={styles.actionIconContainer}>
                             <button 
                                 className={styles.actionIcon} 
@@ -222,13 +245,47 @@ const AdminLayout = () => {
                         </div>
 
 
-                        <div className={styles.userProfile}>
-                            <img src="https://i.pravatar.cc/150?img=12" alt="Admin" className={styles.avatar} />
-                            <div className={styles.userInfo}>
-                                <span className={styles.userName}>Marcus George</span>
-                                <span className={styles.userRole}>Admin</span>
+                        <div className={styles.userProfileContainer}>
+                            <div 
+                                className={styles.userProfile}
+                                onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
+                            >
+                                <img src={getAvatarUrl(user?.avatarUrl)} alt="Admin" className={styles.avatar} />
+                                <div className={styles.userInfo}>
+                                    <span className={styles.userName}>{user?.fullName || 'Admin User'}</span>
+                                    <span className={styles.userRole}>{user?.role || 'Admin'}</span>
+                                </div>
+                                <BiChevronDown className={`${styles.chevron} ${isUserDropdownOpen ? styles.rotate : ''}`} />
                             </div>
-                            <BiChevronDown />
+
+                            {isUserDropdownOpen && (
+                                <>
+                                    <div className={styles.dropdownOverlay} onClick={() => setIsUserDropdownOpen(false)} />
+                                    <div className={styles.userDropdownMenu}>
+                                        <div className={styles.userDropdownHeader}>
+                                            <p className={styles.userEmail}>{user?.email}</p>
+                                        </div>
+                                        <div className={styles.userDropdownDivider} />
+                                        <NavLink to="/admin/profile" className={styles.userDropdownItem} onClick={() => setIsUserDropdownOpen(false)}>
+                                            <BiUser /> Profile Settings
+                                        </NavLink>
+                                        <Link to="/" className={styles.userDropdownItem} onClick={() => setIsUserDropdownOpen(false)}>
+                                            <BiStore /> View Storefront
+                                        </Link>
+                                        <div className={styles.userDropdownDivider} />
+                                        <button 
+                                            className={`${styles.userDropdownItem} ${styles.logoutBtn}`}
+                                            onClick={() => {
+                                                logout();
+                                                setIsUserDropdownOpen(false);
+                                                navigate('/login');
+                                            }}
+                                        >
+                                            <BiLogOut /> Logout
+                                        </button>
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </div>
                 </header>

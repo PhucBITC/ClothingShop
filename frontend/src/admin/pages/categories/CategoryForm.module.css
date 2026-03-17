@@ -3,16 +3,17 @@
     max-width: 900px;
     margin: 2rem auto;
     padding: 2.5rem;
-    background-color: #ffffff;
+    background-color: var(--admin-card-bg);
     border-radius: 16px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
     font-family: 'Inter', sans-serif;
+    border: 1px solid var(--admin-border);
 }
 
 .title {
     font-size: 1.75rem;
     font-weight: 700;
-    color: #1a1a1a;
+    color: var(--admin-text-main);
     margin-bottom: 2.5rem;
     text-align: center;
     position: relative;
@@ -40,12 +41,12 @@
 .section {
     margin-bottom: 2rem;
     padding-bottom: 1.5rem;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid var(--admin-border);
 }
 
 .section h3 {
     font-size: 1.25rem;
-    color: #333;
+    color: var(--admin-text-main);
     margin-bottom: 1.25rem;
     font-weight: 600;
 }
@@ -60,7 +61,7 @@
 .label {
     font-weight: 500;
     font-size: 0.9rem;
-    color: #4a5568;
+    color: var(--admin-text-muted);
     margin-left: 2px;
 }
 
@@ -69,11 +70,11 @@
 .textarea {
     width: 100%;
     padding: 0.75rem 1rem;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--admin-border);
     border-radius: 8px;
     font-size: 0.95rem;
-    color: #2d3748;
-    background-color: #f7fafc;
+    color: var(--admin-text-main);
+    background-color: var(--admin-bg);
     transition: all 0.2s ease;
 }
 
@@ -82,7 +83,7 @@
 .textarea:focus {
     outline: none;
     border-color: #ff8800;
-    background-color: #fff;
+    background-color: var(--admin-card-bg);
     box-shadow: 0 0 0 3px rgba(255, 136, 0, 0.15);
 }
 
@@ -97,7 +98,7 @@
     gap: 1rem;
     margin-top: 2rem;
     padding-top: 1.5rem;
-    border-top: 1px solid #f0f0f0;
+    border-top: 1px solid var(--admin-border);
 }
 
 .btnPrimary {
@@ -124,20 +125,20 @@
 }
 
 .btnSecondary {
-    background-color: white;
+    background-color: var(--admin-bg);
     border-radius: 15px;
     padding: 0.75rem 2rem;
-    color: #4a5568;
-    border: 1px solid #e2e8f0;
+    color: var(--admin-text-main);
+    border: 1px solid var(--admin-border);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .btnSecondary:hover {
-    background-color: #f7fafc;
+    background-color: var(--admin-hover-bg);
     border-color: #cbd5e0;
-    color: #2d3748;
+    color: var(--admin-text-main);
 }
 
 .errorMsg {
