@@ -153,7 +153,7 @@ const Dashboard = () => {
             <div className={`${styles.card} ${styles.span1}`}>
                 <div className={styles.cardHeader}>
                     <span>Total Visitors</span>
-                    <div className={`${styles.iconCircle} ${styles.bgGray}`}>
+                    <div className={`${styles.iconCircle} ${styles.bgBlue}`}>
                         <BiUser />
                     </div>
                 </div>
