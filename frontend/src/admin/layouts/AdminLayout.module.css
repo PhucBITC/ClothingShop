@@ -30,6 +30,10 @@
     --admin-hover-bg: rgba(255, 136, 0, 0.15);
 }
 
+:global([data-theme='Dark']) .logo {
+    filter: brightness(0) invert(1);
+}
+
 /* Sidebar */
 .sidebar {
     width: var(--sidebar-width);
