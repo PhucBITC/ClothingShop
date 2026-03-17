@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import {
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
     PieChart, Pie, Cell, Legend
@@ -11,6 +11,7 @@ import api from '../../api/axios';
 import TargetModal from '../components/TargetModal';
 
 const Dashboard = () => {
+    const navigate = useNavigate();
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -50,6 +51,12 @@ const Dashboard = () => {
         }
     };
 
+    const handleRestock = (productId) => {
+        if (productId) {
+            navigate(`/admin/products/edit/${productId}`);
+        }
+    };
+
     useEffect(() => {
         fetchStats();
     }, [period]);
@@ -75,7 +82,6 @@ const Dashboard = () => {
     const monthlyTarget = stats?.monthlyTarget || 10000;
     const currentMonthSales = stats?.currentMonthSales || 0;
     const conversionData = stats?.conversionData || [];
-    const trafficSourceData = stats?.trafficSourceData || [];
 
     const targetPercent = Math.min((currentMonthSales / monthlyTarget) * 100, 100);
     const targetData = [
@@ -97,63 +103,54 @@ const Dashboard = () => {
             transition={{ duration: 0.5 }}
         >
             {/* Left Column */}
-            <div className={styles.leftColumn}>
-
-                {/* Row 1: Stats */}
-                <div className={styles.statsGrid}>
-                    {/* Sales */}
-                    <div className={styles.card}>
-                        <div className={styles.cardHeader}>
-                            <span>Total Sales</span>
-                            <div className={`${styles.iconCircle} ${styles.bgOrange}`}>
-                                <BiDollar />
-                            </div>
-                        </div>
-                        <div className={styles.statsValue}>${totalSales.toLocaleString()}</div>
-                        <div className={styles.statsChange}>
-                            <span className={salesChange >= 0 ? styles.textGreen : styles.textRed}>
-                                {salesChange >= 0 ? '+' : ''}{salesChange.toFixed(2)}%
-                            </span> vs last week
-                        </div>
-                    </div>
-
-                    {/* Orders */}
-                    <div className={styles.card}>
-                        <div className={styles.cardHeader}>
-                            <span>Total Orders</span>
-                            <div className={`${styles.iconCircle} ${styles.bgGray}`}>
-                                <BiCart />
-                            </div>
-                        </div>
-                        <div className={styles.statsValue}>{totalOrders.toLocaleString()}</div>
-                        <div className={styles.statsChange}>
-                            <span className={ordersChange >= 0 ? styles.textGreen : styles.textRed}>
-                                {ordersChange >= 0 ? '+' : ''}{ordersChange.toFixed(2)}%
-                            </span> vs last week
-                        </div>
-                    </div>
-
-                    {/* Visitors */}
-                    <div className={styles.card}>
-                        <div className={styles.cardHeader}>
-                            <span>Total Visitors</span>
-                            <div className={`${styles.iconCircle} ${styles.bgGray}`}>
-                                <BiUser />
-                            </div>
-                        </div>
-                        <div className={styles.statsValue}>{totalVisitors.toLocaleString()}</div>
-                        <div className={styles.statsChange}>
-                            <span className={visitorsChange >= 0 ? styles.textGreen : styles.textRed}>
-                                {visitorsChange >= 0 ? '+' : ''}{visitorsChange.toFixed(2)}%
-                            </span> vs last week
-                        </div>
+            {/* Stats - Row 1 */}
+            <div className={`${styles.card} ${styles.span1}`}>
+                <div className={styles.cardHeader}>
+                    <span>Total Sales</span>
+                    <div className={`${styles.iconCircle} ${styles.bgOrange}`}>
+                        <BiDollar />
                     </div>
                 </div>
+                <div className={styles.statsValue}>${totalSales.toLocaleString()}</div>
+                <div className={styles.statsChange}>
+                    <span className={salesChange >= 0 ? styles.textGreen : styles.textRed}>
+                        {salesChange >= 0 ? '+' : ''}{salesChange.toFixed(2)}%
+                    </span> vs last week
+                </div>
+            </div>
 
-                {/* Row 2: Charts */}
-                <div className={styles.chartsRow}>
-                    {/* Revenue Analytics */}
-                    <div className={styles.chartCard}>
+            <div className={`${styles.card} ${styles.span1}`}>
+                <div className={styles.cardHeader}>
+                    <span>Total Orders</span>
+                    <div className={`${styles.iconCircle} ${styles.bgGray}`}>
+                        <BiCart />
+                    </div>
+                </div>
+                <div className={styles.statsValue}>{totalOrders.toLocaleString()}</div>
+                <div className={styles.statsChange}>
+                    <span className={ordersChange >= 0 ? styles.textGreen : styles.textRed}>
+                        {ordersChange >= 0 ? '+' : ''}{ordersChange.toFixed(2)}%
+                    </span> vs last week
+                </div>
+            </div>
+
+            <div className={`${styles.card} ${styles.span1}`}>
+                <div className={styles.cardHeader}>
+                    <span>Total Visitors</span>
+                    <div className={`${styles.iconCircle} ${styles.bgGray}`}>
+                        <BiUser />
+                    </div>
+                </div>
+                <div className={styles.statsValue}>{totalVisitors.toLocaleString()}</div>
+                <div className={styles.statsChange}>
+                    <span className={visitorsChange >= 0 ? styles.textGreen : styles.textRed}>
+                        {visitorsChange >= 0 ? '+' : ''}{visitorsChange.toFixed(2)}%
+                    </span> vs last week
+                </div>
+            </div>
+
+            {/* Main Charts - Row 2 */}
+            <div className={`${styles.chartCard} ${styles.span2}`}>
                         <div className={styles.chartHeader}>
                             <h3 className={styles.cardTitle}>Revenue Analytics</h3>
                             <div className={styles.filterGroup}>
@@ -204,8 +201,8 @@ const Dashboard = () => {
                                 </button>
                             </div>
                         )}
-                        <div style={{ height: 250, width: '100%' }}>
-                            <ResponsiveContainer>
+                        <div className={styles.revenueChart}>
+                            <ResponsiveContainer width="100%" height={300} minWidth={0} minHeight={0}>
                                 <AreaChart data={revenueData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
                                     <defs>
                                         <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
@@ -224,10 +221,9 @@ const Dashboard = () => {
                                 </AreaChart>
                             </ResponsiveContainer>
                         </div>
-                    </div>
+            </div>
 
-                    {/* Monthly Target */}
-                     <div className={styles.chartCard} style={{ textAlign: 'center' }}>
+            <div className={`${styles.chartCard} ${styles.span1}`} style={{ textAlign: 'center' }}>
                         <div className={styles.chartHeader} style={{ justifyContent: 'space-between' }}>
                             <h3 className={styles.cardTitle}>Monthly Target</h3>
                             <button 
@@ -240,7 +236,7 @@ const Dashboard = () => {
                         </div>
 
                         <div style={{ position: 'relative', height: 160 }}>
-                            <ResponsiveContainer>
+                            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                                 <PieChart>
                                     <Pie
                                         data={targetData}
@@ -273,149 +269,118 @@ const Dashboard = () => {
                                 Our achievement increased by $200,000; let's reach 100% next month.
                             </p>
                         </div>
+            </div>
+
+            {/* Conversion & Categories - Row 3 */}
+            <div className={`${styles.chartCard} ${styles.span2}`}>
+                <div className={styles.chartHeader}>
+                    <h3 className={styles.cardTitle}>Conversion Rate</h3>
+                    <div className={styles.timeFilter} style={{ cursor: 'default' }}>
+                        {period === 'WEEK' ? 'This Week' : 
+                         period === 'MONTH' ? 'This Month' : 
+                         period === 'YEAR' ? 'This Year' : 'Custom Period'}
                     </div>
                 </div>
 
-                {/* Row 3: Active User & Conversion - For brevity mocking simplistically */}
-                <div className={styles.bottomRow}>
-                    <div className={styles.chartCard}>
-                        <div className={styles.chartHeader}>
-                            <h3 className={styles.cardTitle}>Active User</h3>
-                            <BiDotsHorizontalRounded />
-                        </div>
-                        <div style={{ fontSize: 32, fontWeight: 700 }}>2,758</div>
-                        <div className={styles.textGreen} style={{ fontSize: 12, marginBottom: 20 }}>+8.02% from last month</div>
-
-                        {/* Simple Bars for Country */}
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                            {[
-                                { n: 'United States', v: 36 },
-                                { n: 'United Kingdom', v: 24 },
-                                { n: 'Indonesia', v: 17.5 },
-                                { n: 'Russia', v: 15 }
-                            ].map((c) => (
-                                <div key={c.n}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 4 }}>
-                                        <span>{c.n}</span>
-                                        <span>{c.v}%</span>
-                                    </div>
-                                    <div style={{ height: 6, background: '#F0F0F0', borderRadius: 3 }}>
-                                        <div style={{ width: `${c.v * 2}%`, height: '100%', background: '#FFBB73', borderRadius: 3 }}></div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                <div className={styles.conversionWrapper}>
+                    <div className={styles.gridLines}>
+                        {[1, 2, 3, 4].map(i => <div key={i} className={styles.gridLine} />)}
                     </div>
+                    <div className={styles.conversionContainer}>
+                        {conversionData.map((step, i) => {
+                            // Calculate conversion rate to next step
+                            const nextStep = conversionData[i + 1];
+                            const conversionToNext = (nextStep && step.val_num > 0) ? ((nextStep.val_num / step.val_num) * 100).toFixed(0) : null;
 
-                    <div className={styles.chartCard}>
-                        <div className={styles.chartHeader}>
-                            <h3 className={styles.cardTitle}>Conversion Rate</h3>
-                            <button className={`${styles.timeFilter} ${styles.active}`}>This Week</button>
-                        </div>
-
-                        <div className={styles.conversionContainer}>
-                            {conversionData.map((step, i) => (
+                            return (
                                 <div key={i} className={styles.barGroup}>
-                                    <div style={{ textAlign: 'center', marginBottom: 5 }}>
-                                        <div style={{ fontWeight: 700 }}>{step.val}</div>
-                                        <div style={{ fontSize: 10, color: step.red ? 'red' : 'green' }}>{step.change}</div>
+                                    <div className={styles.barValue}>{step.val}</div>
+                                    <div className={`${styles.barChange} ${step.red ? styles.negative : ''}`}>
+                                        {step.change}
                                     </div>
                                     <div
                                         className={styles.bar}
-                                        style={{ height: `${step.h * 1.5}px` }}
+                                        style={{ height: `${step.h * 1.2}px` }}
                                     />
-                                    <span style={{ fontSize: 10, color: '#888', textAlign: 'center', width: 60 }}>{step.label}</span>
+                                    <span className={styles.barLabel}>{step.label}</span>
+
+                                    {conversionToNext && (
+                                        <div className={styles.conversionGap}>
+                                            <span className={styles.gapPercent}>{conversionToNext}%</span>
+                                            <div className={styles.gapLine} />
+                                        </div>
+                                    )}
                                 </div>
-                            ))}
-                        </div>
+                            );
+                        })}
                     </div>
                 </div>
-
             </div>
 
-            {/* Right Column Layout */}
-            <div className={styles.rightColumn}>
-                {/* Top Categories */}
-                <div className={styles.chartCard}>
-                    <div className={styles.chartHeader}>
-                        <h3 className={styles.cardTitle}>Top Categories</h3>
-                        <NavLink to="/admin/categories" className={styles.seeAllLink}>See All</NavLink>
-                    </div>
+            <div className={`${styles.chartCard} ${styles.span1}`}>
+                <div className={styles.chartHeader}>
+                    <h3 className={styles.cardTitle}>Top Categories</h3>
+                    <NavLink to="/admin/categories" className={styles.seeAllLink}>See All</NavLink>
+                </div>
 
-                    <div style={{ height: 200, position: 'relative' }}>
-                        <ResponsiveContainer>
-                            <PieChart>
-                                <Pie
-                                    data={categoryData}
-                                    innerRadius={60}
-                                    outerRadius={80}
-                                    paddingAngle={5}
-                                    dataKey="value"
-                                >
-                                    {categoryData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={entry.color} />
-                                    ))}
-                                </Pie>
-                            </PieChart>
-                        </ResponsiveContainer>
-                        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
-                            <div style={{ fontSize: 10, color: '#888' }}>Total Sales</div>
-                            <div style={{ fontSize: 18, fontWeight: 700 }}>${totalSales.toLocaleString()}</div>
-                        </div>
-                    </div>
-
-                    <div style={{ marginTop: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
-                        {categoryData.map((cat) => (
-                            <div key={cat.name} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                    <div style={{ width: 8, height: 8, borderRadius: 2, background: cat.color }}></div>
-                                    <span style={{ fontSize: 12, color: '#555' }}>{cat.name}</span>
-                                </div>
-                                <span style={{ fontSize: 12, fontWeight: 600 }}>${cat.value.toLocaleString()}</span>
-                            </div>
-                        ))}
+                <div className={styles.categoryChart}>
+                    <ResponsiveContainer width="100%" height={240} minWidth={0} minHeight={0}>
+                        <PieChart>
+                            <Pie
+                                data={categoryData}
+                                innerRadius={60}
+                                outerRadius={80}
+                                paddingAngle={5}
+                                dataKey="value"
+                            >
+                                {categoryData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={entry.color} />
+                                ))}
+                            </Pie>
+                        </PieChart>
+                    </ResponsiveContainer>
+                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
+                        <div style={{ fontSize: 10, color: '#888' }}>Total Sales</div>
+                        <div style={{ fontSize: 18, fontWeight: 700 }}>${totalSales.toLocaleString()}</div>
                     </div>
                 </div>
+
+                <div style={{ marginTop: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    {categoryData.map((cat) => (
+                        <div key={cat.name} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                <div style={{ width: 8, height: 8, borderRadius: 2, background: cat.color }}></div>
+                                <span style={{ fontSize: 12, color: '#555' }}>{cat.name}</span>
+                            </div>
+                            <span style={{ fontSize: 12, fontWeight: 600 }}>${cat.value.toLocaleString()}</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
 
                 {/* Traffic Sources */}
-                <div className={styles.chartCard}>
-                    <div className={styles.chartHeader}>
-                        <h3 className={styles.cardTitle}>Traffic Sources</h3>
-                        <BiDotsHorizontalRounded />
-                    </div>
-
-                    <div style={{ display: 'flex', height: 40, borderRadius: 4, overflow: 'hidden', marginBottom: 20 }}>
-                        <div style={{ width: '40%', background: '#FFDFC0' }}></div>
-                        <div style={{ width: '30%', background: '#FFEACC' }}></div>
-                        <div style={{ width: '20%', background: '#FFF5E0' }}></div>
-                        <div style={{ width: '10%', background: '#FF8800' }}></div>
-                    </div>
-
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                        {trafficSourceData.map((t) => (
-                            <div key={t.label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
-                                <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#FF8800' }}></div>
-                                    {t.label}
-                                </span>
-                                <span style={{ fontWeight: 600 }}>{t.value}</span>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-                {/* Low Stock Alerts */}
-                {lowStockProducts.length > 0 && (
-                    <div className={styles.chartCard}>
+            {/* Alerts - Row 4 */}
+            {lowStockProducts.length > 0 && (
+                <div className={`${styles.chartCard} ${styles.span3}`}>
                         <div className={styles.chartHeader}>
                             <h3 className={styles.cardTitle} style={{ color: '#E74C3C' }}>Low Stock Alerts</h3>
                         </div>
                         <div className={styles.lowStockList}>
-                            {lowStockProducts.map((p, idx) => (
-                                <div key={idx} className={styles.lowStockItem}>
+                            {lowStockProducts.map((p, idx) => {
+                                return (
+                                    <div key={idx} className={styles.lowStockItem}>
                                     <div className={styles.productInfo}>
                                         <div className={styles.productImage}>
                                             {p.image ? (
-                                                <img src={getProductImageUrl(p.image)} alt={p.name} />
+                                                <img 
+                                                    src={getProductImageUrl(p.image)} 
+                                                    alt={p.name} 
+                                                    onError={(e) => {
+                                                        e.target.onerror = null; 
+                                                        e.target.style.display = 'none';
+                                                        e.target.parentNode.innerHTML = '<div class="' + styles.placeholderIcon + '">👕</div>';
+                                                    }}
+                                                />
                                             ) : (
                                                 <div className={styles.placeholderIcon}>👕</div>
                                             )}
@@ -425,13 +390,18 @@ const Dashboard = () => {
                                             <div className={styles.stockCount}>Only {p.stock} left</div>
                                         </div>
                                     </div>
-                                    <button className={styles.restockBtn}>Restock</button>
-                                </div>
-                            ))}
+                                    <button 
+                                        className={styles.restockBtn}
+                                        onClick={() => handleRestock(p.productId || p.id)}
+                                    >
+                                        Restock
+                                    </button>
+                                    </div>
+                                );
+                            })}
                         </div>
-                    </div>
-                )}
-            </div>
+                </div>
+            )}
 
             <TargetModal 
                 isOpen={isModalOpen}

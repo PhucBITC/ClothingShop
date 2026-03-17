@@ -115,6 +115,7 @@ public class DashboardServiceImpl implements DashboardService {
         List<ProductVariant> lowStockRaw = productVariantRepository.findByStockLessThan(10);
         List<DashboardStatsDTO.LowStockDTO> lowStockProducts = lowStockRaw.stream()
                 .map(pv -> new DashboardStatsDTO.LowStockDTO(
+                        pv.getProduct().getId(),
                         pv.getProduct().getName() + " (" + pv.getSize() + "/" + pv.getColor() + ")",
                         pv.getStock(),
                         (pv.getProduct().getImages() == null || pv.getProduct().getImages().isEmpty()) ? null : pv.getProduct().getImages().get(0).getImageUrl()
@@ -136,11 +137,11 @@ public class DashboardServiceImpl implements DashboardService {
         // 9. Simulated Analytics (Based on real orders for dynamic feel)
         long ordersCount = dto.getTotalOrders();
         List<DashboardStatsDTO.ConversionStepDTO> conversionData = new ArrayList<>();
-        conversionData.add(new DashboardStatsDTO.ConversionStepDTO("Product Views", formatK(ordersCount * 25), "+9%", 40, false));
-        conversionData.add(new DashboardStatsDTO.ConversionStepDTO("Add to Cart", formatK(ordersCount * 2), "+6%", 60, false));
-        conversionData.add(new DashboardStatsDTO.ConversionStepDTO("Checkout", formatK((long)(ordersCount * 1.4)), "+4%", 30, false));
-        conversionData.add(new DashboardStatsDTO.ConversionStepDTO("Purchase", formatK(ordersCount), "+7%", 20, false));
-        conversionData.add(new DashboardStatsDTO.ConversionStepDTO("Abandoned", formatK(ordersCount), "-5%", 10, true));
+        conversionData.add(new DashboardStatsDTO.ConversionStepDTO("Product Views", formatK(ordersCount * 25), ordersCount * 25, "+9%", 40, false));
+        conversionData.add(new DashboardStatsDTO.ConversionStepDTO("Add to Cart", formatK(ordersCount * 2), ordersCount * 2, "+6%", 60, false));
+        conversionData.add(new DashboardStatsDTO.ConversionStepDTO("Checkout", formatK((long)(ordersCount * 1.4)), (long)(ordersCount * 1.4), "+4%", 30, false));
+        conversionData.add(new DashboardStatsDTO.ConversionStepDTO("Purchase", formatK(ordersCount), ordersCount, "+7%", 20, false));
+        conversionData.add(new DashboardStatsDTO.ConversionStepDTO("Abandoned", formatK(ordersCount), ordersCount, "-5%", 10, true));
         dto.setConversionData(conversionData);
 
         List<DashboardStatsDTO.TrafficSourceDTO> trafficSourceData = new ArrayList<>();

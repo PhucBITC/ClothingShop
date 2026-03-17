@@ -25,7 +25,6 @@ export const NotificationProvider = ({ children }) => {
         setLoading(true);
         try {
             const response = await axios.get('/notifications');
-            console.log("DEBUG: Notifications fetched from backend:", response.data);
             setNotifications(response.data);
             // After fetching the list, update unread count just in case
             const unread = response.data.filter(n => !n.isRead).length;
@@ -39,9 +38,7 @@ export const NotificationProvider = ({ children }) => {
 
     const markAsRead = async (id) => {
         try {
-            console.log(`DEBUG: Marking notification ${id} as read...`);
             const response = await axios.patch(`/notifications/${id}/read`);
-            console.log(`DEBUG: Mark as read success for ${id}:`, response.status);
             setNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
             setUnreadCount(prev => Math.max(0, prev - 1));
         } catch (error) {

@@ -52,13 +52,15 @@ public class DashboardStatsDTO {
     public static class ConversionStepDTO {
         private String label;
         private String val;
+        private Long val_num;
         private String change;
         private Integer h;
         private Boolean red;
 
-        public ConversionStepDTO(String label, String val, String change, Integer h, Boolean red) {
+        public ConversionStepDTO(String label, String val, Long val_num, String change, Integer h, Boolean red) {
             this.label = label;
             this.val = val;
+            this.val_num = val_num;
             this.change = change;
             this.h = h;
             this.red = red;
@@ -66,6 +68,7 @@ public class DashboardStatsDTO {
 
         public String getLabel() { return label; }
         public String getVal() { return val; }
+        public Long getVal_num() { return val_num; }
         public String getChange() { return change; }
         public Integer getH() { return h; }
         public Boolean getRed() { return red; }
@@ -88,16 +91,19 @@ public class DashboardStatsDTO {
     public void setLowStockProducts(List<LowStockDTO> lowStockProducts) { this.lowStockProducts = lowStockProducts; }
 
     public static class LowStockDTO {
+        private Long productId;
         private String name;
         private Integer stock;
         private String image;
 
-        public LowStockDTO(String name, Integer stock, String image) {
+        public LowStockDTO(Long productId, String name, Integer stock, String image) {
+            this.productId = productId;
             this.name = name;
             this.stock = stock;
             this.image = image;
         }
 
+        public Long getProductId() { return productId; }
         public String getName() { return name; }
         public Integer getStock() { return stock; }
         public String getImage() { return image; }
