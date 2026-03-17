@@ -98,18 +98,26 @@ function PaymentMethod() {
     const fetchVouchers = async () => {
         try {
             const response = await axios.get('/discounts');
-            // Filter only active and current vouchers
-            const now = new Date();
-            const filtered = response.data.filter(v => {
-                const start = v.startDate ? new Date(v.startDate) : null;
-                const end = v.endDate ? new Date(v.endDate) : null;
-                return v.isActive && (!start || now >= start) && (!end || now <= end);
-            });
+            // Show all active vouchers, even if expired or limit reached (so user knows why they can't use them)
+            const filtered = response.data.filter(v => v.isActive);
             setAvailableVouchers(filtered);
             setShowVoucherModal(true);
         } catch (error) {
             toast.error('Error', 'Failed to fetch vouchers');
         }
+    };
+
+    const getVoucherStatus = (v) => {
+        const now = new Date();
+        const start = v.startDate ? new Date(v.startDate) : null;
+        const end = v.endDate ? new Date(v.endDate) : null;
+
+        if (start && now < start) return { disabled: true, reason: 'Coming Soon', label: 'UPCOMING' };
+        if (end && now > end) return { disabled: true, reason: 'This voucher has expired', label: 'EXPIRED' };
+        if (v.usageLimit && v.usageCount >= v.usageLimit) return { disabled: true, reason: 'Usage limit reached', label: 'FULL' };
+        if (v.minOrderAmount > baseTotals.subtotal) return { disabled: true, reason: `Min order of $${v.minOrderAmount} required`, label: 'INELIGIBLE' };
+        
+        return { disabled: false, reason: null, label: null };
     };
 
     const handleContinue = async () => {
@@ -300,28 +308,34 @@ function PaymentMethod() {
                         
                         <div className={styles.voucherList}>
                             {availableVouchers.length > 0 ? (
-                                availableVouchers.map(v => (
-                                    <div 
-                                        key={v.id} 
-                                        className={`${styles.voucherCard} ${v.minOrderAmount > baseTotals.subtotal ? styles.disabledVoucher : ''}`}
-                                        onClick={() => {
-                                            if (v.minOrderAmount <= baseTotals.subtotal) {
-                                                handleApplyDiscount(v.code);
-                                            }
-                                        }}
-                                    >
-                                        <div className={styles.voucherIcon}>
-                                            <BiPurchaseTag />
+                                availableVouchers.map(v => {
+                                    const status = getVoucherStatus(v);
+                                    return (
+                                        <div 
+                                            key={v.id} 
+                                            className={`${styles.voucherCard} ${status.disabled ? styles.disabledVoucher : ''}`}
+                                            onClick={() => {
+                                                if (!status.disabled) {
+                                                    handleApplyDiscount(v.code);
+                                                }
+                                            }}
+                                        >
+                                            <div className={styles.voucherIcon}>
+                                                <BiPurchaseTag />
+                                            </div>
+                                            <div className={styles.voucherInfo}>
+                                                <div className={styles.voucherHeaderRow}>
+                                                    <div className={styles.voucherCodeName}>{v.code}</div>
+                                                    {status.label && <span className={`${styles.statusLabel} ${styles[status.label.toLowerCase().replace(' ', '')]}`}>{status.label}</span>}
+                                                </div>
+                                                <div className={styles.voucherDesc}>{v.description}</div>
+                                                {status.reason && (
+                                                    <div className={styles.voucherLimits}>{status.reason}</div>
+                                                )}
+                                            </div>
                                         </div>
-                                        <div className={styles.voucherInfo}>
-                                            <div className={styles.voucherCodeName}>{v.code}</div>
-                                            <div className={styles.voucherDesc}>{v.description}</div>
-                                            {v.minOrderAmount > baseTotals.subtotal && (
-                                                <div className={styles.voucherLimits}>Min order of ${v.minOrderAmount} required</div>
-                                            )}
-                                        </div>
-                                    </div>
-                                ))
+                                    );
+                                })
                             ) : (
                                 <div className={styles.emptyVouchers}>No active vouchers found.</div>
                             )}

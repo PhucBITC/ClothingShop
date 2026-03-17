@@ -415,15 +415,57 @@
     color: var(--text-muted);
 }
 
+.voucherHeaderRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.25rem;
+}
+
+.statusLabel {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 800;
+}
+
+.statusLabel.upcoming {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+.statusLabel.expired {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.statusLabel.full {
+    background: #ffedd5;
+    color: #9a3412;
+}
+
+.statusLabel.ineligible {
+    background: #f1f5f9;
+    color: #475569;
+}
+
 .disabledVoucher {
     opacity: 0.6;
     cursor: not-allowed !important;
-    filter: grayscale(1);
+    filter: grayscale(0.8);
+    position: relative;
 }
 
-.disabledVoucher:hover {
-    transform: none !important;
-    border-color: var(--border-color) !important;
+.disabledVoucher::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    backdrop-filter: blur(1px);
+    pointer-events: none;
+    border-radius: 12px;
 }
 
 .summaryLabel {
