@@ -132,19 +132,103 @@
     font-weight: 700;
 }
 
+.seeAllLink {
+    font-size: 12px;
+    color: var(--text-gray);
+    text-decoration: none;
+    transition: color 0.2s;
+    cursor: pointer;
+}
+
+.seeAllLink:hover {
+    color: var(--primary-orange);
+}
+
+.filterGroup {
+    display: flex;
+    gap: 8px;
+}
+
 .timeFilter {
-    padding: 6px 12px;
-    border-radius: 6px;
+    padding: 6px 14px;
+    border-radius: 8px;
     border: 1px solid #E0E0E0;
     font-size: 12px;
+    font-weight: 600;
     background: #fff;
+    color: var(--text-gray);
     cursor: pointer;
+    transition: all 0.2s;
+}
+
+.timeFilter:hover {
+    background: #f8f9fa;
+    border-color: #ccc;
 }
 
 .timeFilter.active {
     background: var(--primary-orange);
     color: var(--white);
     border-color: var(--primary-orange);
+    box-shadow: 0 2px 8px rgba(255, 136, 0, 0.2);
+}
+
+.datePickerContainer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border: 1px dashed #E0E0E0;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.dateInput {
+    padding: 8px 12px;
+    border: 1px solid #E0E0E0;
+    border-radius: 8px;
+    font-size: 13px;
+    outline: none;
+    color: #333;
+    font-family: inherit;
+}
+
+.dateInput:focus {
+    border-color: var(--primary-orange);
+}
+
+.dateSeparator {
+    color: var(--text-gray);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.applyBtn {
+    padding: 8px 16px;
+    background: var(--primary-orange);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.applyBtn:hover {
+    background: #e67a00;
+    transform: translateY(-1px);
+}
+
+.applyBtn:active {
+    transform: translateY(0);
 }
 
 /* Bottom Row */
@@ -175,6 +259,85 @@
     background: #FFE0B2;
     border-radius: 8px 8px 0 0;
     transition: height 1s ease-out;
+}
+
+/* Low Stock Alerts */
+.lowStockList {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 10px;
+}
+
+.lowStockItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    border-radius: 8px;
+    background: #FFFBFA;
+    border: 1px solid #FFEBE9;
+}
+
+.productInfo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.productImage {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.productImage img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.placeholderIcon {
+    font-size: 20px;
+}
+
+.productText {
+    display: flex;
+    flex-direction: column;
+}
+
+.productName {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.stockCount {
+    font-size: 11px;
+    color: #E74C3C;
+    font-weight: 500;
+}
+
+.restockBtn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    background: #fff;
+    border: 1px solid #E0E0E0;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.restockBtn:hover {
+    background: #E74C3C;
+    color: #fff;
+    border-color: #E74C3C;
 }
 
 /* RESPONSIVE QUERIES */

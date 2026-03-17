@@ -14,4 +14,6 @@ public interface ProductVariantRepository extends JpaRepository<ProductVariant, 
     void deleteByProduct(Product product);
 
     boolean existsBySku(String sku);
+
+    List<ProductVariant> findByStockLessThan(Integer threshold);
 }
