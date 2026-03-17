@@ -504,6 +504,7 @@
 /* Content wrapper */
 .content {
     padding: 32px;
+    padding-top: calc(var(--topbar-height) + 32px);
     width: 100%;
     overflow-x: hidden;
     /* Prevent horizontal scroll on body */
@@ -561,6 +562,7 @@
 
     .content {
         padding: 16px;
+        padding-top: calc(var(--topbar-height) + 16px);
     }
 }
 
