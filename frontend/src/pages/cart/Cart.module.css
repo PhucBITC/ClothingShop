@@ -247,7 +247,7 @@
 
 .productMeta p {
     font-size: 0.85rem;
-    color: #666;
+    color: var(--text-muted);
 }
 
 .priceCell,
@@ -257,10 +257,10 @@
 }
 
 .itemCheckbox {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     cursor: pointer;
-    accent-color: #131118;
+    accent-color: var(--accent-blue);
 }
 
 .selectedRow {
@@ -271,28 +271,45 @@
 .quantityControl {
     display: flex;
     align-items: center;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
     border-radius: 8px;
     width: 100px;
-    height: 40px;
+    height: 36px;
+    overflow: hidden;
 }
 
 .qtyBtn {
-    width: 30px;
+    width: 32px;
     height: 100%;
     background: none;
     border: none;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--text-main);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: all 0.2s;
+}
+
+.qtyBtn:hover {
+    background: var(--bg-hover);
+    color: var(--accent-blue);
+}
+
+.qtyBtn:active {
+    background: var(--border-color);
+    transform: scale(0.95);
 }
 
 .qtyValue {
     flex: 1;
     text-align: center;
-    font-weight: 600;
+    font-weight: 700;
+    color: var(--text-main);
+    font-size: 0.95rem;
 }
 
 /* --- Order Summary (Right Side) --- */
@@ -335,7 +352,7 @@
 .discountWrapper h5 {
     font-size: 0.9rem;
     margin-bottom: 1rem;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--text-main);
     display: flex;
     align-items: center;
