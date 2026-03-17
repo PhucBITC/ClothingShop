@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -6,40 +6,49 @@ import {
 } from 'recharts';
 import { BiDollar, BiCart, BiUser, BiDotsHorizontalRounded } from 'react-icons/bi';
 import styles from './Dashboard.module.css';
-
-// Mock Data
-const revenueData = [
-    { name: '12 Aug', revenue: 4000, order: 2400 },
-    { name: '13 Aug', revenue: 3000, order: 1398 },
-    { name: '14 Aug', revenue: 2000, order: 9800 },
-    { name: '15 Aug', revenue: 2780, order: 3908 },
-    { name: '16 Aug', revenue: 1890, order: 4800 },
-    { name: '17 Aug', revenue: 2390, order: 3800 },
-    { name: '18 Aug', revenue: 3490, order: 4300 },
-    { name: '19 Aug', revenue: 3000, order: 4100 },
-];
-
-const categoryData = [
-    { name: 'Electronics', value: 1200000, color: '#FF8800' },
-    { name: 'Fashion', value: 950000, color: '#FFBB73' },
-    { name: 'Home & Kitchen', value: 750000, color: '#FFDCA8' },
-    { name: 'Beauty', value: 500000, color: '#F5F6FA' },
-];
-
-const targetData = [
-    { name: 'Achieved', value: 85, color: '#FF8800' },
-    { name: 'Remaining', value: 15, color: '#F0F0F0' },
-];
-
-const trafficData = [
-    { name: 'Direct', value: 40 },
-    { name: 'Organic', value: 30 },
-    { name: 'Social', value: 15 },
-    { name: 'Referral', value: 10 },
-    { name: 'Email', value: 5 },
-];
+import api from '../../api/axios';
 
 const Dashboard = () => {
+    const [stats, setStats] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const response = await api.get('/admin/dashboard/stats');
+                setStats(response.data);
+            } catch (error) {
+                console.error('Error fetching dashboard stats:', error);
+                setError('Failed to fetch dashboard data. Please ensure the backend is running and you have admin permissions.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchStats();
+    }, []);
+
+    if (loading) {
+        return <div className={styles.loading}>Loading Dashboard...</div>;
+    }
+
+    if (error) {
+        return <div className={styles.error} style={{ color: 'red', textAlign: 'center', marginTop: '50px' }}>{error}</div>;
+    }
+
+    // Default values if data hasn't loaded or fails
+    const revenueData = stats?.revenueData || [];
+    const categoryData = stats?.categoryData || [];
+    const totalSales = stats?.totalSales || 0;
+    const totalOrders = stats?.totalOrders || 0;
+    const totalVisitors = stats?.totalVisitors || 0;
+
+    const targetData = [
+        { name: 'Achieved', value: 85, color: '#FF8800' },
+        { name: 'Remaining', value: 15, color: '#F0F0F0' },
+    ];
+
     return (
         <motion.div
             className={styles.dashboardContainer}
@@ -60,7 +69,7 @@ const Dashboard = () => {
                                 <BiDollar />
                             </div>
                         </div>
-                        <div className={styles.statsValue}>$983,410</div>
+                        <div className={styles.statsValue}>${totalSales.toLocaleString()}</div>
                         <div className={styles.statsChange}>
                             <span className={styles.textGreen}>+3.34%</span> vs last week
                         </div>
@@ -74,7 +83,7 @@ const Dashboard = () => {
                                 <BiCart />
                             </div>
                         </div>
-                        <div className={styles.statsValue}>58,375</div>
+                        <div className={styles.statsValue}>{totalOrders.toLocaleString()}</div>
                         <div className={styles.statsChange}>
                             <span className={styles.textRed}>-2.89%</span> vs last week
                         </div>
@@ -88,7 +97,7 @@ const Dashboard = () => {
                                 <BiUser />
                             </div>
                         </div>
-                        <div className={styles.statsValue}>237,782</div>
+                        <div className={styles.statsValue}>{totalVisitors.toLocaleString()}</div>
                         <div className={styles.statsChange}>
                             <span className={styles.textGreen}>+8.02%</span> vs last week
                         </div>
@@ -257,7 +266,7 @@ const Dashboard = () => {
                         </ResponsiveContainer>
                         <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
                             <div style={{ fontSize: 10, color: '#888' }}>Total Sales</div>
-                            <div style={{ fontSize: 18, fontWeight: 700 }}>$3.4M</div>
+                            <div style={{ fontSize: 18, fontWeight: 700 }}>${totalSales.toLocaleString()}</div>
                         </div>
                     </div>
 

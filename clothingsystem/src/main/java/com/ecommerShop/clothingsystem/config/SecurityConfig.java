@@ -58,7 +58,7 @@ public class SecurityConfig {
                                                 .requestMatchers(org.springframework.http.HttpMethod.POST,
                                                                 "/api/contact")
                                                 .permitAll()
-                                                .requestMatchers("/api/orders/admin/**").hasRole("ADMIN")
+                                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
                                                 .anyRequest().authenticated())
                                 .exceptionHandling(exception -> exception
                                                 .authenticationEntryPoint(
