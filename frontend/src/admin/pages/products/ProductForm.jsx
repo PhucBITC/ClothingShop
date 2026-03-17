@@ -268,15 +268,15 @@ const ProductForm = () => {
         try {
             const productData = {
                 ...formData,
-                basePrice: parseFloat(formData.basePrice),
-                categoryId: parseInt(formData.categoryId, 10),
+                basePrice: parseFloat(formData.basePrice) || 0,
+                categoryId: parseInt(formData.categoryId, 10) || null,
                 weight: formData.weight ? parseFloat(formData.weight) : null,
                 length: formData.length ? parseFloat(formData.length) : null,
                 width: formData.width ? parseFloat(formData.width) : null,
                 height: formData.height ? parseFloat(formData.height) : null,
                 variants: variants.map(v => ({
                     ...v,
-                    stock: parseInt(v.stock, 10),
+                    stock: parseInt(v.stock, 10) || 0,
                     price: v.price ? parseFloat(v.price) : null,
                     salePrice: v.salePrice ? parseFloat(v.salePrice) : null
                 })),
@@ -307,7 +307,8 @@ const ProductForm = () => {
             navigate('/admin/products');
         } catch (err) {
             console.error("Error saving product:", err);
-            const errorMessage = err.response?.data?.message || 'Failed to save product. Please try again.';
+            const serverMessage = err.response?.headers?.['x-error-message'] || err.response?.data;
+            const errorMessage = serverMessage || 'Failed to save product. Please try again.';
             toast.error('Save Failed', errorMessage);
         } finally {
             setLoading(false);

@@ -37,8 +37,9 @@ public class ProductController {
         try {
             Product createdProduct = productService.createProduct(productRequest, files);
             return ResponseEntity.ok(createdProduct);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
+                    .body(null); 
         }
     }
 
@@ -52,7 +53,9 @@ public class ProductController {
             Product updatedProduct = productService.updateProduct(id, productRequest, files);
             return ResponseEntity.ok(updatedProduct);
         } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
+                    .header("X-Error-Message", e.getMessage())
+                    .body(null); 
         }
     }
 
@@ -73,12 +76,13 @@ public class ProductController {
     // 5. Lấy sản phẩm theo ID
     // 5. Lấy sản phẩm theo ID (Update to return 404 properly)
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+    public ResponseEntity<?> getProductById(@PathVariable Long id) {
         try {
             Product product = productService.getProductById(id);
             return ResponseEntity.ok(product);
         } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(org.springframework.http.HttpStatus.NOT_FOUND)
+                    .body(e.getMessage());
         }
     }
 

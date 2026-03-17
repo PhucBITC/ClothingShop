@@ -25,6 +25,9 @@ public class FilesController {
         String filename = path.replace("/api/files/", "");
 
         Resource file = storageService.load(filename);
+        if (file == null) {
+            return ResponseEntity.notFound().build();
+        }
         String contentType = "application/octet-stream";
         try {
             contentType = java.nio.file.Files.probeContentType(file.getFile().toPath());

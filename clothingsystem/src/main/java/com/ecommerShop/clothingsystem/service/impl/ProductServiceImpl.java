@@ -127,41 +127,42 @@ public class ProductServiceImpl implements ProductService {
         product.setWidth(request.getWidth());
         product.setHeight(request.getHeight());
 
-        // Update Variants
+        // Update Variants (Merging logic instead of clear() to avoid breaking FKs)
         if (request.getVariants() != null) {
-            product.getVariants().clear();
+            List<ProductVariant> existingVariants = product.getVariants();
+            List<ProductVariant> updatedVariants = new ArrayList<>();
+
+            for (ProductRequest.VariantDTO vDto : request.getVariants()) {
+                // Find matching existing variant
+                ProductVariant variant = existingVariants.stream()
+                        .filter(v -> v.getSize().equals(vDto.getSize()) && v.getColor().equals(vDto.getColor()))
+                        .findFirst()
+                        .orElse(new ProductVariant());
+
+                variant.setProduct(product);
+                variant.setSize(vDto.getSize());
+                variant.setColor(vDto.getColor());
+                variant.setStock(vDto.getStock() != null ? vDto.getStock() : 0);
+                variant.setPrice(vDto.getPrice() != null ? vDto.getPrice() : product.getBasePrice());
+                variant.setSalePrice(vDto.getSalePrice());
+                
+                // Regenerate SKU if it's new
+                if (variant.getSku() == null) {
+                    variant.setSku(generateSku(product.getSlug(), vDto.getColor(), vDto.getSize()));
+                }
+                
+                updatedVariants.add(variant);
+            }
+
+            // Variants that are in current product but NOT in the updated list should be removed
+            // orphanRemoval = true will handle the actual deletion from DB
+            existingVariants.clear();
+            existingVariants.addAll(updatedVariants);
         }
 
         // Update Images (existing ones)
         if (request.getImages() != null) {
             product.getImages().clear();
-        }
-
-        // IMPORTANT: Flush deletions before adding new ones to avoid "Duplicate entry"
-        // (SKU collision)
-        // because Hibernate flushes INSERTS before DELETES by default.
-        productRepository.saveAndFlush(product);
-
-        // Re-add Variants
-        if (request.getVariants() != null) {
-            for (ProductRequest.VariantDTO vDto : request.getVariants()) {
-                ProductVariant variant = new ProductVariant();
-                variant.setProduct(product);
-                variant.setSize(vDto.getSize());
-                variant.setColor(vDto.getColor());
-                variant.setStock(vDto.getStock());
-                variant.setPrice(vDto.getPrice() != null ? vDto.getPrice() : product.getBasePrice());
-                variant.setSalePrice(vDto.getSalePrice());
-
-                // Regenerate SKU based on existing slug
-                variant.setSku(generateSku(product.getSlug(), vDto.getColor(), vDto.getSize()));
-
-                product.getVariants().add(variant);
-            }
-        }
-
-        // Re-add Existing Images from Request
-        if (request.getImages() != null) {
             for (ProductRequest.ImageDTO imgDto : request.getImages()) {
                 ProductImage image = new ProductImage();
                 image.setProduct(product);

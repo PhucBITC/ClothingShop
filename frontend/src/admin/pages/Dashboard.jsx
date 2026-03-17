@@ -31,7 +31,6 @@ const Dashboard = () => {
             setStats(response.data);
             setLoading(false);
         } catch (error) {
-            console.error('Error fetching dashboard stats:', error);
             setError('Failed to fetch dashboard data.');
             setLoading(false);
         }
@@ -51,9 +50,13 @@ const Dashboard = () => {
         }
     };
 
-    const handleRestock = (productId) => {
+    const handleRestock = (p) => {
+        const productId = (p && typeof p === 'object') ? (p.productId || p.id) : p;
+        
         if (productId) {
             navigate(`/admin/products/edit/${productId}`);
+        } else {
+            console.error("Product ID is missing for restock action!", p);
         }
     };
 
@@ -392,7 +395,7 @@ const Dashboard = () => {
                                     </div>
                                     <button 
                                         className={styles.restockBtn}
-                                        onClick={() => handleRestock(p.productId || p.id)}
+                                        onClick={() => handleRestock(p)}
                                     >
                                         Restock
                                     </button>
