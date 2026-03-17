@@ -219,6 +219,15 @@
     font-size: 1.1rem;
 }
 
+.discountRow {
+    color: #e53e3e;
+    font-weight: 500;
+}
+
+.discountValue {
+    color: #e53e3e;
+}
+
 .modalFooter {
     padding: 1rem 2rem;
     background: #f8fafc;

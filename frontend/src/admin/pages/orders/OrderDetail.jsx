@@ -109,12 +109,18 @@ const OrderDetail = () => {
                         <div className={styles.orderSummary}>
                             <div className={styles.summaryRow}>
                                 <span>Subtotal</span>
-                                <span>${(order.items?.reduce((sum, item) => sum + ((item.price || 0) * item.quantity), 0) || 0).toFixed(2)}</span>
+                                <span>${(order.subtotal || order.totalPrice).toFixed(2)}</span>
                             </div>
                             <div className={styles.summaryRow}>
                                 <span>Delivery Fee</span>
-                                <span>${(order.totalPrice - (order.items?.reduce((sum, item) => sum + ((item.price || 0) * item.quantity), 0) || 0)).toFixed(2)}</span>
+                                <span>${(order.deliveryCharge || 0).toFixed(2)}</span>
                             </div>
+                            {order.discountAmount > 0 && (
+                                <div className={`${styles.summaryRow} ${styles.discountRow}`}>
+                                    <span>Discount {order.discountCode ? `(${order.discountCode})` : ''}</span>
+                                    <span className={styles.discountValue}>-${order.discountAmount.toFixed(2)}</span>
+                                </div>
+                            )}
                             <div className={`${styles.summaryRow} ${styles.grandTotal}`}>
                                 <span>Total Price</span>
                                 <span>${(order.totalPrice || 0).toFixed(2)}</span>

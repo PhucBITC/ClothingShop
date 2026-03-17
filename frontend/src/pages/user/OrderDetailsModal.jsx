@@ -88,12 +88,18 @@ const OrderDetailsModal = ({ isOpen, onClose, order }) => {
                     <div className={styles.summarySection}>
                         <div className={styles.summaryRow}>
                             <span>Subtotal</span>
-                            <span>${order.totalPrice.toFixed(2)}</span>
+                            <span>${(order.subtotal || order.totalPrice).toFixed(2)}</span>
                         </div>
                         <div className={styles.summaryRow}>
                             <span>Shipping</span>
-                            <span>Free</span>
+                            <span>{order.deliveryCharge > 0 ? `$${order.deliveryCharge.toFixed(2)}` : 'Free'}</span>
                         </div>
+                        {order.discountAmount > 0 && (
+                            <div className={`${styles.summaryRow} ${styles.discountRow}`}>
+                                <span>Discount {order.discountCode ? `(${order.discountCode})` : ''}</span>
+                                <span className={styles.discountValue}>-${order.discountAmount.toFixed(2)}</span>
+                            </div>
+                        )}
                         <div className={`${styles.summaryRow} ${styles.grandTotal}`}>
                             <span>Total</span>
                             <span>${order.totalPrice.toFixed(2)}</span>

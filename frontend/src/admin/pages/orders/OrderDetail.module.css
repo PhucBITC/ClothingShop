@@ -161,6 +161,15 @@
     font-size: 1.2rem;
 }
 
+.discountRow {
+    color: #e53e3e;
+    font-weight: 600;
+}
+
+.discountValue {
+    color: #e53e3e;
+}
+
 /* Status Select */
 .statusBox {
     display: flex;
