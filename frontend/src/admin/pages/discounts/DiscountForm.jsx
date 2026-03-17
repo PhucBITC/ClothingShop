@@ -4,7 +4,7 @@ import axios from '../../../api/axios';
 import { useToast } from '../../../components/common/toast/ToastContext';
 import styles from './DiscountForm.module.css';
 import { motion } from 'framer-motion';
-import { BiSave, BiX, BiPurchaseTag } from 'react-icons/bi';
+import { BiSave, BiX, BiPurchaseTag, BiCalendar } from 'react-icons/bi';
 
 const DiscountForm = () => {
     const { id } = useParams();
@@ -248,24 +248,32 @@ const DiscountForm = () => {
                     <div className={styles.grid}>
                         <div className={styles.formGroup}>
                             <label>Start Date & Time</label>
-                            <input 
-                                type="datetime-local"
-                                name="startDate"
-                                value={formData.startDate}
-                                onChange={handleChange}
-                                className={styles.input}
-                            />
+                            <div className={styles.inputWithIcon}>
+                                <BiCalendar className={styles.inputIcon} />
+                                <input 
+                                    type="datetime-local"
+                                    name="startDate"
+                                    value={formData.startDate}
+                                    onChange={handleChange}
+                                    onClick={(e) => e.target.showPicker()}
+                                    className={styles.input}
+                                />
+                            </div>
                         </div>
 
                         <div className={styles.formGroup}>
                             <label>End Date & Time</label>
-                            <input 
-                                type="datetime-local"
-                                name="endDate"
-                                value={formData.endDate}
-                                onChange={handleChange}
-                                className={styles.input}
-                            />
+                            <div className={styles.inputWithIcon}>
+                                <BiCalendar className={styles.inputIcon} />
+                                <input 
+                                    type="datetime-local"
+                                    name="endDate"
+                                    value={formData.endDate}
+                                    onChange={handleChange}
+                                    onClick={(e) => e.target.showPicker()}
+                                    className={styles.input}
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
