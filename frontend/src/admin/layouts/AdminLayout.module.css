@@ -271,10 +271,10 @@
     top: 50px;
     right: 0;
     width: 320px;
-    background: white;
+    background: var(--admin-card-bg);
     border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--admin-border);
     z-index: 999;
     overflow: hidden;
     animation: dropdownSlide 0.2s ease-out;
@@ -297,6 +297,7 @@
     font-size: 1rem;
     font-weight: 700;
     margin: 0;
+    color: var(--admin-text-main);
 }
 
 .dropdownHeader a, .markAllReadBtn {
@@ -321,21 +322,22 @@
 
 .dropdownItem {
     padding: 15px 20px;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid var(--admin-border);
     transition: background 0.2s;
     cursor: pointer;
+    background: transparent;
 }
 
 .dropdownItem:hover {
-    background: #f0f4f8; /* Highlight on hover */
+    background: var(--admin-hover-bg); /* Highlight on hover */
 }
 
 .dropdownItem.unread {
-    background: #fff9f5;
+    background: rgba(255, 136, 0, 0.05);
 }
 
 .dropdownItem.unread:hover {
-    background: #ffede0;
+    background: rgba(255, 136, 0, 0.1);
 }
 
 .itemHeader {
@@ -347,17 +349,17 @@
 .itemName {
     font-size: 0.9rem;
     font-weight: 600;
-    color: var(--text-dark);
+    color: var(--admin-text-main);
 }
 
 .itemDate {
     font-size: 0.75rem;
-    color: var(--text-gray);
+    color: var(--admin-text-muted);
 }
 
 .itemSnippet {
     font-size: 0.85rem;
-    color: var(--text-gray);
+    color: var(--admin-text-muted);
     margin: 0;
     white-space: nowrap;
     overflow: hidden;
@@ -367,7 +369,7 @@
 .emptyDropdown {
     padding: 30px;
     text-align: center;
-    color: var(--text-gray);
+    color: var(--admin-text-muted);
     font-size: 0.9rem;
 }
 
@@ -375,8 +377,8 @@
     display: block;
     padding: 12px;
     text-align: center;
-    background: var(--secondary-bg);
-    color: var(--text-gray);
+    background: var(--admin-bg);
+    color: var(--admin-text-muted);
     text-decoration: none;
     font-size: 0.85rem;
     font-weight: 600;
@@ -384,8 +386,8 @@
 }
 
 .dropdownFooter:hover {
-    background: #e9eaef;
-    color: var(--text-dark);
+    background: var(--admin-hover-bg);
+    color: var(--primary-orange);
 }
 
 .userProfile {
