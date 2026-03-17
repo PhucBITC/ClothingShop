@@ -228,7 +228,7 @@ function Cart() {
                     </div>
 
 
-                    <div className={styles.grandTotalRow} style={{ borderTop: '1px solid #eee', paddingTop: '1.5rem' }}>
+                    <div className={styles.grandTotalRow}>
                         <span className={styles.summaryLabel}>Grand Total</span>
                         <span className={styles.summaryValue}>${total.toFixed(2)}</span>
                     </div>

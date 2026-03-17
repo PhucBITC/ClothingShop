@@ -324,13 +324,6 @@ function ShippingAddress() {
                             <span className={styles.summaryLabel}>Subtotal</span>
                             <span>${subtotal.toFixed(2)}</span>
                         </div>
-                        <div className={styles.discountWrapper}>
-                            <label className={styles.discountLabel}>Enter Discount Code</label>
-                            <div className={styles.discountGroup}>
-                                <input type="text" placeholder="FLAT50" className={styles.discountInput} />
-                                <button className={styles.applyBtn}>Apply</button>
-                            </div>
-                        </div>
                         <div className={styles.summaryRow}>
                             <span className={styles.summaryLabel}>Delivery Charge</span>
                             <span>${deliveryCharge.toFixed(2)}</span>

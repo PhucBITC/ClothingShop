@@ -23,7 +23,6 @@ function PaymentMethod() {
     const [validating, setValidating] = useState(false);
     
     // Discount State
-    const [discountCode, setDiscountCode] = useState('');
     const [appliedDiscount, setAppliedDiscount] = useState(null);
     const [showVoucherModal, setShowVoucherModal] = useState(false);
     const [availableVouchers, setAvailableVouchers] = useState([]);
@@ -60,7 +59,7 @@ function PaymentMethod() {
         });
     }, [appliedDiscount, baseTotals]);
 
-    const handleApplyDiscount = async (codeToTry = discountCode) => {
+    const handleApplyDiscount = async (codeToTry) => {
         if (!codeToTry) return;
         setValidating(true);
         try {
@@ -71,7 +70,6 @@ function PaymentMethod() {
                 }
             });
             setAppliedDiscount(response.data);
-            setDiscountCode('');
             setShowVoucherModal(false);
             toast.success('Discount Applied', `You saved $${calculateDiscountAmount(response.data).toFixed(2)}`);
         } catch (error) {
@@ -242,33 +240,18 @@ function PaymentMethod() {
                     </div>
 
                     <div className={styles.discountWrapper}>
-                        <div className={styles.discountLabelRow}>
-                            <label className={styles.discountLabel}>Discount Code</label>
-                            <span className={styles.browseVouchers} onClick={fetchVouchers}>Browse Vouchers</span>
-                        </div>
-                        
                         {!appliedDiscount ? (
-                            <div className={styles.discountGroup}>
-                                <input 
-                                    type="text" 
-                                    placeholder="Enter code" 
-                                    className={styles.discountInput} 
-                                    value={discountCode}
-                                    onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
-                                />
-                                <button 
-                                    className={styles.applyBtn} 
-                                    onClick={() => handleApplyDiscount(discountCode.trim())}
-                                    disabled={validating || !discountCode.trim()}
-                                >
-                                    {validating ? '...' : 'Apply'}
+                            <div className={styles.noDiscountBox}>
+                                <p className={styles.noDiscountText}>No discount applied</p>
+                                <button className={styles.browseBtnSmall} onClick={fetchVouchers}>
+                                    Select Voucher
                                 </button>
                             </div>
                         ) : (
                             <div className={styles.appliedDiscountInfo}>
                                 <div className={styles.appliedText}>
                                     <BiCheckCircle style={{ marginRight: '6px' }} />
-                                    {appliedDiscount.code} Applied
+                                    {appliedDiscount.code}
                                 </div>
                                 <button className={styles.removeDiscount} onClick={() => setAppliedDiscount(null)}>
                                     <BiX />
