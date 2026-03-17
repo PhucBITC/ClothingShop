@@ -1,0 +1,271 @@
+.container {
+    padding: 0;
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--admin-text-main);
+}
+
+.addButton {
+    background-color: #FF8800;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.addButton:hover {
+    background-color: #e07800;
+}
+
+.searchBar {
+    margin-bottom: 24px;
+}
+
+.searchContainer {
+    position: relative;
+    max-width: 400px;
+}
+
+.searchIcon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--admin-text-muted);
+}
+
+.searchInput {
+    width: 100%;
+    padding: 10px 10px 10px 40px;
+    border-radius: 8px;
+    border: 1px solid var(--admin-border);
+    background: var(--admin-card-bg);
+    color: var(--admin-text-main);
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.searchInput:focus {
+    border-color: #FF8800;
+}
+
+.tableContainer {
+    background: var(--admin-card-bg);
+    border-radius: 12px;
+    border: 1px solid var(--admin-border);
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th {
+    text-align: left;
+    padding: 16px 24px;
+    background: var(--admin-bg);
+    color: var(--admin-text-muted);
+    font-weight: 600;
+    font-size: 14px;
+    border-bottom: 1px solid var(--admin-border);
+}
+
+.table td {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--admin-border);
+    color: var(--admin-text-main);
+    font-size: 14px;
+}
+
+.table tr:hover {
+    background-color: var(--admin-hover-bg);
+}
+
+.codeCell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.tagIcon {
+    color: #FF8800;
+    font-size: 18px;
+}
+
+.codeText {
+    font-weight: 600;
+}
+
+.valueText {
+    font-weight: 600;
+    color: #FF8800;
+}
+
+.usageCell {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100px;
+}
+
+.usageBar {
+    height: 4px;
+    background: var(--admin-bg);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.usageProgress {
+    height: 100%;
+    background: #FF8800;
+}
+
+.dateCell {
+    display: flex;
+    flex-direction: column;
+    font-size: 12px;
+}
+
+.dateSeparator {
+    color: var(--admin-text-muted);
+    font-size: 10px;
+    text-transform: uppercase;
+    margin: 2px 0;
+}
+
+.statusBadge {
+    padding: 4px 10px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.active {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10B981;
+}
+
+.inactive {
+    background: rgba(107, 114, 128, 0.1);
+    color: #6B7280;
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
+}
+
+.actionButton {
+    padding: 6px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    background: transparent;
+    color: var(--admin-text-muted);
+    transition: all 0.2s;
+}
+
+.editBtn:hover {
+    background: rgba(255, 136, 0, 0.1);
+    color: #FF8800;
+}
+
+.deleteBtn:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #EF4444;
+}
+
+.toggleBtn:hover {
+    background: var(--admin-bg);
+}
+
+.loading, .empty {
+    padding: 40px;
+    text-align: center;
+    color: var(--admin-text-muted);
+}
+
+/* Modal Styling */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.modalContent {
+    background: var(--admin-card-bg);
+    padding: 24px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    border: 1px solid var(--admin-border);
+}
+
+.modalContent h3 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    color: var(--admin-text-main);
+}
+
+.modalContent p {
+    color: var(--admin-text-muted);
+    margin-bottom: 24px;
+}
+
+.modalActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.cancelBtn, .confirmBtn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+}
+
+.cancelBtn {
+    background: var(--admin-bg);
+    color: var(--admin-text-main);
+    border: 1px solid var(--admin-border);
+}
+
+.confirmBtn {
+    background: #EF4444;
+    color: white;
+}

@@ -79,6 +79,7 @@ const AdminLayout = () => {
         if (pathname.includes('/admin/categories')) return 'Categories';
         if (pathname.includes('/admin/customers')) return 'Customers';
         if (pathname.includes('/admin/notifications')) return 'Notifications';
+        if (pathname.includes('/admin/discounts')) return 'Discounts';
         if (pathname === '/admin') return 'Dashboard';
         return 'Dashboard';
     };
