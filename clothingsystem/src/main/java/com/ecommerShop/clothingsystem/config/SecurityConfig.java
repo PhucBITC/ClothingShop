@@ -16,6 +16,7 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 
 @Configuration
 @EnableWebSecurity
+@org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 public class SecurityConfig {
 
         @Autowired
@@ -48,7 +49,9 @@ public class SecurityConfig {
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers("/api/auth/**", "/api/files/**",
                                                                 "/api/orders/vnpay-return",
-                                                                "/api/orders/paypal-success")
+                                                                "/api/orders/paypal-success",
+                                                                "/api/discounts/validate",
+                                                                "/error")
                                                 .permitAll()
                                                 .requestMatchers(org.springframework.http.HttpMethod.GET,
                                                                 "/api/products/**", "/api/categories/**",
@@ -58,7 +61,8 @@ public class SecurityConfig {
                                                 .requestMatchers(org.springframework.http.HttpMethod.POST,
                                                                 "/api/contact")
                                                 .permitAll()
-                                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                                                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/discounts").authenticated()
+                                                .requestMatchers("/api/discounts/**", "/api/notifications/**", "/api/admin/**").hasRole("ADMIN")
                                                 .anyRequest().authenticated())
                                 .exceptionHandling(exception -> exception
                                                 .authenticationEntryPoint(

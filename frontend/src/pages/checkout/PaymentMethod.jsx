@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { BiHome, BiCreditCard, BiListCheck } from 'react-icons/bi';
+import { BiHome, BiCreditCard, BiListCheck, BiPurchaseTag, BiX, BiCheckCircle } from 'react-icons/bi';
 import { useCart } from '../../context/CartContext';
 import axios from '../../api/axios';
 import { useToast } from '../../components/common/toast/ToastContext';
@@ -14,9 +14,22 @@ function PaymentMethod() {
 
     const addressId = location.state?.addressId;
     const checkoutItems = location.state?.items || [];
-    const { subtotal, deliveryCharge, total } = calculateTotals(checkoutItems);
+    
+    // Fix: Memoize baseTotals to avoid infinite loop in useEffect
+    const baseTotals = useMemo(() => calculateTotals(checkoutItems), [calculateTotals, checkoutItems]);
+
     const [selectedMethod, setSelectedMethod] = useState('COD');
     const [loading, setLoading] = useState(false);
+    const [validating, setValidating] = useState(false);
+    
+    // Discount State
+    const [discountCode, setDiscountCode] = useState('');
+    const [appliedDiscount, setAppliedDiscount] = useState(null);
+    const [showVoucherModal, setShowVoucherModal] = useState(false);
+    const [availableVouchers, setAvailableVouchers] = useState([]);
+    
+    // Final Totals
+    const [finalTotals, setFinalTotals] = useState(baseTotals);
 
     useEffect(() => {
         if (!addressId || checkoutItems.length === 0) {
@@ -24,24 +37,97 @@ function PaymentMethod() {
         }
     }, [addressId, checkoutItems, navigate]);
 
+    useEffect(() => {
+        let currentSubtotal = baseTotals.subtotal;
+        let discountAmt = 0;
+
+        if (appliedDiscount) {
+            if (appliedDiscount.type === 'PERCENTAGE') {
+                discountAmt = (currentSubtotal * appliedDiscount.value) / 100;
+                if (appliedDiscount.maxDiscountAmount && discountAmt > appliedDiscount.maxDiscountAmount) {
+                    discountAmt = appliedDiscount.maxDiscountAmount;
+                }
+            } else {
+                discountAmt = appliedDiscount.value;
+            }
+        }
+
+        const newTotal = Math.max(0, currentSubtotal - discountAmt + baseTotals.deliveryCharge);
+        setFinalTotals({
+            ...baseTotals,
+            discount: discountAmt,
+            total: newTotal
+        });
+    }, [appliedDiscount, baseTotals]);
+
+    const handleApplyDiscount = async (codeToTry = discountCode) => {
+        if (!codeToTry) return;
+        setValidating(true);
+        try {
+            const response = await axios.get('/discounts/validate', {
+                params: {
+                    code: codeToTry,
+                    amount: baseTotals.subtotal
+                }
+            });
+            setAppliedDiscount(response.data);
+            setDiscountCode('');
+            setShowVoucherModal(false);
+            toast.success('Discount Applied', `You saved $${calculateDiscountAmount(response.data).toFixed(2)}`);
+        } catch (error) {
+            toast.error('Invalid Code', error.response?.data?.message || 'Failed to apply discount');
+        } finally {
+            setValidating(false);
+        }
+    };
+
+    const calculateDiscountAmount = (discount) => {
+        if (!discount) return 0;
+        let amt = 0;
+        if (discount.type === 'PERCENTAGE') {
+            amt = (baseTotals.subtotal * discount.value) / 100;
+            if (discount.maxDiscountAmount && amt > discount.maxDiscountAmount) {
+                amt = discount.maxDiscountAmount;
+            }
+        } else {
+            amt = discount.value;
+        }
+        return amt;
+    };
+
+    const fetchVouchers = async () => {
+        try {
+            const response = await axios.get('/discounts');
+            // Filter only active and current vouchers
+            const now = new Date();
+            const filtered = response.data.filter(v => {
+                const start = v.startDate ? new Date(v.startDate) : null;
+                const end = v.endDate ? new Date(v.endDate) : null;
+                return v.isActive && (!start || now >= start) && (!end || now <= end);
+            });
+            setAvailableVouchers(filtered);
+            setShowVoucherModal(true);
+        } catch (error) {
+            toast.error('Error', 'Failed to fetch vouchers');
+        }
+    };
+
     const handleContinue = async () => {
         setLoading(true);
         try {
             const response = await axios.post('/orders/checkout', {
                 addressId: addressId,
-                paymentMethod: selectedMethod
+                paymentMethod: selectedMethod,
+                discountCode: appliedDiscount?.code
             });
 
             if (response.data.paymentUrl) {
-                // Persist state to sessionStorage before redirecting to external payment site
                 sessionStorage.setItem('checkoutState', JSON.stringify({
                     addressId: addressId,
                     items: checkoutItems
                 }));
-                // Redirect to VNPay or PayPal
                 window.location.href = response.data.paymentUrl;
             } else {
-                // COD or other local process
                 clearCart();
                 navigate('/checkout/review', { state: { order: response.data } });
             }
@@ -81,7 +167,6 @@ function PaymentMethod() {
 
                     <div className={styles.paymentOptions}>
 
-                        {/* Cash on Delivery */}
                         <div className={styles.paymentOption}>
                             <div className={styles.optionHeader} onClick={() => setSelectedMethod('COD')}>
                                 <div className={`${styles.radioCircle} ${selectedMethod === 'COD' ? styles.selected : ''} `}>
@@ -91,7 +176,6 @@ function PaymentMethod() {
                             </div>
                         </div>
 
-                        {/* VNPay */}
                         <div className={styles.paymentOption}>
                             <div className={styles.optionHeader} onClick={() => setSelectedMethod('VNPAY')}>
                                 <div className={`${styles.radioCircle} ${selectedMethod === 'VNPAY' ? styles.selected : ''} `}>
@@ -101,7 +185,6 @@ function PaymentMethod() {
                             </div>
                         </div>
 
-                        {/* Paypal */}
                         <div className={styles.paymentOption}>
                             <div className={styles.optionHeader} onClick={() => setSelectedMethod('PAYPAL')}>
                                 <div className={`${styles.radioCircle} ${selectedMethod === 'PAYPAL' ? styles.selected : ''} `}>
@@ -147,26 +230,105 @@ function PaymentMethod() {
                 <div className={styles.summaryColumn}>
                     <div className={styles.summaryRow}>
                         <span className={styles.summaryLabel}>Subtotal</span>
-                        <span style={{ fontWeight: '700' }}>${subtotal.toFixed(2)}</span>
+                        <span style={{ fontWeight: '700' }}>${finalTotals.subtotal.toFixed(2)}</span>
                     </div>
+
                     <div className={styles.discountWrapper}>
-                        <label className={styles.discountLabel}>Enter Discount Code</label>
-                        <div className={styles.discountGroup}>
-                            <input type="text" placeholder="FLAT50" className={styles.discountInput} />
-                            <button className={styles.applyBtn}>Apply</button>
+                        <div className={styles.discountLabelRow}>
+                            <label className={styles.discountLabel}>Discount Code</label>
+                            <span className={styles.browseVouchers} onClick={fetchVouchers}>Browse Vouchers</span>
                         </div>
+                        
+                        {!appliedDiscount ? (
+                            <div className={styles.discountGroup}>
+                                <input 
+                                    type="text" 
+                                    placeholder="Enter code" 
+                                    className={styles.discountInput} 
+                                    value={discountCode}
+                                    onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
+                                />
+                                <button 
+                                    className={styles.applyBtn} 
+                                    onClick={() => handleApplyDiscount(discountCode.trim())}
+                                    disabled={validating || !discountCode.trim()}
+                                >
+                                    {validating ? '...' : 'Apply'}
+                                </button>
+                            </div>
+                        ) : (
+                            <div className={styles.appliedDiscountInfo}>
+                                <div className={styles.appliedText}>
+                                    <BiCheckCircle style={{ marginRight: '6px' }} />
+                                    {appliedDiscount.code} Applied
+                                </div>
+                                <button className={styles.removeDiscount} onClick={() => setAppliedDiscount(null)}>
+                                    <BiX />
+                                </button>
+                            </div>
+                        )}
                     </div>
+
+                    {finalTotals.discount > 0 && (
+                        <div className={styles.summaryRow}>
+                            <span className={styles.summaryLabel}>Discount Saved</span>
+                            <span style={{ fontWeight: '700', color: '#10b981' }}>-${finalTotals.discount.toFixed(2)}</span>
+                        </div>
+                    )}
+
                     <div className={styles.summaryRow}>
                         <span className={styles.summaryLabel}>Delivery Charge</span>
-                        <span style={{ fontWeight: '700' }}>${deliveryCharge.toFixed(2)}</span>
+                        <span style={{ fontWeight: '700' }}>${finalTotals.deliveryCharge.toFixed(2)}</span>
                     </div>
+                    
                     <div className={styles.grandTotal}>
                         <span>Grand Total</span>
-                        <span>${total.toFixed(2)}</span>
+                        <span>${finalTotals.total.toFixed(2)}</span>
                     </div>
                 </div>
 
             </div>
+
+            {/* Voucher Picker Modal */}
+            {showVoucherModal && (
+                <div className={styles.modalOverlay} onClick={() => setShowVoucherModal(false)}>
+                    <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+                        <div className={styles.modalHeader}>
+                            <h2 className={styles.modalTitle}>Available Vouchers</h2>
+                            <button className={styles.closeModal} onClick={() => setShowVoucherModal(false)}><BiX /></button>
+                        </div>
+                        
+                        <div className={styles.voucherList}>
+                            {availableVouchers.length > 0 ? (
+                                availableVouchers.map(v => (
+                                    <div 
+                                        key={v.id} 
+                                        className={`${styles.voucherCard} ${v.minOrderAmount > baseTotals.subtotal ? styles.disabledVoucher : ''}`}
+                                        onClick={() => {
+                                            if (v.minOrderAmount <= baseTotals.subtotal) {
+                                                handleApplyDiscount(v.code);
+                                            }
+                                        }}
+                                    >
+                                        <div className={styles.voucherIcon}>
+                                            <BiPurchaseTag />
+                                        </div>
+                                        <div className={styles.voucherInfo}>
+                                            <div className={styles.voucherCodeName}>{v.code}</div>
+                                            <div className={styles.voucherDesc}>{v.description}</div>
+                                            {v.minOrderAmount > baseTotals.subtotal && (
+                                                <div className={styles.voucherLimits}>Min order of ${v.minOrderAmount} required</div>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <div className={styles.emptyVouchers}>No active vouchers found.</div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

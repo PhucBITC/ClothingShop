@@ -4,6 +4,8 @@ public class CheckoutRequest {
     private Long addressId;
     private String paymentMethod;
 
+    private String discountCode;
+
     public CheckoutRequest() {
     }
 
@@ -21,5 +23,13 @@ public class CheckoutRequest {
 
     public void setPaymentMethod(String paymentMethod) {
         this.paymentMethod = paymentMethod;
+    }
+
+    public String getDiscountCode() {
+        return discountCode;
+    }
+
+    public void setDiscountCode(String discountCode) {
+        this.discountCode = discountCode;
     }
 }

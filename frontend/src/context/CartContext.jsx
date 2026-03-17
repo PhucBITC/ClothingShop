@@ -240,7 +240,7 @@ export const CartProvider = ({ children }) => {
         }
     };
 
-    const calculateTotals = (items) => {
+    const calculateTotals = useCallback((items) => {
         const itemSubtotal = items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
         const itemCount = items.reduce((acc, item) => acc + item.quantity, 0);
         const itemWeight = items.reduce((acc, item) => acc + (item.weight * item.quantity), 0);
@@ -260,7 +260,7 @@ export const CartProvider = ({ children }) => {
             deliveryCharge: charge,
             total: itemSubtotal + charge
         };
-    };
+    }, []);
 
     const { subtotal, deliveryCharge, total } = calculateTotals(cartItems);
     const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);

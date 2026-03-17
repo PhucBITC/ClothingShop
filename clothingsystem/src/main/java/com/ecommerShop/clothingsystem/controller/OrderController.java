@@ -32,7 +32,7 @@ public class OrderController {
     @PostMapping("/checkout")
     public ResponseEntity<?> checkout(@AuthenticationPrincipal User user, @RequestBody CheckoutRequest request) {
         try {
-            Order order = orderService.createOrder(user, request.getAddressId(), request.getPaymentMethod());
+            Order order = orderService.createOrder(user, request.getAddressId(), request.getPaymentMethod(), request.getDiscountCode());
 
             if ("VNPAY".equalsIgnoreCase(request.getPaymentMethod())) {
                 String paymentUrl = vnpayService.createPaymentUrl(order.getId(), order.getTotalPrice(), httpRequest);

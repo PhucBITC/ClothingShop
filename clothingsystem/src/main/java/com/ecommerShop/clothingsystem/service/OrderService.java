@@ -6,7 +6,7 @@ import com.ecommerShop.clothingsystem.model.User;
 import java.util.List;
 
 public interface OrderService {
-    Order createOrder(User user, Long addressId, String paymentMethod);
+    Order createOrder(User user, Long addressId, String paymentMethod, String discountCode);
 
     List<Order> getMyOrders(User user);
 

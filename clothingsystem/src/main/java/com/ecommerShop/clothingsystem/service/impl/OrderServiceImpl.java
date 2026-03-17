@@ -39,9 +39,12 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private com.ecommerShop.clothingsystem.service.DiscountService discountService;
+
     @Override
     @Transactional
-    public Order createOrder(User user, Long addressId, String paymentMethod) {
+    public Order createOrder(User user, Long addressId, String paymentMethod, String discountCode) {
         // 1. Get Cart
         Cart cart = cartRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new RuntimeException("Cart not found"));
@@ -56,7 +59,7 @@ public class OrderServiceImpl implements OrderService {
         ShippingAddress address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new RuntimeException("Address not found"));
 
-        // 3. Calculate Total Price
+        // 3. Calculate Subtotal
         double subtotal = cart.getItems().stream()
                 .mapToDouble(item -> {
                     ProductVariant v = item.getProductVariant();
@@ -67,22 +70,48 @@ public class OrderServiceImpl implements OrderService {
         // Delivery charge logic (matching CartServiceImpl/Frontend)
         int totalItemsCount = cart.getItems().stream().mapToInt(CartItem::getQuantity).sum();
         double deliveryCharge = (subtotal >= 30 || totalItemsCount >= 3) ? 0 : 1.50;
-        double totalPrice = subtotal + deliveryCharge;
 
-        // 4. Create Order
+        // 4. Handle Discount
+        double discountAmount = 0;
+        Discount appliedDiscount = null;
+        if (discountCode != null && !discountCode.trim().isEmpty()) {
+            appliedDiscount = discountService.validateDiscount(discountCode.trim(), subtotal);
+            if (appliedDiscount.getType() == DiscountType.PERCENTAGE) {
+                discountAmount = subtotal * (appliedDiscount.getValue() / 100.0);
+                if (appliedDiscount.getMaxDiscountAmount() != null && discountAmount > appliedDiscount.getMaxDiscountAmount()) {
+                    discountAmount = appliedDiscount.getMaxDiscountAmount();
+                }
+            } else {
+                discountAmount = appliedDiscount.getValue();
+            }
+            // Ensure discount doesn't exceed subtotal
+            if (discountAmount > subtotal) {
+                discountAmount = subtotal;
+            }
+        }
+
+        double totalPrice = subtotal + deliveryCharge - discountAmount;
+
+        // 5. Create Order
         Order order = new Order();
         order.setUser(user);
         order.setReceiverName(address.getFullName());
         order.setReceiverPhone(address.getPhone());
         order.setShippingAddress(address.getStreetAddress() + ", " + address.getWard() + ", " + address.getDistrict()
                 + ", " + address.getProvince());
+        
+        order.setSubtotal(subtotal);
+        order.setDeliveryCharge(deliveryCharge);
+        order.setDiscountCode(appliedDiscount != null ? appliedDiscount.getCode() : null);
+        order.setDiscountAmount(discountAmount);
         order.setTotalPrice(totalPrice);
+        
         order.setStatus("PENDING");
         order.setOrderCode(generateOrderCode());
 
         order = orderRepository.save(order);
 
-        // 5. Create Order Items
+        // 6. Create Order Items
         List<OrderItem> orderItems = new ArrayList<>();
         for (CartItem cartItem : cart.getItems()) {
             ProductVariant v = cartItem.getProductVariant();
@@ -93,7 +122,12 @@ public class OrderServiceImpl implements OrderService {
         orderItemRepository.saveAll(orderItems);
         order.setItems(orderItems);
 
-        // 6. Create Payment Record
+        // 7. Increment Discount Usage
+        if (appliedDiscount != null) {
+            discountService.incrementUsageCount(appliedDiscount.getId());
+        }
+
+        // 8. Create Payment Record
         Payment payment = new Payment();
         payment.setOrder(order);
         payment.setPaymentMethod(paymentMethod);
@@ -101,8 +135,8 @@ public class OrderServiceImpl implements OrderService {
         paymentRepository.save(payment);
         order.setPayment(payment);
 
-        // 7. Clear Cart ONLY for COD (online payments clear after success)
-        System.out.println("Processing order for payment method: " + paymentMethod);
+        // 9. Clear Cart ONLY for COD (online payments clear after success)
+        System.out.println("Processing order with total price: " + totalPrice + " for payment method: " + paymentMethod);
         if ("COD".equalsIgnoreCase(paymentMethod)) {
             System.out.println("Clearing cart for COD order");
             cartService.clearCart(user);
@@ -114,7 +148,7 @@ public class OrderServiceImpl implements OrderService {
             notificationService.createNotification(
                     user,
                     "Order Placed Successfully",
-                    "Your order " + order.getOrderCode() + " has been placed. Payment will be collected upon delivery.",
+                    "Your order " + order.getOrderCode() + " has been placed. Final amount: $" + String.format("%.2f", totalPrice) + ". Payment will be collected upon delivery.",
                     Notification.NotificationType.ORDER,
                     true);
         } else {
@@ -124,7 +158,7 @@ public class OrderServiceImpl implements OrderService {
                     user,
                     "Order Pending Payment",
                     "Your order " + order.getOrderCode()
-                            + " has been placed. Please complete the payment to process it.",
+                            + " has been placed. Please complete the payment of $" + String.format("%.2f", totalPrice) + " to process it.",
                     Notification.NotificationType.ORDER,
                     false); // No email yet, wait for success
         }
@@ -253,16 +287,41 @@ public class OrderServiceImpl implements OrderService {
     @jakarta.annotation.PostConstruct
     @Transactional
     public void migrateExistingOrders() {
-        List<Order> ordersWithoutCode = orderRepository.findAll().stream()
-                .filter(o -> o.getOrderCode() == null)
-                .collect(java.util.stream.Collectors.toList());
+        List<Order> orders = orderRepository.findAll();
+        boolean changed = false;
 
-        if (!ordersWithoutCode.isEmpty()) {
-            System.out.println("Migrating " + ordersWithoutCode.size() + " orders to add order codes...");
-            for (Order order : ordersWithoutCode) {
+        for (Order order : orders) {
+            boolean orderChanged = false;
+            
+            // 1. Order Code
+            if (order.getOrderCode() == null) {
                 order.setOrderCode(generateOrderCode());
+                orderChanged = true;
             }
-            orderRepository.saveAll(ordersWithoutCode);
+
+            // 2. New Discount Fields
+            if (order.getSubtotal() == null) {
+                // Approximate subtotal from totalPrice if items are not available or for simplicity
+                order.setSubtotal(order.getTotalPrice());
+                orderChanged = true;
+            }
+            if (order.getDeliveryCharge() == null) {
+                order.setDeliveryCharge(0.0);
+                orderChanged = true;
+            }
+            if (order.getDiscountAmount() == null) {
+                order.setDiscountAmount(0.0);
+                orderChanged = true;
+            }
+
+            if (orderChanged) {
+                changed = true;
+            }
+        }
+
+        if (changed) {
+            System.out.println("Migrated orders to include new fields (order_code, subtotal, etc.)");
+            orderRepository.saveAll(orders);
         }
     }
 }

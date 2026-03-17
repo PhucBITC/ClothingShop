@@ -20,4 +20,6 @@ public interface NotificationService {
     void deleteNotification(Long notificationId, User user);
 
     void deleteAllNotifications(User user);
+
+    void broadcastGlobalNotification(String title, String content, Notification.NotificationType type);
 }

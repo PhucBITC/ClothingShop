@@ -11,5 +11,8 @@ public interface DiscountService {
     Discount updateDiscount(Long id, DiscountRequest request);
     void deleteDiscount(Long id);
     void toggleStatus(Long id);
-    // Add additional logic as needed (e.g., validate valid code for order)
+    Discount validateDiscount(String code, Double orderAmount);
+    void broadcastDiscount(Long id);
+
+    void incrementUsageCount(Long id);
 }

@@ -4,6 +4,7 @@ import com.ecommerShop.clothingsystem.dto.NotificationResponse;
 import com.ecommerShop.clothingsystem.model.Notification;
 import com.ecommerShop.clothingsystem.model.User;
 import com.ecommerShop.clothingsystem.repository.NotificationRepository;
+import com.ecommerShop.clothingsystem.repository.UserRepository;
 import com.ecommerShop.clothingsystem.service.EmailService;
 import com.ecommerShop.clothingsystem.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,9 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Autowired
     private NotificationRepository notificationRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private EmailService emailService;
@@ -101,6 +105,16 @@ public class NotificationServiceImpl implements NotificationService {
     public void deleteAllNotifications(User user) {
         List<Notification> all = notificationRepository.findByUserIdOrderByCreatedAtDesc(user.getId());
         notificationRepository.deleteAll(all);
+    }
+
+    @Override
+    @Transactional
+    public void broadcastGlobalNotification(String title, String content, Notification.NotificationType type) {
+        List<User> allUsers = userRepository.findAll();
+        List<Notification> notifications = allUsers.stream()
+                .map(u -> new Notification(u, title, content, type))
+                .collect(Collectors.toList());
+        notificationRepository.saveAll(notifications);
     }
 
     private NotificationResponse mapToResponse(Notification notification) {

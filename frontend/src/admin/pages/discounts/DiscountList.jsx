@@ -8,7 +8,8 @@ import {
     BiSearch,
     BiShow,
     BiHide,
-    BiPurchaseTag
+    BiPurchaseTag,
+    BiBell
 } from 'react-icons/bi';
 import { useToast } from '../../../components/common/toast/ToastContext';
 import styles from './DiscountList.module.css';
@@ -47,6 +48,16 @@ const DiscountList = () => {
         } catch (error) {
             console.error('Error toggling status:', error);
             toast.error('Failed to update status');
+        }
+    };
+
+    const handleBroadcast = async (id) => {
+        try {
+            await axios.post(`/discounts/${id}/broadcast`);
+            toast.success('Promotion broadcasted to all users');
+        } catch (error) {
+            console.error('Error broadcasting promotion:', error);
+            toast.error('Failed to broadcast promotion');
         }
     };
 
@@ -162,6 +173,14 @@ const DiscountList = () => {
                                             title={discount.isActive ? "Deactivate" : "Activate"}
                                         >
                                             {discount.isActive ? <BiHide /> : <BiShow />}
+                                        </button>
+                                        <button 
+                                            className={`${styles.actionButton} ${styles.broadcastBtn}`}
+                                            onClick={() => handleBroadcast(discount.id)}
+                                            title="Broadcast Promotion"
+                                            disabled={!discount.isActive}
+                                        >
+                                            <BiBell />
                                         </button>
                                         <button 
                                             className={`${styles.actionButton} ${styles.editBtn}`}

@@ -52,4 +52,16 @@ public class DiscountController {
         discountService.toggleStatus(id);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/validate")
+    public ResponseEntity<Discount> validateDiscount(@RequestParam String code, @RequestParam Double amount) {
+        return ResponseEntity.ok(discountService.validateDiscount(code, amount));
+    }
+
+    @PostMapping("/{id}/broadcast")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> broadcastDiscount(@PathVariable Long id) {
+        discountService.broadcastDiscount(id);
+        return ResponseEntity.ok().build();
+    }
 }

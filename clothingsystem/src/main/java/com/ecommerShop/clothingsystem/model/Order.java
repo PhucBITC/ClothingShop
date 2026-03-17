@@ -30,6 +30,18 @@ public class Order {
     @Column(name = "receiver_phone", nullable = false)
     private String receiverPhone;
 
+    @Column(name = "subtotal", nullable = false)
+    private Double subtotal;
+
+    @Column(name = "delivery_charge", nullable = false)
+    private Double deliveryCharge;
+
+    @Column(name = "discount_code")
+    private String discountCode;
+
+    @Column(name = "discount_amount")
+    private Double discountAmount;
+
     @Column(name = "total_price", nullable = false)
     private Double totalPrice;
 
@@ -145,6 +157,38 @@ public class Order {
 
     public void setItems(List<OrderItem> items) {
         this.items = items;
+    }
+
+    public Double getSubtotal() {
+        return subtotal;
+    }
+
+    public void setSubtotal(Double subtotal) {
+        this.subtotal = subtotal;
+    }
+
+    public Double getDeliveryCharge() {
+        return deliveryCharge;
+    }
+
+    public void setDeliveryCharge(Double deliveryCharge) {
+        this.deliveryCharge = deliveryCharge;
+    }
+
+    public String getDiscountCode() {
+        return discountCode;
+    }
+
+    public void setDiscountCode(String discountCode) {
+        this.discountCode = discountCode;
+    }
+
+    public Double getDiscountAmount() {
+        return discountAmount;
+    }
+
+    public void setDiscountAmount(Double discountAmount) {
+        this.discountAmount = discountAmount;
     }
 
     public Payment getPayment() {
