@@ -21,6 +21,23 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
 
     boolean existsBySlug(String slug);
 
+    @Query(value = "SELECT pi.image_url FROM product_images pi " +
+            "JOIN ( " +
+            "    SELECT p.id, SUM(COALESCE(oi.quantity,0)) as total_sales " +
+            "    FROM products p " +
+            "    LEFT JOIN product_variants pv ON p.id = pv.product_id " +
+            "    LEFT JOIN order_items oi ON pv.id = oi.product_variant_id " +
+            "    WHERE p.category_id = :categoryId " +
+            "    GROUP BY p.id " +
+            "    ORDER BY total_sales DESC " +
+            "    LIMIT 1 " +
+            ") best_product ON pi.product_id = best_product.id " +
+            "ORDER BY pi.is_primary DESC " +
+            "LIMIT 1", nativeQuery = true)
+    String findTopProductImageByCategoryId(@Param("categoryId") Long categoryId);
+
+    long countByCategoryId(Long categoryId);
+
     @Modifying
     @Transactional
     @Query("UPDATE Product p SET p.category = null WHERE p.category.id = :categoryId")

@@ -8,7 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import com.ecommerShop.clothingsystem.dto.CategoryBannerDTO;
+
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/categories") // Đường dẫn gốc cho API này
@@ -24,6 +27,35 @@ public class CategoryController {
     @GetMapping
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
+    }
+
+    // NEW: Lấy 7 danh mục "hot" nhất để làm banner trang chủ
+    @GetMapping("/banners")
+    public List<CategoryBannerDTO> getCategoryBanners() {
+        return categoryRepository.findTopCategoriesBySales().stream()
+                .map(cat -> {
+                    String topImage = productRepository.findTopProductImageByCategoryId(cat.getId());
+                    
+                    // Ensure absolute URL for dynamic images
+                    if (topImage != null && !topImage.startsWith("http") && !topImage.startsWith("/api/files/")) {
+                        topImage = "/api/files/" + topImage;
+                    }
+
+                    long count = productRepository.countByCategoryId(cat.getId());
+                    
+                    // Fallback image if category has no products
+                    if (topImage == null || topImage.isEmpty()) {
+                        topImage = "https://images.unsplash.com/photo-1441984904996-e0b6ba687e12?w=1000&q=80";
+                    }
+
+                    return new CategoryBannerDTO(
+                            cat.getId(),
+                            cat.getName().toUpperCase() + " COLLECTION",
+                            topImage,
+                            count
+                    );
+                })
+                .collect(Collectors.toList());
     }
 
     // 2. Tạo mới một danh mục
