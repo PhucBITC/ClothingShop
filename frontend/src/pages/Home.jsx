@@ -156,22 +156,6 @@ function Home() {
               ))}
             </motion.div>
           </section>
-
-          {/* 6. Newsletter Section */}
-          <section className={styles.newsletterSection}>
-            <div className={styles.newsletterContent}>
-              <motion.div {...fadeInUp}>
-                <h2 className={styles.newsletterTitle}>JOIN THE CLUB</h2>
-                <p className={styles.newsletterSubtitle}>
-                  Subscribe for exclusive updates, new collection arrivals, and 10% off your first order.
-                </p>
-                <form className={styles.newsletterForm} onSubmit={(e) => e.preventDefault()}>
-                  <input type="email" placeholder="YOUR EMAIL ADDRESS" required />
-                  <button type="submit" className={styles.newsletterBtn}>SUBSCRIBE</button>
-                </form>
-              </motion.div>
-            </div>
-          </section>
         </>
       )}
     </div>
