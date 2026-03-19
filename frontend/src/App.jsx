@@ -38,6 +38,7 @@ import AdminNotifications from "./admin/pages/notifications/Notifications";
 import AdminProfile from "./admin/pages/AdminProfile";
 import DiscountList from "./admin/pages/discounts/DiscountList";
 import DiscountForm from "./admin/pages/discounts/DiscountForm";
+import Reports from "./admin/pages/reports/Reports";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function AppLayout() {
@@ -98,6 +99,7 @@ function AppLayout() {
             <Route path="discounts" element={<DiscountList />} />
             <Route path="discounts/add" element={<DiscountForm />} />
             <Route path="discounts/edit/:id" element={<DiscountForm />} />
+            <Route path="reports" element={<Reports />} />
             <Route path="profile" element={<AdminProfile />} />
           </Route>
         </Route>

@@ -95,7 +95,6 @@ const AdminLayout = () => {
         { name: 'Notifications', path: '/admin/notifications', icon: <BiBell /> },
         { name: 'Reports', path: '/admin/reports', icon: <BiFile /> },
         { name: 'Discounts', path: '/admin/discounts', icon: <BiPurchaseTag /> },
-        { name: 'Integrations', path: '/admin/integrations', icon: <BiLink /> },
         { name: 'Help', path: '/admin/help', icon: <BiHelpCircle /> },
         { name: 'Settings', path: '/admin/settings', icon: <BiCog /> },
     ];
