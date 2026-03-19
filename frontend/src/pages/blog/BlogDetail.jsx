@@ -1,22 +1,55 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useParams, Link } from 'react-router-dom';
-import { BiCalendar, BiUser, BiArrowBack } from 'react-icons/bi';
-import { blogPosts, blogCategories } from '../../data/blogData';
+import { BiCalendar, BiUser, BiArrowBack, BiLoaderAlt } from 'react-icons/bi';
+import axios from '../../api/axios';
 import styles from './BlogDetail.module.css';
+
+const blogCategories = [
+  { key: 'ALL', label: 'All' },
+  { key: 'TRENDS', label: 'Trends' },
+  { key: 'STYLING_TIPS', label: 'Styling Tips' },
+  { key: 'NEW_COLLECTION', label: 'New Collection' },
+  { key: 'FASHION_GUIDE', label: 'Fashion Guide' }
+];
 
 function BlogDetail() {
   const { slug } = useParams();
-  const post = blogPosts.find(p => p.slug === slug);
+  const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [relatedPosts, setRelatedPosts] = useState([]);
 
-  if (!post) {
-    return (
-      <div className={styles.notFound}>
-        <h2>Article not found</h2>
-        <Link to="/blog" className={styles.backLink}>← Back to Blog</Link>
-      </div>
-    );
-  }
+  useEffect(() => {
+    fetchPost();
+  }, [slug]);
+
+  const fetchPost = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.get(`/blogs/${slug}`);
+      setPost(res.data);
+      
+      // Fetch all posts to find related ones (simplified)
+      const allRes = await axios.get('/blogs');
+      const allPosts = allRes.data;
+      const related = allPosts
+        .filter(p => p.category === res.data.category && p.id !== res.data.id)
+        .slice(0, 3);
+      
+      const additional = related.length < 3
+        ? allPosts.filter(p => p.id !== res.data.id && !related.find(r => r.id === p.id)).slice(0, 3 - related.length)
+        : [];
+      
+      setRelatedPosts([...related, ...additional]);
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching blog detail:', err);
+      setError('Article not found or failed to load.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const formatDate = (dateStr) => {
     return new Date(dateStr).toLocaleDateString('en-US', {
@@ -24,17 +57,23 @@ function BlogDetail() {
     });
   };
 
-  // Get related posts (same category, exclude current)
-  const relatedPosts = blogPosts
-    .filter(p => p.category === post.category && p.id !== post.id)
-    .slice(0, 3);
+  if (loading) {
+    return (
+      <div className={styles.loadingContainer}>
+        <BiLoaderAlt className={styles.spinner} />
+        <p>Loading article...</p>
+      </div>
+    );
+  }
 
-  // If not enough related posts in same category, fill with other posts
-  const additionalPosts = relatedPosts.length < 3
-    ? blogPosts.filter(p => p.id !== post.id && !relatedPosts.find(r => r.id === p.id)).slice(0, 3 - relatedPosts.length)
-    : [];
-
-  const allRelated = [...relatedPosts, ...additionalPosts];
+  if (error || !post) {
+    return (
+      <div className={styles.notFound}>
+        <h2>{error || 'Article not found'}</h2>
+        <Link to="/blog" className={styles.backLink}>← Back to Blog</Link>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.detailPage}>
@@ -87,7 +126,7 @@ function BlogDetail() {
       </motion.section>
 
       {/* Related Posts */}
-      {allRelated.length > 0 && (
+      {relatedPosts.length > 0 && (
         <section className={styles.relatedSection}>
           <motion.div
             className={styles.relatedHeader}
@@ -100,7 +139,7 @@ function BlogDetail() {
             <h2 className={styles.relatedTitle}>Related Articles</h2>
           </motion.div>
           <div className={styles.relatedGrid}>
-            {allRelated.map((rPost, idx) => (
+            {relatedPosts.map((rPost, idx) => (
               <motion.div
                 key={rPost.id}
                 className={styles.relatedCard}

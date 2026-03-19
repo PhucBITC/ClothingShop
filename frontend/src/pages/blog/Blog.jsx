@@ -1,22 +1,60 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { BiCalendar, BiUser } from 'react-icons/bi';
-import { blogPosts, blogCategories } from '../../data/blogData';
+import { BiCalendar, BiUser, BiLoaderAlt } from 'react-icons/bi';
+import axios from '../../api/axios';
 import styles from './Blog.module.css';
 
+const blogCategories = [
+  { key: 'ALL', label: 'All' },
+  { key: 'TRENDS', label: 'Trends' },
+  { key: 'STYLING_TIPS', label: 'Styling Tips' },
+  { key: 'NEW_COLLECTION', label: 'New Collection' },
+  { key: 'FASHION_GUIDE', label: 'Fashion Guide' }
+];
+
 function Blog() {
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [activeCategory, setActiveCategory] = useState('ALL');
 
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  const fetchPosts = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.get('/blogs');
+      setPosts(res.data);
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching blogs:', err);
+      setError('Failed to load blog posts. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const filteredPosts = activeCategory === 'ALL'
-    ? blogPosts
-    : blogPosts.filter(post => post.category === activeCategory);
+    ? posts
+    : posts.filter(post => post.category === activeCategory);
 
   const formatDate = (dateStr) => {
     return new Date(dateStr).toLocaleDateString('en-US', {
       year: 'numeric', month: 'long', day: 'numeric'
     });
   };
+
+  if (loading) {
+    return (
+      <div className={styles.loadingContainer}>
+        <BiLoaderAlt className={styles.spinner} />
+        <p>Loading journal...</p>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.blogPage}>
@@ -58,60 +96,64 @@ function Blog() {
 
       {/* Blog Grid */}
       <section className={styles.gridSection}>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeCategory}
-            className={styles.blogGrid}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            {filteredPosts.map((post, idx) => (
-              <motion.article
-                key={post.id}
-                className={styles.blogCard}
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
-                whileHover={{ y: -8 }}
-              >
-                <Link to={`/blog/${post.slug}`} className={styles.cardLink}>
-                  <div className={styles.cardImageWrap}>
-                    <img src={post.coverImage} alt={post.title} className={styles.cardImage} />
-                    <span className={styles.cardCategory}>
-                      {blogCategories.find(c => c.key === post.category)?.label}
-                    </span>
-                  </div>
-                  <div className={styles.cardContent}>
-                    <div className={styles.cardMeta}>
-                      <span className={styles.metaItem}>
-                        <BiUser /> {post.author}
-                      </span>
-                      <span className={styles.metaItem}>
-                        <BiCalendar /> {formatDate(post.createdAt)}
+        {error ? (
+          <div className={styles.errorState}>{error}</div>
+        ) : (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeCategory}
+              className={styles.blogGrid}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              {filteredPosts.map((post, idx) => (
+                <motion.article
+                  key={post.id}
+                  className={styles.blogCard}
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: idx * 0.1 }}
+                  whileHover={{ y: -8 }}
+                >
+                  <Link to={`/blog/${post.slug}`} className={styles.cardLink}>
+                    <div className={styles.cardImageWrap}>
+                      <img src={post.coverImage} alt={post.title} className={styles.cardImage} />
+                      <span className={styles.cardCategory}>
+                        {blogCategories.find(c => c.key === post.category)?.label}
                       </span>
                     </div>
-                    <h3 className={styles.cardTitle}>{post.title}</h3>
-                    <p className={styles.cardExcerpt}>{post.excerpt}</p>
-                    <span className={styles.readMore}>
-                      Read More
-                      <motion.span
-                        className={styles.arrow}
-                        initial={{ x: 0 }}
-                        whileHover={{ x: 5 }}
-                      >
-                        →
-                      </motion.span>
-                    </span>
-                  </div>
-                </Link>
-              </motion.article>
-            ))}
-          </motion.div>
-        </AnimatePresence>
+                    <div className={styles.cardContent}>
+                      <div className={styles.cardMeta}>
+                        <span className={styles.metaItem}>
+                          <BiUser /> {post.author}
+                        </span>
+                        <span className={styles.metaItem}>
+                          <BiCalendar /> {formatDate(post.createdAt)}
+                        </span>
+                      </div>
+                      <h3 className={styles.cardTitle}>{post.title}</h3>
+                      <p className={styles.cardExcerpt}>{post.excerpt}</p>
+                      <span className={styles.readMore}>
+                        Read More
+                        <motion.span
+                          className={styles.arrow}
+                          initial={{ x: 0 }}
+                          whileHover={{ x: 5 }}
+                        >
+                          →
+                        </motion.span>
+                      </span>
+                    </div>
+                  </Link>
+                </motion.article>
+              ))}
+            </motion.div>
+          </AnimatePresence>
+        )}
 
-        {filteredPosts.length === 0 && (
+        {!loading && filteredPosts.length === 0 && !error && (
           <motion.div
             className={styles.emptyState}
             initial={{ opacity: 0 }}

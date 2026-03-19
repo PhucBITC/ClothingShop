@@ -20,6 +20,11 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
+    public List<BlogPost> getAll() {
+        return blogPostRepository.findAll();
+    }
+
+    @Override
     public List<BlogPost> getByCategory(String category) {
         return blogPostRepository.findByStatusAndCategoryOrderByCreatedAtDesc("PUBLISHED", category);
     }
@@ -28,6 +33,12 @@ public class BlogServiceImpl implements BlogService {
     public BlogPost getBySlug(String slug) {
         return blogPostRepository.findBySlug(slug)
                 .orElseThrow(() -> new RuntimeException("Blog post not found with slug: " + slug));
+    }
+
+    @Override
+    public BlogPost getById(Long id) {
+        return blogPostRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Blog post not found with ID: " + id));
     }
 
     @Override

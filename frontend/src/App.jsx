@@ -41,6 +41,8 @@ import DiscountForm from "./admin/pages/discounts/DiscountForm";
 import Reports from "./admin/pages/reports/Reports";
 import AdminSettings from "./admin/pages/settings/AdminSettings";
 import AdminHelp from "./admin/pages/help/AdminHelp";
+import AdminBlogList from "./admin/pages/blog/AdminBlogList";
+import AdminBlogForm from "./admin/pages/blog/AdminBlogForm";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function AppLayout() {
@@ -104,6 +106,9 @@ function AppLayout() {
             <Route path="reports" element={<Reports />} />
             <Route path="settings" element={<AdminSettings />} />
             <Route path="help" element={<AdminHelp />} />
+            <Route path="blogs" element={<AdminBlogList />} />
+            <Route path="blogs/new" element={<AdminBlogForm />} />
+            <Route path="blogs/edit/:id" element={<AdminBlogForm />} />
             <Route path="profile" element={<AdminProfile />} />
           </Route>
         </Route>

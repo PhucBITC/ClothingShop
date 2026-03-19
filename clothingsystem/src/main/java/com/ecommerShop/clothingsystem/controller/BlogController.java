@@ -21,11 +21,28 @@ public class BlogController {
         return blogService.getAllPublished();
     }
 
+    // Get all blog posts (Admin)
+    @GetMapping("/admin")
+    public List<BlogPost> getAll() {
+        return blogService.getAll();
+    }
+
     // Get blog post by slug
     @GetMapping("/{slug}")
     public ResponseEntity<BlogPost> getBySlug(@PathVariable String slug) {
         try {
             BlogPost blog = blogService.getBySlug(slug);
+            return ResponseEntity.ok(blog);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    // Get blog post by ID (Admin)
+    @GetMapping("/admin/{id}")
+    public ResponseEntity<BlogPost> getById(@PathVariable Long id) {
+        try {
+            BlogPost blog = blogService.getById(id);
             return ResponseEntity.ok(blog);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
@@ -39,7 +56,7 @@ public class BlogController {
     }
 
     // Create blog post (Admin)
-    @PostMapping
+    @PostMapping("/admin")
     public ResponseEntity<BlogPost> create(@RequestBody BlogPost blogPost) {
         try {
             BlogPost created = blogService.create(blogPost);
@@ -50,7 +67,7 @@ public class BlogController {
     }
 
     // Update blog post (Admin)
-    @PutMapping("/{id}")
+    @PutMapping("/admin/{id}")
     public ResponseEntity<BlogPost> update(@PathVariable Long id, @RequestBody BlogPost blogPost) {
         try {
             BlogPost updated = blogService.update(id, blogPost);
@@ -61,7 +78,7 @@ public class BlogController {
     }
 
     // Delete blog post (Admin)
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/admin/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         try {
             blogService.delete(id);

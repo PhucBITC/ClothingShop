@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, Outlet, useLocation, Link, useNavigate } from 'react-router-dom';
 import {
     BiGridAlt, BiCart, BiPackage, BiUser,
-    BiFile, BiPurchaseTag, BiLink, BiHelpCircle,
+    BiFile, BiPurchaseTag, BiLink, BiHelpCircle, BiNews,
     BiCog, BiSearch, BiBell, BiMessageDetail, BiChevronDown, BiLogOut, BiStore,
     BiSun, BiMoon
 } from 'react-icons/bi';
@@ -81,9 +81,11 @@ const AdminLayout = () => {
         if (pathname.includes('/admin/categories')) return 'Categories';
         if (pathname.includes('/admin/customers')) return 'Customers';
         if (pathname.includes('/admin/notifications')) return 'Notifications';
+        if (pathname.includes('/admin/reports')) return 'Reports';
         if (pathname.includes('/admin/discounts')) return 'Discounts';
         if (pathname.includes('/admin/help')) return 'Help Center';
         if (pathname.includes('/admin/settings')) return 'System Settings';
+        if (pathname.includes('/admin/blogs')) return 'Blog Management';
         if (pathname === '/admin') return 'Dashboard';
         return 'Dashboard';
     };
@@ -99,6 +101,7 @@ const AdminLayout = () => {
         { name: 'Notifications', path: '/admin/notifications', icon: <BiBell /> },
         { name: 'Reports', path: '/admin/reports', icon: <BiFile /> },
         { name: 'Discounts', path: '/admin/discounts', icon: <BiPurchaseTag /> },
+        { name: 'Blog', path: '/admin/blogs', icon: <BiNews /> },
         { name: 'Help', path: '/admin/help', icon: <BiHelpCircle /> },
         { name: 'Settings', path: '/admin/settings', icon: <BiCog /> },
     ];

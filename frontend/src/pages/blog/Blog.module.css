@@ -249,3 +249,32 @@
     font-size: 0.75rem;
   }
 }
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 1rem;
+  color: var(--text-muted);
+}
+
+.spinner {
+  font-size: 2.5rem;
+  color: var(--accent-orange, #ff8c00);
+  animation: spin 1s linear infinite;
+}
+
+.errorState {
+  text-align: center;
+  padding: 3rem;
+  color: #ff4d4d;
+  background: rgba(255, 77, 77, 0.05);
+  border-radius: 12px;
+  grid-column: 1 / -1;
+}
