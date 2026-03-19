@@ -19,10 +19,10 @@ public class BlogPost {
     @Column(length = 500)
     private String excerpt;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "LONGTEXT")
     private String content;
 
-    @Column(name = "cover_image")
+    @Column(name = "cover_image", columnDefinition = "LONGTEXT")
     private String coverImage;
 
     private String author;

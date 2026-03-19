@@ -31,6 +31,9 @@ const BlogForm = () => {
         status: 'PUBLISHED'
     });
 
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [previewUrl, setPreviewUrl] = useState('');
+
     useEffect(() => {
         if (isEdit) {
             fetchPost();
@@ -56,6 +59,8 @@ const BlogForm = () => {
             // Auto-generate slug from title if it's a new post
             if (name === 'title' && !isEdit) {
                 updated.slug = value.toLowerCase()
+                                    .normalize("NFD")
+                                    .replace(/[\u0300-\u036f]/g, "")
                                     .replace(/[^\w ]+/g, '')
                                     .replace(/ +/g, '-');
             }
@@ -63,20 +68,52 @@ const BlogForm = () => {
         });
     };
 
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setSelectedFile(file);
+            setPreviewUrl(URL.createObjectURL(file));
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             setIsSaving(true);
+            
+            const formData = new FormData();
+            
+            // Map 'post' to 'BlogRequest' structure
+            const blogRequest = {
+                title: post.title,
+                slug: post.slug,
+                excerpt: post.excerpt,
+                content: post.content,
+                author: post.author,
+                category: post.category,
+                status: post.status,
+                existingCoverImage: post.coverImage // Send current URL if no new file
+            };
+
+            formData.append('blog', new Blob([JSON.stringify(blogRequest)], { type: 'application/json' }));
+            
+            if (selectedFile) {
+                formData.append('file', selectedFile);
+            }
+
+
             if (isEdit) {
-                await axios.put(`/blogs/admin/${id}`, post);
+                await axios.put(`/blogs/admin/${id}`, formData);
                 toast.success("Success", "Article updated successfully");
             } else {
-                await axios.post('/blogs/admin', post);
+                await axios.post('/blogs/admin', formData);
                 toast.success("Success", "Article created successfully");
             }
             navigate('/admin/blogs');
         } catch (error) {
-            toast.error("Error", error.response?.data?.message || "Failed to save article");
+            console.error("Save error:", error);
+            const message = error.response?.data?.message || "Failed to save article. Check if the slug is unique.";
+            toast.error("Error", message);
         } finally {
             setIsSaving(false);
         }
@@ -186,23 +223,42 @@ const BlogForm = () => {
                                 </div>
                             </div>
                             <div className={styles.group}>
-                                <label>Cover Image URL</label>
+                                <label>Cover Image</label>
+                                <div className={styles.fileUpload}>
+                                    <input 
+                                        type="file" 
+                                        onChange={handleFileChange} 
+                                        accept="image/*"
+                                        id="coverImageInput"
+                                        className={styles.hiddenInput}
+                                    />
+                                    <label htmlFor="coverImageInput" className={styles.uploadLabel}>
+                                        <BiImage /> {selectedFile ? 'Change Image' : 'Upload Cover Image'}
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div className={styles.group}>
+                                <label>Or Image URL / Base64</label>
                                 <div className={styles.inputWithIcon}>
-                                    <BiImage />
+                                    <BiLink />
                                     <input 
                                         type="text" 
                                         name="coverImage" 
                                         value={post.coverImage} 
                                         onChange={handleChange} 
                                         placeholder="https://images.unsplash.com/..."
-                                        required
                                     />
                                 </div>
                             </div>
-                            {post.coverImage && (
+
+                            {(previewUrl || post.coverImage) && (
                                 <div className={styles.preview}>
                                     <label>Preview Image</label>
-                                    <img src={post.coverImage} alt="Preview" />
+                                    <div className={styles.previewImageContainer}>
+                                        <img src={previewUrl || post.coverImage} alt="Preview" />
+                                        {previewUrl && <div className={styles.newBadge}>New</div>}
+                                    </div>
                                 </div>
                             )}
                         </div>

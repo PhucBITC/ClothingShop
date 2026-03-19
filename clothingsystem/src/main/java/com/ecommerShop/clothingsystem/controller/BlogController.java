@@ -1,10 +1,13 @@
 package com.ecommerShop.clothingsystem.controller;
 
+import com.ecommerShop.clothingsystem.dto.BlogRequest;
 import com.ecommerShop.clothingsystem.model.BlogPost;
 import com.ecommerShop.clothingsystem.service.BlogService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -56,24 +59,31 @@ public class BlogController {
     }
 
     // Create blog post (Admin)
-    @PostMapping("/admin")
-    public ResponseEntity<BlogPost> create(@RequestBody BlogPost blogPost) {
+    @PostMapping(value = "/admin")
+    public ResponseEntity<BlogPost> create(
+            @RequestPart("blog") BlogRequest blogRequest,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
         try {
-            BlogPost created = blogService.create(blogPost);
+            BlogPost created = blogService.create(blogRequest, file);
             return ResponseEntity.ok(created);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     // Update blog post (Admin)
-    @PutMapping("/admin/{id}")
-    public ResponseEntity<BlogPost> update(@PathVariable Long id, @RequestBody BlogPost blogPost) {
+    @PutMapping(value = "/admin/{id}")
+    public ResponseEntity<BlogPost> update(
+            @PathVariable Long id,
+            @RequestPart("blog") BlogRequest blogRequest,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
         try {
-            BlogPost updated = blogService.update(id, blogPost);
+            BlogPost updated = blogService.update(id, blogRequest, file);
             return ResponseEntity.ok(updated);
         } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
