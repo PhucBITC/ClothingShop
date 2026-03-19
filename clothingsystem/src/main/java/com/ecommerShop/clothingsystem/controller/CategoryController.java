@@ -45,7 +45,7 @@ public class CategoryController {
                     
                     // Fallback image if category has no products
                     if (topImage == null || topImage.isEmpty()) {
-                        topImage = "https://images.unsplash.com/photo-1441984904996-e0b6ba687e12?w=1000&q=80";
+                        topImage = "https://placehold.co/600x400?text=Product+Image";
                     }
 
                     return new CategoryBannerDTO(

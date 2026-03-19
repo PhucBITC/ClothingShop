@@ -5,14 +5,16 @@ import styles from './CategoryBanners.module.css';
 
 import api from '../../api/axios';
 
+const PLACEHOLDER_IMAGE = "https://placehold.co/600x400?text=Product+Image";
+
 const ORIGINAL_CATEGORIES = [
-    { id: 'WOMEN', title: "WOMEN'S COLLECTION", image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1000&q=80", link: "/products?category=WOMEN", keywords: ['women', 'nữ', 'váy', 'đầm'] },
-    { id: 'MEN', title: "MEN'S COLLECTION", image: "https://images.unsplash.com/photo-1490578474895-699cd4e2cf59?w=1000&q=80", link: "/products?category=MEN", keywords: ['men', 'nam'] },
-    { id: 'KIDS', title: "KIDS' COLLECTION", image: "https://images.unsplash.com/photo-1519233073524-829b378cc6a1?w=1000&q=80", link: "/products?category=KIDS", keywords: ['kids', 'trẻ em', 'bé'] },
-    { id: 'FOOTWEAR', title: "PREMIUM FOOTWEAR", image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1000&q=80", link: "/products?category=FOOTWEAR", keywords: ['footwear', 'giày', 'shoes'] },
-    { id: 'ACCESSORIES', title: "LUXURY ACCESSORIES", image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=1000&q=80", link: "/products?category=ACCESSORIES", keywords: ['accessories', 'phụ kiện', 'túi', 'ví'] },
-    { id: 'NEW_ARRIVALS', title: "NEW ARRIVALS 2024", image: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e12?w=1000&q=80", link: "/products?category=NEW_ARRIVALS", keywords: ['new', 'mới'] },
-    { id: 'BEST_SELLERS', title: "BEST SELLERS", image: "https://images.unsplash.com/photo-1445205170230-053b830c6050?w=1000&q=80", link: "/products", keywords: ['best', 'bán chạy'] }
+    { id: 'WOMEN', title: "WOMEN'S COLLECTION", image: PLACEHOLDER_IMAGE, link: "/products?category=WOMEN", keywords: ['women', 'nữ', 'váy', 'đầm'] },
+    { id: 'MEN', title: "MEN'S COLLECTION", image: PLACEHOLDER_IMAGE, link: "/products?category=MEN", keywords: ['men', 'nam'] },
+    { id: 'KIDS', title: "KIDS' COLLECTION", image: PLACEHOLDER_IMAGE, link: "/products?category=KIDS", keywords: ['kids', 'trẻ em', 'bé'] },
+    { id: 'FOOTWEAR', title: "PREMIUM FOOTWEAR", image: PLACEHOLDER_IMAGE, link: "/products?category=FOOTWEAR", keywords: ['footwear', 'giày', 'shoes'] },
+    { id: 'ACCESSORIES', title: "LUXURY ACCESSORIES", image: PLACEHOLDER_IMAGE, link: "/products?category=ACCESSORIES", keywords: ['accessories', 'phụ kiện', 'túi', 'ví'] },
+    { id: 'NEW_ARRIVALS', title: "NEW ARRIVALS 2024", image: PLACEHOLDER_IMAGE, link: "/products?category=NEW_ARRIVALS", keywords: ['new', 'mới'] },
+    { id: 'BEST_SELLERS', title: "BEST SELLERS", image: PLACEHOLDER_IMAGE, link: "/products", keywords: ['best', 'bán chạy'] }
 ];
 
 const CategoryBanners = () => {
@@ -82,7 +84,7 @@ const CategoryBanners = () => {
     ];
 
     const handleImageError = (e) => {
-        e.target.src = "https://images.unsplash.com/photo-1441984904996-e0b6ba687e12?w=1000&q=80";
+        e.target.src = PLACEHOLDER_IMAGE;
     };
 
     return (
