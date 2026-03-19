@@ -77,7 +77,7 @@ const CategoryBanners = () => {
                                     <img src={cat.image} alt={cat.title} className={styles.image} />
                                     <div className={styles.overlay}>
                                         <h3 className={styles.title}>{cat.title}</h3>
-                                        <span className={styles.linkText}>XEM NGAY</span>
+                                        <span className={styles.linkText}>VIEW NOW</span>
                                     </div>
                                 </Link>
                             </div>

@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { BiTrash, BiCheck } from 'react-icons/bi';
 import { useCart } from '../../context/CartContext';
 import { useToast } from '../../components/common/toast/ToastContext';
+import { useSettings } from '../../context/SettingsContext';
 import ConfirmModal from '../../components/common/modal/ConfirmModal';
 import styles from './Cart.module.css';
 
@@ -19,6 +20,7 @@ function Cart() {
     const [selectedItems, setSelectedItems] = useState([]);
     const [modalConfig, setModalConfig] = useState({ isOpen: false, type: '', data: null });
     const [isCheckingOut, setIsCheckingOut] = useState(false);
+    const { formatPrice } = useSettings();
     const toast = useToast();
 
     // Calculate totals based on selection
@@ -163,7 +165,7 @@ function Cart() {
                                             </div>
                                         </div>
                                     </td>
-                                    <td className={styles.priceCell}>${item.price.toFixed(2)}</td>
+                                    <td className={styles.priceCell}>{formatPrice(item.price)}</td>
                                     <td>
                                         <div className={styles.quantityControl}>
                                             <button className={styles.qtyBtn} onClick={() => handleQuantityChange(item.id, item.variantId, -1)}>−</button>
@@ -171,7 +173,7 @@ function Cart() {
                                             <button className={styles.qtyBtn} onClick={() => handleQuantityChange(item.id, item.variantId, 1)}>+</button>
                                         </div>
                                     </td>
-                                    <td className={styles.subtotalCell}>${(item.price * item.quantity).toFixed(2)}</td>
+                                    <td className={styles.subtotalCell}>{formatPrice(item.price * item.quantity)}</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -208,7 +210,7 @@ function Cart() {
                                     <span>Unlocked! You get <strong>FREE Shipping</strong>! 🎉</span>
                                 ) : (
                                     <span>
-                                        Add <strong>{Math.max(0, 3 - selectedCartItems.reduce((acc, i) => acc + i.quantity, 0))}</strong> more or spend <strong>${Math.max(0, 30 - subtotal).toFixed(2)}</strong> for Free Ship.
+                                        Add <strong>{Math.max(0, 3 - selectedCartItems.reduce((acc, i) => acc + i.quantity, 0))}</strong> more or spend <strong>{formatPrice(Math.max(0, 30 - subtotal))}</strong> for Free Ship.
                                     </span>
                                 )}
                             </div>
@@ -217,20 +219,20 @@ function Cart() {
 
                     <div className={styles.summaryRow}>
                         <span className={styles.summaryLabel}>Subtotal</span>
-                        <span className={styles.summaryValue}>${subtotal.toFixed(2)}</span>
+                        <span className={styles.summaryValue}>{formatPrice(subtotal)}</span>
                     </div>
 
                     <div className={styles.summaryRow}>
                         <span className={styles.summaryLabel}>Delivery Charge</span>
                         <span className={styles.summaryValue}>
-                            {deliveryCharge === 0 ? <span style={{ color: '#52c41a' }}>FREE</span> : `$${deliveryCharge.toFixed(2)}`}
+                            {deliveryCharge === 0 ? <span style={{ color: '#52c41a' }}>FREE</span> : formatPrice(deliveryCharge)}
                         </span>
                     </div>
 
 
                     <div className={styles.grandTotalRow}>
                         <span className={styles.summaryLabel}>Grand Total</span>
-                        <span className={styles.summaryValue}>${total.toFixed(2)}</span>
+                        <span className={styles.summaryValue}>{formatPrice(total)}</span>
                     </div>
 
                     <button

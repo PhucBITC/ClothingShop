@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../../../api/axios';
+import { useSettings } from '../../../context/SettingsContext';
 import styles from './Reports.module.css';
 import { BiDownload, BiFilterAlt, BiPackage, BiTrendingUp, BiChevronDown, BiChevronRight } from 'react-icons/bi';
 import { FaFilePdf } from 'react-icons/fa';
 import { useToast } from '../../../components/common/toast/ToastContext';
 
 const Reports = () => {
+    const { settings } = useSettings();
     const toast = useToast();
     const [activeTab, setActiveTab] = useState('products');
     const [productData, setProductData] = useState([]);
@@ -186,7 +188,7 @@ const Reports = () => {
                                                             {item.currentStock}
                                                         </span>
                                                     </td>
-                                                    <td>${item.totalRevenue.toLocaleString()}</td>
+                                                    <td>{settings.currency_symbol}{item.totalRevenue.toLocaleString()}</td>
                                                 </tr>
                                             ))}
                                         </React.Fragment>
@@ -210,10 +212,10 @@ const Reports = () => {
                                         <tr key={idx}>
                                             <td>{item.date}</td>
                                             <td>{item.orderCount}</td>
-                                            <td>${item.subtotal.toLocaleString()}</td>
-                                            <td className={styles.discount}>-${item.discountAmount.toLocaleString()}</td>
-                                            <td>${item.deliveryCharge.toLocaleString()}</td>
-                                            <td className={styles.total}>${item.totalRevenue.toLocaleString()}</td>
+                                            <td>{settings.currency_symbol}{item.subtotal.toLocaleString()}</td>
+                                            <td className={styles.discount}>-{settings.currency_symbol}{item.discountAmount.toLocaleString()}</td>
+                                            <td>{settings.currency_symbol}{item.deliveryCharge.toLocaleString()}</td>
+                                            <td className={styles.total}>{settings.currency_symbol}{item.totalRevenue.toLocaleString()}</td>
                                         </tr>
                                     ))}
                                 </tbody>

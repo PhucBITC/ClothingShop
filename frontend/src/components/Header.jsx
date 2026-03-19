@@ -10,6 +10,7 @@ import { useCart } from '../context/CartContext';
 import { useToast } from './common/toast/ToastContext';
 import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationContext';
+import { useSettings } from '../context/SettingsContext';
 import ConfirmModal from './common/modal/ConfirmModal';
 
 function Header() {
@@ -22,6 +23,7 @@ function Header() {
     const { cartItems, cartCount, subtotal, removeFromCart, removeMultipleFromCart, clearCart } = useCart();
     const { user, logout } = useAuth();
     const { unreadCount, notifications, markAsRead, markAllAsRead, deleteAllNotifications } = useNotifications();
+    const { settings, formatPrice } = useSettings();
     const toast = useToast();
 
     const handleSelectItem = (id, variantId) => {
@@ -102,7 +104,7 @@ function Header() {
 
             {/* Logo */}
             <Link to="/" className={styles.logo} onClick={closeMenu}>
-                <img src={logo} alt="Lighter & Princess" className={styles.logoImg} />
+                <img src={logo} alt={settings.store_name} className={styles.logoImg} />
             </Link>
 
             {/* Navigation */}
@@ -230,7 +232,7 @@ function Header() {
                                     <img src={item.image} alt={item.name} className={styles.miniCartImg} />
                                     <div className={styles.miniCartInfo}>
                                         <h4 className={styles.miniCartTitle}>{item.name}</h4>
-                                        <div className={styles.miniCartPrice}>{item.quantity} x ${item.price.toFixed(2)}</div>
+                                        <div className={styles.miniCartPrice}>{item.quantity} x {formatPrice(item.price)}</div>
                                         <div className={styles.miniCartSize}>Size: {item.size}</div>
                                     </div>
                                     <button
@@ -252,7 +254,7 @@ function Header() {
                                 )}
                                 <div className={styles.miniCartSubtotal}>
                                     <span>Subtotal</span>
-                                    <span>${subtotal.toFixed(2)}</span>
+                                    <span>{formatPrice(subtotal)}</span>
                                 </div>
                                 <div className={styles.miniCartActions}>
                                     <Link to="/cart" className={styles.viewCartBtn}>View Cart</Link>

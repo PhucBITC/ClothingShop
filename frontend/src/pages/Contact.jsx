@@ -3,37 +3,8 @@ import { motion } from 'framer-motion';
 import { BiMap, BiEnvelope, BiPhone, BiTime, BiLoaderAlt } from 'react-icons/bi';
 import { FaFacebookF, FaInstagram, FaTwitter, FaPinterestP } from 'react-icons/fa';
 import axios from '../api/axios';
+import { useSettings } from '../context/SettingsContext';
 import styles from './Contact.module.css';
-
-const contactInfo = [
-  {
-    icon: <BiMap />,
-    title: 'Visit Us',
-    lines: ['3891 Ranchview Dr.', 'Richardson, California 62639']
-  },
-  {
-    icon: <BiEnvelope />,
-    title: 'Email Us',
-    lines: ['support@lighterprincess.com', 'press@lighterprincess.com']
-  },
-  {
-    icon: <BiPhone />,
-    title: 'Call Us',
-    lines: ['(704) 555-0127', '(704) 555-0128']
-  },
-  {
-    icon: <BiTime />,
-    title: 'Working Hours',
-    lines: ['Mon - Fri: 9:00 AM - 6:00 PM', 'Sat: 10:00 AM - 4:00 PM']
-  }
-];
-
-const socialLinks = [
-  { icon: <FaFacebookF />, url: '#', label: 'Facebook' },
-  { icon: <FaInstagram />, url: '#', label: 'Instagram' },
-  { icon: <FaTwitter />, url: '#', label: 'Twitter' },
-  { icon: <FaPinterestP />, url: '#', label: 'Pinterest' }
-];
 
 const fadeInUp = {
   initial: { opacity: 0, y: 40 },
@@ -43,9 +14,40 @@ const fadeInUp = {
 };
 
 function Contact() {
+  const { settings } = useSettings();
   const [form, setForm] = useState({ name: '', email: '', message: '' });
   const [status, setStatus] = useState('idle'); // idle, sending, success, error
   const [errorMsg, setErrorMsg] = useState('');
+
+  const contactInfo = [
+    {
+      icon: <BiMap />,
+      title: 'Visit Us',
+      lines: [settings.store_address]
+    },
+    {
+      icon: <BiEnvelope />,
+      title: 'Email Us',
+      lines: [settings.store_email]
+    },
+    {
+      icon: <BiPhone />,
+      title: 'Call Us',
+      lines: [settings.store_phone]
+    },
+    {
+      icon: <BiTime />,
+      title: 'Working Hours',
+      lines: ['Mon - Fri: 9:00 AM - 6:00 PM', 'Sat: 10:00 AM - 4:00 PM']
+    }
+  ];
+
+  const socialLinks = [
+    { icon: <FaFacebookF />, url: '#', label: 'Facebook' },
+    { icon: <FaInstagram />, url: '#', label: 'Instagram' },
+    { icon: <FaTwitter />, url: '#', label: 'Twitter' },
+    { icon: <FaPinterestP />, url: '#', label: 'Pinterest' }
+  ];
 
   const handleChange = (e) => {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));

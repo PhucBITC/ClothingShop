@@ -13,6 +13,7 @@ import {
     BiSearch,
     BiChevronLeft
 } from 'react-icons/bi';
+import { useSettings } from '../../context/SettingsContext';
 import styles from './ProductList.module.css';
 
 function useQuery() {
@@ -22,6 +23,7 @@ function useQuery() {
 function ProductList() {
     const query = useQuery();
     const location = useLocation();
+    const { settings } = useSettings();
 
     // API State
     const [products, setProducts] = useState([]);
@@ -127,7 +129,7 @@ function ProductList() {
             setLoading(true);
             const params = {
                 page: page,
-                size: 12,
+                size: parseInt(settings.items_per_page) || 12,
                 keyword: filters.keyword,
                 categoryId: filters.categoryId,
                 minPrice: filters.minPrice,

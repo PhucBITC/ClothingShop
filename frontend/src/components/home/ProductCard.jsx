@@ -6,6 +6,7 @@ import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { useWishlist } from '../../context/WishlistContext';
 import { useCart } from '../../context/CartContext';
 import { useToast } from '../common/toast/ToastContext';
+import { useSettings } from '../../context/SettingsContext';
 import QuickViewModal from '../products/QuickViewModal';
 import styles from './ProductCard.module.css';
 
@@ -14,6 +15,7 @@ const ProductCard = ({ product }) => {
     const navigate = useNavigate();
     const { toggleWishlist, isInWishlist } = useWishlist();
     const { addToCart } = useCart();
+    const { formatPrice } = useSettings();
     const toast = useToast();
 
     const isLiked = isInWishlist(product.id);
@@ -97,11 +99,11 @@ const ProductCard = ({ product }) => {
                 <p className={styles.productDesc}>{product.category?.name || 'Fashion Item'}</p>
                 <div className={styles.priceRow}>
                     <span className={styles.productPrice}>
-                        ${product.basePrice?.toFixed(2)}
+                        {formatPrice(product.basePrice)}
                     </span>
                     {product.discountPrice && (
                         <span className={styles.discountPrice}>
-                            ${product.discountPrice?.toFixed(2)}
+                            {formatPrice(product.discountPrice)}
                         </span>
                     )}
                 </div>

@@ -1,19 +1,21 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaFacebookF, FaInstagram, FaTwitter, FaCcVisa, FaCcMastercard, FaCcPaypal, FaCcApplePay } from 'react-icons/fa';
+import { useSettings } from '../context/SettingsContext';
 import styles from './Footer.module.css';
 
 function Footer() {
+  const { settings } = useSettings();
   return (
     <footer className={styles.footer}>
       <div className={styles.topSection}>
         {/* Brand Column */}
         <div className={styles.brandCol}>
-          <span className={styles.logo}>L & P</span>
+          <span className={styles.logo}>{settings.store_name}</span>
           <div className={styles.contactInfo}>
-            <p><strong>(704) 555-0127</strong></p>
-            <p><strong>support@lighterprincess.com</strong></p>
-            <p>3891 Ranchview Dr. Richardson, California 62639</p>
+            <p><strong>{settings.store_phone}</strong></p>
+            <p><strong>{settings.store_email}</strong></p>
+            <p>{settings.store_address}</p>
           </div>
         </div>
 
@@ -58,7 +60,7 @@ function Footer() {
         <div className={styles.paymentIcons}>
           <FaCcVisa /> <FaCcMastercard /> <FaCcPaypal /> <FaCcApplePay />
         </div>
-        <p className={styles.copyright}>©2024 Lighter & Princess. All Rights are reserved</p>
+        <p className={styles.copyright}>©{new Date().getFullYear()} {settings.store_name}. All Rights are reserved</p>
         <div className={styles.paymentIcons}>
           <FaFacebookF size={18} /> <FaInstagram size={18} /> <FaTwitter size={18} />
         </div>

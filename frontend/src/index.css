@@ -13,6 +13,8 @@
     --accent-green: #38a169;
     --accent-blue: #2563eb;
     --accent-red: #ff4d4f;
+    --primary-color: #FF8800;
+    --primary-dark: #cc6d00;
     --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.02);
     --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.05);
     --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.08);

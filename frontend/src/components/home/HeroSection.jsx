@@ -99,7 +99,7 @@ const HeroSection = () => {
                                             visible: { opacity: 1, y: 0 }
                                         }}
                                     >
-                                        KHÁM PHÁ NGAY
+                                       Discover Now
                                     </motion.div>
                                 </motion.div>
                             </div>

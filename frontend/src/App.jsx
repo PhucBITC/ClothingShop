@@ -39,6 +39,8 @@ import AdminProfile from "./admin/pages/AdminProfile";
 import DiscountList from "./admin/pages/discounts/DiscountList";
 import DiscountForm from "./admin/pages/discounts/DiscountForm";
 import Reports from "./admin/pages/reports/Reports";
+import AdminSettings from "./admin/pages/settings/AdminSettings";
+import AdminHelp from "./admin/pages/help/AdminHelp";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function AppLayout() {
@@ -100,6 +102,8 @@ function AppLayout() {
             <Route path="discounts/add" element={<DiscountForm />} />
             <Route path="discounts/edit/:id" element={<DiscountForm />} />
             <Route path="reports" element={<Reports />} />
+            <Route path="settings" element={<AdminSettings />} />
+            <Route path="help" element={<AdminHelp />} />
             <Route path="profile" element={<AdminProfile />} />
           </Route>
         </Route>
@@ -124,22 +128,25 @@ import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
 import { NotificationProvider } from "./context/NotificationContext";
 import { ThemeProvider } from "./context/ThemeContext";
+import { SettingsProvider } from "./context/SettingsContext";
 
 function App() {
   return (
     <BrowserRouter>
       <ThemeProvider>
-        <AuthProvider>
-          <NotificationProvider>
-            <ToastProvider>
-              <CartProvider>
-                <WishlistProvider>
-                  <AppLayout />
-                </WishlistProvider>
-              </CartProvider>
-            </ToastProvider>
-          </NotificationProvider>
-        </AuthProvider>
+        <SettingsProvider>
+          <AuthProvider>
+            <NotificationProvider>
+              <ToastProvider>
+                <CartProvider>
+                  <WishlistProvider>
+                    <AppLayout />
+                  </WishlistProvider>
+                </CartProvider>
+              </ToastProvider>
+            </NotificationProvider>
+          </AuthProvider>
+        </SettingsProvider>
       </ThemeProvider>
     </BrowserRouter>
   );

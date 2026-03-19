@@ -51,6 +51,7 @@ public class SecurityConfig {
                                                                 "/api/orders/vnpay-return",
                                                                 "/api/orders/paypal-success",
                                                                 "/api/discounts/validate",
+                                                                "/api/admin/settings/public",
                                                                 "/error")
                                                 .permitAll()
                                                 .requestMatchers(org.springframework.http.HttpMethod.GET,

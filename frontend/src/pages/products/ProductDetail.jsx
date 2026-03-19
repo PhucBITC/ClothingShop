@@ -6,6 +6,7 @@ import axios from '../../api/axios';
 import { useToast } from '../../components/common/toast/ToastContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { useCart } from '../../context/CartContext';
+import { useSettings } from '../../context/SettingsContext';
 import styles from './ProductDetail.module.css';
 
 const ProductDetail = () => {
@@ -13,6 +14,7 @@ const ProductDetail = () => {
     const toast = useToast();
     const { toggleWishlist, isInWishlist } = useWishlist();
     const { addToCart } = useCart();
+    const { formatPrice } = useSettings();
 
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -237,11 +239,11 @@ const ProductDetail = () => {
                     <div className={styles.priceRow}>
                         {salePrice ? (
                             <>
-                                <span className={styles.currentPrice}>${salePrice.toFixed(2)}</span>
-                                <span className={styles.originalPrice}>${displayPrice.toFixed(2)}</span>
+                                <span className={styles.currentPrice}>{formatPrice(salePrice)}</span>
+                                <span className={styles.originalPrice}>{formatPrice(displayPrice)}</span>
                             </>
                         ) : (
-                            <span className={styles.currentPrice}>${displayPrice.toFixed(2)}</span>
+                            <span className={styles.currentPrice}>{formatPrice(displayPrice)}</span>
                         )}
                     </div>
 
@@ -401,7 +403,7 @@ const ProductDetail = () => {
                                     <h4 className={styles.relatedBrand}>{item.brand || 'Krist'}</h4>
                                     <p className={styles.relatedName}>{item.name}</p>
                                     <div className={styles.relatedPriceRow}>
-                                        <span className={styles.relatedPrice}>${item.basePrice.toFixed(2)}</span>
+                                        <span className={styles.relatedPrice}>{formatPrice(item.basePrice)}</span>
                                         {/* Simplified: showing strike price if it were available in search response */}
                                     </div>
                                 </div>

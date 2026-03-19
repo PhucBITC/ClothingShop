@@ -11,6 +11,7 @@ import logo from '../../assets/logo.png';
 import axios from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import { useSettings } from '../../context/SettingsContext';
 
 const AdminLayout = () => {
     const location = useLocation();
@@ -25,6 +26,7 @@ const AdminLayout = () => {
     const [viewingMessage, setViewingMessage] = useState(null);
     const { user, logout } = useAuth();
     const { theme, toggleTheme } = useTheme();
+    const { settings } = useSettings();
     const navigate = useNavigate();
 
     const refreshAllCounts = async () => {
@@ -80,6 +82,8 @@ const AdminLayout = () => {
         if (pathname.includes('/admin/customers')) return 'Customers';
         if (pathname.includes('/admin/notifications')) return 'Notifications';
         if (pathname.includes('/admin/discounts')) return 'Discounts';
+        if (pathname.includes('/admin/help')) return 'Help Center';
+        if (pathname.includes('/admin/settings')) return 'System Settings';
         if (pathname === '/admin') return 'Dashboard';
         return 'Dashboard';
     };
@@ -119,7 +123,7 @@ const AdminLayout = () => {
             <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.showSidebar : ''}`}>
                 <div className={styles.logoContainer}>
                     <Link to="/" className={styles.logoLink}>
-                        <img src={logo} alt="Logo" className={styles.logo} />
+                        <img src={logo} alt={settings.store_name} className={styles.logo} />
                     </Link>
                     <button
                         className={styles.closeSidebarBtn}

@@ -102,7 +102,7 @@ const ProductSection = ({ title, products, loading }) => {
             </div>
 
             <div className={styles.viewAllWrapper}>
-                <button className={styles.viewAllBtn}>XEM TẤT CẢ</button>
+                <button className={styles.viewAllBtn}>VIEW ALL</button>
             </div>
         </section>
     );
