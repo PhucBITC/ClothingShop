@@ -27,6 +27,11 @@
     background: #f0f0f0;
     padding: 0.25rem;
     border-radius: 12px;
+    transition: background 0.3s;
+}
+
+:global([data-theme='Dark']) .tabs {
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .tab {
@@ -49,11 +54,25 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
+:global([data-theme='Dark']) .activeTab {
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+:global([data-theme='Dark']) .tab:not(.activeTab) {
+    color: #888;
+}
+
 .contentCard {
     background: #fff;
     border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.05);
     padding: 1.5rem;
+}
+
+:global([data-theme='Dark']) .contentCard {
+    background: var(--admin-card-bg, #1a1a1a);
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .toolbar {
@@ -91,6 +110,22 @@
 
 .filterBtn:hover {
     background: #e9ecef;
+}
+
+:global([data-theme='Dark']) .filterBtn {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #ccc;
+}
+
+:global([data-theme='Dark']) .filterBtn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+:global([data-theme='Dark']) .dateInput {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #eee;
 }
 
 .exportButtons {
@@ -160,6 +195,17 @@
     color: #444;
 }
 
+:global([data-theme='Dark']) .table th {
+    background: rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: #888;
+}
+
+:global([data-theme='Dark']) .table td {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: #ccc;
+}
+
 .categoryHeader {
     background: #fff8f0;
     transition: background 0.2s;
@@ -167,6 +213,14 @@
 
 .categoryHeader:hover {
     background: #fff0df;
+}
+
+:global([data-theme='Dark']) .categoryHeader {
+    background: rgba(255, 126, 0, 0.05);
+}
+
+:global([data-theme='Dark']) .categoryHeader:hover {
+    background: rgba(255, 126, 0, 0.08);
 }
 
 .categoryHeader td {
@@ -185,6 +239,11 @@
     border-radius: 6px;
     font-size: 0.85rem;
     font-family: monospace;
+}
+
+:global([data-theme='Dark']) .skuBadge {
+    background: rgba(79, 70, 229, 0.1);
+    color: #818cf8;
 }
 
 .lowStock {
