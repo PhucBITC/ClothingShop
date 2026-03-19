@@ -8,7 +8,7 @@ public class SystemSetting {
     @Id
     private String settingKey;
     
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String settingValue;
 
     public SystemSetting() {}

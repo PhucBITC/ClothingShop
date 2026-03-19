@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { BiLeaf, BiDiamond, BiPalette, BiHeart } from 'react-icons/bi';
 import styles from './OurStory.module.css';
+import studioImg from '../assets/our_studio.png';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 40 },
@@ -72,8 +73,17 @@ const teamMembers = [
     role: 'Production Manager'
   }
 ];
+import { useSettings } from '../context/SettingsContext';
 
 function OurStory() {
+  const { settings } = useSettings();
+
+  // Fallbacks for empty settings
+  const storyTitle = settings.story_title || 'Where Elegance Meets Purpose';
+  const storyContent = settings.story_content || 'Born in 2020 from a passion for contemporary fashion. We started with a simple belief that luxury should be accessible and sustainable.';
+  const mission = settings.mission || 'To create thoughtfully designed fashion that empowers individuals to express their authentic selves.';
+  const vision = settings.vision || 'To become a leading sustainable fashion brand, setting new standards for ethical production.';
+
   return (
     <div className={styles.storyPage}>
       {/* 1. Hero Section */}
@@ -91,7 +101,7 @@ function OurStory() {
             animate={{ opacity: 1, letterSpacing: '6px' }}
             transition={{ duration: 1.5, delay: 0.3 }}
           >
-            LIGHTER & PRINCESS
+            {settings.store_name?.toUpperCase() || 'OUR STORY'}
           </motion.span>
           <motion.h1
             className={styles.heroTitle}
@@ -99,7 +109,7 @@ function OurStory() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.6 }}
           >
-            Where Elegance <br /> Meets Purpose
+            {storyTitle}
           </motion.h1>
           <motion.p
             className={styles.heroSubtitle}
@@ -117,20 +127,13 @@ function OurStory() {
         <motion.div className={styles.storyText} {...fadeInLeft}>
           <span className={styles.sectionLabel}>WHO WE ARE</span>
           <h2 className={styles.sectionTitle}>Our Story</h2>
-          <p className={styles.storyParagraph}>
-            Born in 2020 from a passion for contemporary Vietnamese fashion, Lighter & Princess 
-            started as a small atelier in Ho Chi Minh City. Our founder believed that luxury fashion 
-            should be accessible, sustainable, and deeply personal.
-          </p>
-          <p className={styles.storyParagraph}>
-            What began as a curated collection of handcrafted pieces has grown into a movement — 
-            a brand that celebrates individuality, embraces modern aesthetics, and champions 
-            responsible fashion practices. Every stitch carries our commitment to excellence.
-          </p>
+          <div className={styles.storyParagraph} style={{ whiteSpace: 'pre-wrap' }}>
+            {storyContent}
+          </div>
         </motion.div>
         <motion.div className={styles.storyImage} {...fadeInRight}>
           <img
-            src="https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600&q=80"
+            src={studioImg}
             alt="Our studio"
           />
           <div className={styles.imageAccent} />
@@ -145,9 +148,7 @@ function OurStory() {
           </div>
           <h3 className={styles.mvTitle}>Our Mission</h3>
           <p className={styles.mvText}>
-            To create thoughtfully designed fashion that empowers individuals to express 
-            their authentic selves. We strive to make every garment a perfect blend of 
-            comfort, style, and conscious craftsmanship — accessible to all.
+            {mission}
           </p>
         </motion.div>
         <motion.div 
@@ -160,9 +161,7 @@ function OurStory() {
           </div>
           <h3 className={styles.mvTitle}>Our Vision</h3>
           <p className={styles.mvText}>
-            To become Southeast Asia's leading sustainable fashion brand, setting new 
-            standards for ethical production while pushing the boundaries of modern design. 
-            We envision a world where fashion and responsibility coexist beautifully.
+            {vision}
           </p>
         </motion.div>
       </section>

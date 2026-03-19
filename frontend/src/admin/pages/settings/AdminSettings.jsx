@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../../../api/axios';
 import styles from './AdminSettings.module.css';
-import { BiSave, BiLoaderAlt, BiCog, BiStore, BiEnvelope, BiPhone, BiMap, BiDollar } from 'react-icons/bi';
+import { BiSave, BiLoaderAlt, BiCog, BiStore, BiEnvelope, BiPhone, BiMap, BiDollar, BiBook } from 'react-icons/bi';
 import { useToast } from '../../../components/common/toast/ToastContext';
 import { useSettings } from '../../../context/SettingsContext';
 
@@ -12,7 +12,11 @@ const AdminSettings = () => {
         store_phone: '',
         store_address: '',
         currency_symbol: '$',
-        items_per_page: '10'
+        items_per_page: '10',
+        story_title: '',
+        story_content: '',
+        mission: '',
+        vision: ''
     });
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
@@ -154,6 +158,52 @@ const AdminSettings = () => {
                                 <option value="24">24</option>
                                 <option value="48">48</option>
                             </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div className={styles.section}>
+                    <h2 className={styles.sectionTitle}><BiBook /> Store Story (Our Story Page)</h2>
+                    <div className={styles.fullWidthGroup}>
+                        <label>Story Title</label>
+                        <input 
+                            type="text" 
+                            name="story_title" 
+                            value={settings.story_title} 
+                            onChange={handleChange} 
+                            placeholder="e.g. Our Journey Since 2020"
+                        />
+                    </div>
+                    <div className={styles.fullWidthGroup} style={{ marginTop: '1rem' }}>
+                        <label>Story Content</label>
+                        <textarea 
+                            name="story_content" 
+                            value={settings.story_content} 
+                            onChange={handleChange} 
+                            placeholder="Tell your brand story here..."
+                            rows="5"
+                        />
+                    </div>
+                    <div className={styles.grid} style={{ marginTop: '1rem' }}>
+                        <div className={styles.group}>
+                            <label>Mission Statement</label>
+                            <textarea 
+                                name="mission" 
+                                value={settings.mission} 
+                                onChange={handleChange} 
+                                placeholder="Your brand mission..."
+                                rows="3"
+                            />
+                        </div>
+                        <div className={styles.group}>
+                            <label>Vision Statement</label>
+                            <textarea 
+                                name="vision" 
+                                value={settings.vision} 
+                                onChange={handleChange} 
+                                placeholder="Your brand vision..."
+                                rows="3"
+                            />
                         </div>
                     </div>
                 </div>
