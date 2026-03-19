@@ -72,6 +72,8 @@
 }
 
 .viewAllBtn {
+    display: inline-block;
+    text-decoration: none;
     padding: 10px 40px;
     border: 1px solid var(--primary-black);
     background: var(--bg-page);

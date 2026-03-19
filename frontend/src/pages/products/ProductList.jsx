@@ -38,7 +38,7 @@ function ProductList() {
 
     const [filters, setFilters] = useState({
         keyword: query.get('search') || '',
-        categoryId: query.get('category') || '',
+        categoryId: (query.get('category') && !isNaN(query.get('category'))) ? query.get('category') : '',
         minPrice: '',
         maxPrice: '',
         sortBy: 'createdAt',
@@ -95,7 +95,7 @@ function ProductList() {
         if (catId !== filters.categoryId || search !== filters.keyword) {
             setFilters(prev => ({
                 ...prev,
-                categoryId: catId || '',
+                categoryId: (catId && !isNaN(catId)) ? catId : '',
                 keyword: search || ''
             }));
             setPage(0);

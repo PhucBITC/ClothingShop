@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import ProductCard from './ProductCard';
 import SkeletonCard from './SkeletonCard';
 import styles from './ProductSection.module.css';
@@ -25,6 +26,17 @@ const ProductSection = ({ title, products, loading }) => {
             const catType = p.category?.categoryType?.toUpperCase() || '';
             return catName === activeTab || catType === activeTab;
         });
+
+    const getViewAllLink = () => {
+        switch (activeTab) {
+            case 'ALL':
+                return '/products';
+            case 'NEW_ARRIVALS':
+                return '/products?sortBy=createdAt&direction=desc';
+            default:
+                return `/products?category=${activeTab}`;
+        }
+    };
 
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -102,7 +114,9 @@ const ProductSection = ({ title, products, loading }) => {
             </div>
 
             <div className={styles.viewAllWrapper}>
-                <button className={styles.viewAllBtn}>VIEW ALL</button>
+                <Link to={getViewAllLink()} className={styles.viewAllBtn}>
+                    VIEW ALL
+                </Link>
             </div>
         </section>
     );
