@@ -10,6 +10,8 @@ import java.util.Optional;
 @Repository
 public interface BlogPostRepository extends JpaRepository<BlogPost, Long> {
     List<BlogPost> findByStatusOrderByCreatedAtDesc(String status);
+    org.springframework.data.domain.Page<BlogPost> findByStatus(String status, org.springframework.data.domain.Pageable pageable);
+    List<BlogPost> findByStatus(String status);
     List<BlogPost> findByStatusAndCategoryOrderByCreatedAtDesc(String status, String category);
     Optional<BlogPost> findBySlug(String slug);
 }

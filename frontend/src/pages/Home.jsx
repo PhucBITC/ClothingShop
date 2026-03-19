@@ -10,26 +10,33 @@ import styles from './Home.module.css';
 
 function Home() {
   const [products, setProducts] = useState([]);
+  const [blogPosts, setBlogPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchHomeData = async () => {
       try {
         setLoading(true);
-        const response = await axios.get('/products/search', {
-          params: { status: 'ACTIVE', size: 8 }
-        });
-        const data = Array.isArray(response.data) ? response.data : response.data.content;
-        if (data) setProducts(data);
+        // Fetch products and blog posts in parallel
+        const [prodRes, blogRes] = await Promise.all([
+          axios.get('/products/search', { params: { status: 'ACTIVE', size: 8 } }),
+          axios.get('/blog-posts/latest', { params: { limit: 3 } })
+        ]);
+
+        const prodData = Array.isArray(prodRes.data) ? prodRes.data : prodRes.data.content;
+        if (prodData) setProducts(prodData);
+        
+        if (blogRes.data) setBlogPosts(blogRes.data);
+
         setError(null);
       } catch (err) {
-        setError("Unable to load latest products.");
+        setError("Unable to load homepage data.");
       } finally {
         setLoading(false);
       }
     };
-    fetchProducts();
+    fetchHomeData();
   }, []);
 
   const fadeInUp = {
@@ -112,45 +119,58 @@ function Home() {
             </motion.div>
           </motion.section>
 
-          {/* 5. Instagram / Social Feed */}
-          <section className={styles.socialSection}>
-            <motion.div className={styles.socialHeader} {...fadeInUp}>
-              <FiInstagram className={styles.socialIcon} />
-              <h2 className={styles.socialTitle}>
-                @LighterPrincess
-              </h2>
-              <p className={styles.socialSubtitle}>Follow us for daily fashion inspiration</p>
+          {/* 5. Journal / Blog Section */}
+          <section className={styles.journalSection}>
+            <motion.div className={styles.journalHeader} {...fadeInUp}>
+              <span className={styles.journalLabel}>OUR STORIES</span>
+              <h2 className={styles.journalTitle}>L&P JOURNAL</h2>
+              <p className={styles.journalSubtitle}>Discover the latest trends, styling tips, and brand stories.</p>
             </motion.div>
+            
             <motion.div 
-              className={styles.socialGrid}
+              className={styles.journalGrid}
               variants={staggerContainer}
               initial="initial"
               whileInView="whileInView"
               viewport={{ once: false }}
             >
-              {[
-                'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=400&q=80',
-                'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80',
-                'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=400&q=80',
-                'https://images.unsplash.com/photo-1581044777550-4cfa60707998?w=400&q=80',
-                'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=400&q=80'
-              ].map((src, i) => (
-                <motion.a 
-                  key={i}
-                  href="https://instagram.com" 
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.socialItem}
+              {blogPosts.map((post, i) => (
+                <motion.div 
+                  key={post.id}
+                  className={styles.journalCard}
                   variants={itemFadeIn}
-                  whileHover={{ scale: 1.03 }}
                 >
-                  <img src={src} alt={`Instagram post ${i + 1}`} />
-                  <div className={styles.socialOverlay}>
-                    <FiHeart />
+                  <Link to={`/blog/${post.slug}`} className={styles.journalImageWrapper}>
+                    <img src={post.coverImage} alt={post.title} />
+                    <span className={styles.journalCategory}>{post.category}</span>
+                  </Link>
+                  <div className={styles.journalInfo}>
+                    <span className={styles.journalDate}>
+                      {new Date(post.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                    </span>
+                    <h3 className={styles.journalPostTitle}>{post.title}</h3>
+                    <p className={styles.journalExcerpt}>{post.excerpt}</p>
+                    <Link to={`/blog/${post.slug}`} className={styles.readMore}>READ MORE</Link>
                   </div>
-                </motion.a>
+                </motion.div>
               ))}
             </motion.div>
+          </section>
+
+          {/* 6. Newsletter Section */}
+          <section className={styles.newsletterSection}>
+            <div className={styles.newsletterContent}>
+              <motion.div {...fadeInUp}>
+                <h2 className={styles.newsletterTitle}>JOIN THE CLUB</h2>
+                <p className={styles.newsletterSubtitle}>
+                  Subscribe for exclusive updates, new collection arrivals, and 10% off your first order.
+                </p>
+                <form className={styles.newsletterForm} onSubmit={(e) => e.preventDefault()}>
+                  <input type="email" placeholder="YOUR EMAIL ADDRESS" required />
+                  <button type="submit" className={styles.newsletterBtn}>SUBSCRIBE</button>
+                </form>
+              </motion.div>
+            </div>
           </section>
         </>
       )}

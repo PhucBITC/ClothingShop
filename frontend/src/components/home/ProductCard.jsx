@@ -78,9 +78,7 @@ const ProductCard = ({ product }) => {
                     >
                         {isLiked ? <FaHeart /> : <FaRegHeart />}
                     </button>
-                    <button className={styles.actionBtn} aria-label="Compare">
-                        <BiSync />
-                    </button>
+                   
                     <button className={styles.actionBtn} onClick={(e) => { e.stopPropagation(); setIsQuickViewOpen(true); }} aria-label="Quick View">
                         <BiShow />
                     </button>

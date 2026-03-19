@@ -100,83 +100,188 @@
     display: block;
 }
 
-/* ===== Social / Instagram Section ===== */
-.socialSection {
-    padding: 5rem 5%;
+/* ===== Journal Section ===== */
+.journalSection {
+    padding: 7rem 10%;
+    background: var(--bg-page);
+}
+
+.journalHeader {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.journalLabel {
+    font-size: 0.8rem;
+    letter-spacing: 4px;
+    color: var(--text-light);
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.journalTitle {
+    font-size: 2.2rem;
+    font-weight: 300;
+    letter-spacing: 2px;
+    color: var(--text-main);
+    margin-bottom: 1rem;
+}
+
+.journalSubtitle {
+    color: var(--text-muted);
+    font-size: 1rem;
+}
+
+.journalGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3rem;
+}
+
+.journalCard {
+    display: flex;
+    flex-direction: column;
+}
+
+.journalImageWrapper {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 4/5;
+    margin-bottom: 1.5rem;
+    display: block;
+}
+
+.journalImageWrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s ease;
+}
+
+.journalCard:hover .journalImageWrapper img {
+    transform: scale(1.05);
+}
+
+.journalCategory {
+    position: absolute;
+    top: 1.5rem;
+    left: 1.5rem;
+    background: var(--primary-white);
+    color: var(--primary-black);
+    padding: 6px 14px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.journalDate {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin-bottom: 0.8rem;
+    display: block;
+}
+
+.journalPostTitle {
+    font-size: 1.25rem;
+    font-weight: 400;
+    line-height: 1.4;
+    color: var(--text-main);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.journalExcerpt {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.readMore {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--primary-black);
+    text-decoration: none;
+    border-bottom: 1px solid var(--primary-black);
+    padding-bottom: 2px;
+    align-self: flex-start;
+    transition: opacity 0.3s;
+}
+
+.readMore:hover {
+    opacity: 0.7;
+}
+
+/* ===== Newsletter Section ===== */
+.newsletterSection {
+    background: #111;
+    color: #fff;
+    padding: 8rem 5%;
     text-align: center;
 }
 
-.socialHeader {
-    margin-bottom: 3rem;
+.newsletterContent {
+    max-width: 600px;
+    margin: 0 auto;
 }
 
-.socialIcon {
+.newsletterTitle {
     font-size: 2rem;
-    color: var(--text-main);
-    margin-bottom: 0.8rem;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.socialTitle {
-    font-size: 1.6rem;
-    letter-spacing: 2px;
     font-weight: 300;
-    color: var(--text-main);
-    margin-bottom: 0.5rem;
+    letter-spacing: 4px;
+    margin-bottom: 1.5rem;
 }
 
-.socialSubtitle {
-    font-size: 0.95rem;
-    color: var(--text-light);
-    letter-spacing: 0.5px;
+.newsletterSubtitle {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: #999;
+    margin-bottom: 3rem;
+    font-weight: 300;
 }
 
-.socialGrid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 6px;
-}
-
-.socialItem {
-    position: relative;
-    overflow: hidden;
-    display: block;
-    cursor: pointer;
-}
-
-.socialItem img {
-    width: 100%;
-    aspect-ratio: 1/1;
-    object-fit: cover;
-    display: block;
-    transition: transform 0.5s ease;
-}
-
-.socialItem:hover img {
-    transform: scale(1.08);
-}
-
-.socialOverlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.35);
+.newsletterForm {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.35s ease;
+    gap: 1rem;
 }
 
-.socialItem:hover .socialOverlay {
-    opacity: 1;
-}
-
-.socialOverlay svg {
+.newsletterForm input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #444;
     color: #fff;
-    font-size: 1.8rem;
-    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+    padding: 12px 10px;
+    font-size: 0.9rem;
+    transition: border-color 0.3s;
+}
+
+.newsletterForm input:focus {
+    outline: none;
+    border-color: #fff;
+}
+
+.newsletterBtn {
+    background: #fff;
+    color: #111;
+    border: none;
+    padding: 12px 30px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+.newsletterBtn:hover {
+    opacity: 0.9;
 }
 
 /* ===== RESPONSIVE ===== */
