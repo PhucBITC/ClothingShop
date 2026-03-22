@@ -14,6 +14,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 import java.util.stream.Stream;
+import java.text.Normalizer;
+import java.util.regex.Pattern;
 
 @Service
 public class FileStorageServiceImpl implements FileStorageService {
@@ -55,7 +57,9 @@ public class FileStorageServiceImpl implements FileStorageService {
                 }
             }
             // Create unique filename to maintain uniqueness
-            String filename = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+            String originalFilename = file.getOriginalFilename();
+            String normalizedName = normalizeFilename(originalFilename);
+            String filename = UUID.randomUUID().toString() + "_" + normalizedName;
             Files.copy(file.getInputStream(), targetFolder.resolve(filename));
 
             // Return folder + filename if folder exists
@@ -94,5 +98,30 @@ public class FileStorageServiceImpl implements FileStorageService {
         } catch (IOException e) {
             throw new RuntimeException("Could not load the files!");
         }
+    }
+
+    private String normalizeFilename(String originalName) {
+        if (originalName == null || originalName.isEmpty()) return "file";
+
+        int lastDotIndex = originalName.lastIndexOf('.');
+        String nameWithoutExtension = (lastDotIndex != -1) ? originalName.substring(0, lastDotIndex) : originalName;
+        String extension = (lastDotIndex != -1) ? originalName.substring(lastDotIndex) : "";
+
+        // Strip accents
+        String normalized = Normalizer.normalize(nameWithoutExtension, Normalizer.Form.NFD);
+        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+        normalized = pattern.matcher(normalized).replaceAll("");
+
+        // Lowercase and replace non-alphanumeric with hyphen
+        normalized = normalized.toLowerCase()
+                .replaceAll("[^a-z0-9\\s-]", "")
+                .replaceAll("\\s+", "-")
+                .replaceAll("-+", "-")
+                .replaceAll("^-", "")
+                .replaceAll("-$", "");
+
+        if (normalized.isEmpty()) normalized = "image";
+
+        return normalized + extension.toLowerCase();
     }
 }

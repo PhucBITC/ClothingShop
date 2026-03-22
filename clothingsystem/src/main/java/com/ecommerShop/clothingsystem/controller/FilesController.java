@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.HandlerMapping;
 import jakarta.servlet.http.HttpServletRequest;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 @RestController
 @RequestMapping("/api/files")
@@ -23,6 +25,9 @@ public class FilesController {
         String path = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
         // Extracts whatever is after /api/files/
         String filename = path.replace("/api/files/", "");
+
+        // Decode the filename to handle spaces and special characters
+        filename = URLDecoder.decode(filename, StandardCharsets.UTF_8);
 
         Resource file = storageService.load(filename);
         if (file == null) {
