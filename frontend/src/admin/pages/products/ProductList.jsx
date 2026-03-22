@@ -17,13 +17,15 @@ import {
 import { useToast } from '../../../components/common/toast/ToastContext';
 import styles from './ProductList.module.css';
 
+const CATEGORY_TYPES = [
+    'MEN', 'WOMEN', 'KIDS', 'FOOTWEAR', 'ACCESSORIES', 'TRADITIONAL_WEAR', 'NEW_ARRIVALS'
+];
+
 const ProductList = () => {
-    const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const toast = useToast();
 
-    // Filter & Pagination State
+    // Filter State
     const [filters, setFilters] = useState({
         keyword: '',
         categoryId: '',
@@ -31,9 +33,6 @@ const ProductList = () => {
         maxPrice: '',
         tag: ''
     });
-    const [page, setPage] = useState(0);
-    const [totalPages, setTotalPages] = useState(0);
-    const [totalElements, setTotalElements] = useState(0);
 
     const [categories, setCategories] = useState([]);
 
@@ -43,6 +42,10 @@ const ProductList = () => {
     const [productToDelete, setProductToDelete] = useState(null);
     const [isProcessing, setIsProcessing] = useState(false);
 
+    // Grouping State
+    const [expandedGroups, setExpandedGroups] = useState(new Set([CATEGORY_TYPES[0]]));
+    const [groupData, setGroupData] = useState({}); // { TYPE: { products: [], page: 0, totalPages: 0, totalElements: 0, loading: false } }
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -50,8 +53,12 @@ const ProductList = () => {
     }, []);
 
     useEffect(() => {
-        fetchProducts();
-    }, [page, filters.categoryId]); // Refetch when page or category changes immediately (optional, or wait for apply)
+        CATEGORY_TYPES.forEach(type => {
+            if (expandedGroups.has(type)) {
+                fetchProductsByType(type);
+            }
+        });
+    }, [expandedGroups, filters]);
 
     const fetchCategories = async () => {
         try {
@@ -62,14 +69,19 @@ const ProductList = () => {
         }
     };
 
-    const fetchProducts = async () => {
+    const fetchProductsByType = async (type, pageNum = 0) => {
         try {
-            setLoading(true);
+            setGroupData(prev => ({
+                ...prev,
+                [type]: { ...prev[type], loading: true }
+            }));
+
             const params = {
-                page: page,
+                page: pageNum,
                 size: 5,
                 keyword: filters.keyword,
                 categoryId: filters.categoryId,
+                categoryType: type,
                 minPrice: filters.minPrice,
                 maxPrice: filters.maxPrice,
                 tag: filters.tag
@@ -80,20 +92,34 @@ const ProductList = () => {
 
             const response = await axios.get('/products/search', { params });
 
-            if (response.data && response.data.content) {
-                setProducts(response.data.content);
-                setTotalPages(response.data.totalPages);
-                setTotalElements(response.data.totalElements);
-            } else {
-                setProducts([]);
-            }
+            setGroupData(prev => ({
+                ...prev,
+                [type]: {
+                    products: response.data?.content || [],
+                    page: pageNum,
+                    totalPages: response.data?.totalPages || 0,
+                    totalElements: response.data?.totalElements || 0,
+                    loading: false
+                }
+            }));
             setError(null);
         } catch (err) {
-            console.error("Error fetching products:", err);
-            setError("Failed to load products. Please try again.");
-        } finally {
-            setLoading(false);
+            console.error(`Error fetching ${type} products:`, err);
+            setGroupData(prev => ({
+                ...prev,
+                [type]: { ...prev[type], loading: false }
+            }));
         }
+    };
+
+    const toggleGroup = (type) => {
+        const newExpanded = new Set(expandedGroups);
+        if (newExpanded.has(type)) {
+            newExpanded.delete(type);
+        } else {
+            newExpanded.add(type);
+        }
+        setExpandedGroups(newExpanded);
     };
 
     const handleFilterChange = (e) => {
@@ -101,8 +127,8 @@ const ProductList = () => {
     };
 
     const handleApplyFilters = () => {
-        setPage(0);
-        fetchProducts();
+        // Refresh all expanded groups
+        expandedGroups.forEach(type => fetchProductsByType(type, 0));
     };
 
     const handleResetFilters = () => {
@@ -113,11 +139,10 @@ const ProductList = () => {
             maxPrice: '',
             tag: ''
         });
-        setPage(0);
-        // fetchProducts() will be triggered by useEffect logic if we add dependencies, 
-        // but here we manually call it or wait for user to click Apply. 
-        // Let's manually call it to be responsive.
-        setTimeout(() => fetchProducts(), 100);
+        // We don't need setPage(0) anymore as pagination is per-group
+        setTimeout(() => {
+            expandedGroups.forEach(type => fetchProductsByType(type, 0));
+        }, 100);
     };
 
     const handleDuplicate = async (product) => {
@@ -137,7 +162,9 @@ const ProductList = () => {
             toast.success('Duplicated', `Product duplicated successfully!`, { id: toastId });
             setIsProcessing(false);
             // Navigate to edit the new product
-            navigate(`/admin/products/edit/${res.data.id}`);
+            // Refresh only the affected group
+            const type = product.category?.categoryType;
+            if (type) fetchProductsByType(type, groupData[type]?.page || 0);
         } catch (err) {
             clearTimeout(safetyTimeout);
             console.error(err);
@@ -160,7 +187,8 @@ const ProductList = () => {
             // To be more robust, we should ideally have setStatus(id, status)
             await axios.patch(`/products/${product.id}/toggle-active`);
             toast.success('Updated', `Product is now ${newState ? 'Active' : 'Hidden'}`, { id: toastId });
-            fetchProducts(); // Refresh list
+            const type = product.category?.categoryType;
+            if (type) fetchProductsByType(type, groupData[type]?.page || 0);
         } catch (err) {
             console.error(err);
             toast.error('Update Failed', 'Failed to update product status', { id: toastId });
@@ -187,7 +215,8 @@ const ProductList = () => {
             await axios.delete(`/products/${productToDelete.id}`);
             clearTimeout(safetyTimeout);
             toast.success('Deleted', 'Product deleted successfully', { id: toastId });
-            fetchProducts(); // Refresh list
+            const type = productToDelete.category?.categoryType;
+            if (type) fetchProductsByType(type, groupData[type]?.page || 0);
             setShowDeleteModal(false);
             setProductToDelete(null);
             setIsProcessing(false);
@@ -281,139 +310,151 @@ const ProductList = () => {
 
                 {/* Main Content */}
                 <div className={styles.content}>
-                    {loading ? <div className={styles.loading}>Loading products...</div> :
-                        error ? <div className={styles.error}><BiError /> {error}</div> : (
-                            <>
-                                <div className={styles.tableContainer}>
-                                    <table className={styles.table}>
-                                        <thead>
-                                            <tr>
-                                                <th>Product</th>
-                                                <th>Category</th>
-                                                <th>Price</th>
-                                                <th title="Total stock of all size/color variants">Total Stock</th>
-                                                <th>Status</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {products.length > 0 ? (
-                                                products.map((product) => {
-                                                    const stock = getStockInfo(product);
-                                                    const imageUrl = getProductImage(product);
-                                                    return (
-                                                        <tr key={product.id}>
-                                                            <td className={styles.productInfo}>
-                                                                <img
-                                                                    src={imageUrl}
-                                                                    alt={product.name}
-                                                                    className={styles.productImage}
-                                                                    onError={(e) => { 
-                                                                        if (!e.target.dataset.errorCalled) {
-                                                                            e.target.dataset.errorCalled = 'true';
-                                                                            e.target.src = 'https://placehold.co/48x48?text=No+Image';
-                                                                        } else {
-                                                                            e.target.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-                                                                        }
-                                                                    }}
-                                                                />
-                                                                <div>
-                                                                    <div className={styles.productName}>{product.name}</div>
-                                                                    {product.slug && <small style={{ color: '#666', fontSize: '11px' }}>{product.slug}</small>}
-                                                                </div>
-                                                            </td>
-                                                            <td>{product.category?.name || 'Uncategorized'}</td>
-                                                            <td className={styles.price}>
-                                                                ${product.basePrice ? product.basePrice.toLocaleString() : '0.00'}
-                                                            </td>
-                                                            <td>
-                                                                <span className={`${styles.stockBadge} ${stock > 0 ? styles.inStock : styles.outOfStock}`}>
-                                                                    {stock} items
-                                                                </span>
-                                                            </td>
-                                                            <td>
-                                                                <span className={`${styles.stockBadge} ${product.status === 'ACTIVE' ? styles.activeBadge : styles.inactiveBadge}`}>
-                                                                    {product.status === 'ACTIVE' ? 'Active' : 'Hidden'}
-                                                                </span>
-                                                            </td>
-                                                            <td>
-                                                                <div className={styles.actions}>
-                                                                    <button 
-                                                                        className={`${styles.actionButton} ${styles.toggleBtn}`} 
-                                                                        title={product.status === 'ACTIVE' ? "Hide Product" : "Show Product"}
-                                                                        onClick={() => handleToggleActive(product)}
-                                                                    >
-                                                                        {product.status === 'ACTIVE' ? <BiShow size={18} /> : <BiHide size={18} />}
-                                                                    </button>
-                                                                    <button className={`${styles.actionButton} ${styles.editBtn}`} title="Duplicate" onClick={() => handleDuplicate(product)}>
-                                                                        <BiCopy size={18} />
-                                                                    </button>
-                                                                    <button className={`${styles.actionButton} ${styles.editBtn}`} title="Edit" onClick={() => navigate(`/admin/products/edit/${product.id}`)}>
-                                                                        <BiPencil size={18} />
-                                                                    </button>
-                                                                    <button className={`${styles.actionButton} ${styles.deleteBtn}`} title="Delete" onClick={() => confirmDelete(product)}>
-                                                                        <BiTrash size={18} />
-                                                                    </button>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    );
-                                                })
-                                            ) : (
-                                                <tr>
-                                                    <td colSpan="5" style={{ textAlign: 'center', padding: '40px' }}>
-                                                        No products found matching filters.
-                                                    </td>
-                                                </tr>
-                                            )}
-                                        </tbody>
-                                    </table>
+                    {CATEGORY_TYPES.map(type => {
+                        const data = { products: [], loading: false, totalElements: 0, ...groupData[type] };
+                        const isExpanded = expandedGroups.has(type);
+
+                        return (
+                            <div key={type} className={styles.categoryGroup}>
+                                <div className={styles.groupHeader} onClick={() => toggleGroup(type)}>
+                                    <div className={styles.groupTitleInfo}>
+                                        <span className={styles.groupToggleIcon}>{isExpanded ? '−' : '+'}</span>
+                                        <h3 className={styles.groupTitleName}>{type.replace('_', ' ')}</h3>
+                                        <span className={styles.groupCountBadge}>{data.totalElements} Products</span>
+                                    </div>
+                                    <div className={styles.groupStatus}>
+                                        {data.loading && <span className={styles.groupLoadingMini}>Loading...</span>}
+                                    </div>
                                 </div>
 
-                                {/* Numerical Pagination */}
-                                {totalPages > 1 && (
-                                    <div className={styles.pagination}>
-                                        <button
-                                            className={styles.pageArrow}
-                                            disabled={page === 0}
-                                            onClick={() => setPage(p => p - 1)}
-                                        >
-                                            <BiChevronLeft />
-                                        </button>
-
-                                        {Array.from({ length: totalPages }, (_, i) => {
-                                            // Simple logic to show current, first, last, and neighbors
-                                            if (i === 0 || i === totalPages - 1 || (i >= page - 1 && i <= page + 1)) {
-                                                return (
-                                                    <button
-                                                        key={i}
-                                                        className={`${styles.pageNumber} ${page === i ? styles.pageActive : ''}`}
-                                                        onClick={() => setPage(i)}
-                                                    >
-                                                        {i + 1}
-                                                    </button>
-                                                );
-                                            } else if (i === page - 2 || i === page + 2) {
-                                                return <span key={i} className={styles.pageDots}>...</span>;
-                                            }
-                                            return null;
-                                        })}
-
-                                        <button
-                                            className={styles.pageArrow}
-                                            disabled={page >= totalPages - 1}
-                                            onClick={() => setPage(p => p + 1)}
-                                        >
-                                            <BiChevronRight />
-                                        </button>
-
-                                        <div className={styles.totalInfo}>
-                                            Total: {totalElements} products
+                                {isExpanded && (
+                                    <div className={styles.groupBody}>
+                                        <div className={styles.tableContainer}>
+                                            <table className={styles.table}>
+                                                <thead>
+                                                    <tr>
+                                                        <th>Product</th>
+                                                        <th>Category</th>
+                                                        <th>Price</th>
+                                                        <th>Total Stock</th>
+                                                        <th>Status</th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {data.products.length > 0 ? (
+                                                        data.products.map((product) => {
+                                                            const stock = getStockInfo(product);
+                                                            const imageUrl = getProductImage(product);
+                                                            return (
+                                                                <tr key={product.id}>
+                                                                    <td className={styles.productInfo}>
+                                                                        <img
+                                                                            src={imageUrl}
+                                                                            alt={product.name}
+                                                                            className={styles.productImage}
+                                                                            onError={(e) => { 
+                                                                                if (!e.target.dataset.errorCalled) {
+                                                                                    e.target.dataset.errorCalled = 'true';
+                                                                                    e.target.src = 'https://placehold.co/48x48?text=No+Image';
+                                                                                }
+                                                                            }}
+                                                                        />
+                                                                        <div>
+                                                                            <div className={styles.productName}>{product.name}</div>
+                                                                            {product.slug && <small className={styles.productSlug}>{product.slug}</small>}
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>{product.category?.name || 'Uncategorized'}</td>
+                                                                    <td className={styles.price}>
+                                                                        ${product.basePrice ? product.basePrice.toLocaleString() : '0.00'}
+                                                                    </td>
+                                                                    <td>
+                                                                        <span className={`${styles.stockBadge} ${stock > 0 ? styles.inStock : styles.outOfStock}`}>
+                                                                            {stock} items
+                                                                        </span>
+                                                                    </td>
+                                                                    <td>
+                                                                        <span className={`${styles.stockBadge} ${product.status === 'ACTIVE' ? styles.activeBadge : styles.inactiveBadge}`}>
+                                                                            {product.status === 'ACTIVE' ? 'Active' : 'Hidden'}
+                                                                        </span>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div className={styles.actions}>
+                                                                            <button 
+                                                                                className={`${styles.actionButton} ${styles.toggleBtn}`} 
+                                                                                title={product.status === 'ACTIVE' ? "Hide Product" : "Show Product"}
+                                                                                onClick={() => handleToggleActive(product)}
+                                                                            >
+                                                                                {product.status === 'ACTIVE' ? <BiShow size={18} /> : <BiHide size={18} />}
+                                                                            </button>
+                                                                            <button className={`${styles.actionButton} ${styles.editBtn}`} title="Duplicate" onClick={() => handleDuplicate(product)}>
+                                                                                <BiCopy size={18} />
+                                                                            </button>
+                                                                            <button className={`${styles.actionButton} ${styles.editBtn}`} title="Edit" onClick={() => navigate(`/admin/products/edit/${product.id}`)}>
+                                                                                <BiPencil size={18} />
+                                                                            </button>
+                                                                            <button className={`${styles.actionButton} ${styles.deleteBtn}`} title="Delete" onClick={() => confirmDelete(product)}>
+                                                                                <BiTrash size={18} />
+                                                                            </button>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            );
+                                                        })
+                                                    ) : (
+                                                        <tr>
+                                                            <td colSpan="6" style={{ textAlign: 'center', padding: '40px' }}>
+                                                                {data.loading ? 'Updating...' : 'No products found in this category.'}
+                                                            </td>
+                                                        </tr>
+                                                    )}
+                                                </tbody>
+                                            </table>
                                         </div>
+
+                                        {/* Pagination for this specific type */}
+                                        {data.totalPages > 1 && (
+                                            <div className={styles.pagination}>
+                                                <button
+                                                    className={styles.pageArrow}
+                                                    disabled={data.page === 0}
+                                                    onClick={() => fetchProductsByType(type, data.page - 1)}
+                                                >
+                                                    <BiChevronLeft />
+                                                </button>
+
+                                                {Array.from({ length: data.totalPages }, (_, i) => {
+                                                    if (i === 0 || i === data.totalPages - 1 || (i >= data.page - 1 && i <= data.page + 1)) {
+                                                        return (
+                                                            <button
+                                                                key={i}
+                                                                className={`${styles.pageNumber} ${data.page === i ? styles.pageActive : ''}`}
+                                                                onClick={() => fetchProductsByType(type, i)}
+                                                            >
+                                                                {i + 1}
+                                                            </button>
+                                                        );
+                                                    } else if (i === data.page - 2 || i === data.page + 2) {
+                                                        return <span key={i} className={styles.pageDots}>...</span>;
+                                                    }
+                                                    return null;
+                                                })}
+
+                                                <button
+                                                    className={styles.pageArrow}
+                                                    disabled={data.page >= data.totalPages - 1}
+                                                    onClick={() => fetchProductsByType(type, data.page + 1)}
+                                                >
+                                                    <BiChevronRight />
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
-                            </>
-                        )}
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
 

@@ -106,6 +106,7 @@ public class ProductController {
             @RequestParam(required = false) Double maxPrice,
             @RequestParam(required = false) String tag,
             @RequestParam(required = false) String status,
+            @RequestParam(required = false) String categoryType,
             @RequestParam(required = false) List<String> colors,
             @RequestParam(required = false) List<String> sizes,
             @RequestParam(defaultValue = "0") int page,
@@ -116,7 +117,7 @@ public class ProductController {
         Sort.Direction dir = Sort.Direction.fromString(direction.equalsIgnoreCase("asc") ? "ASC" : "DESC");
         Pageable pageable = PageRequest.of(page, size, Sort.by(dir, sortBy));
 
-        Page<Product> products = productService.searchProducts(keyword, categoryId, minPrice, maxPrice, tag, status, colors,
+        Page<Product> products = productService.searchProducts(keyword, categoryId, categoryType, minPrice, maxPrice, tag, status, colors,
                 sizes, pageable);
         return ResponseEntity.ok(products);
     }

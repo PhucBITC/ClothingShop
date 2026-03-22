@@ -300,7 +300,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Page<Product> searchProducts(String keyword, Long categoryId, Double minPrice, Double maxPrice, String tag,
+    public Page<Product> searchProducts(String keyword, Long categoryId, String categoryType, Double minPrice, Double maxPrice, String tag,
             String status, List<String> colors, List<String> sizes, Pageable pageable) {
         Specification<Product> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -314,6 +314,10 @@ public class ProductServiceImpl implements ProductService {
 
             if (categoryId != null) {
                 predicates.add(cb.equal(root.get("category").get("id"), categoryId));
+            }
+
+            if (StringUtils.hasText(categoryType)) {
+                predicates.add(cb.equal(root.get("category").get("categoryType"), categoryType));
             }
 
             if (minPrice != null) {
