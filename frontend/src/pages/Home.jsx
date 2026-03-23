@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { FiInstagram, FiHeart } from 'react-icons/fi';
+import { useSettings } from '../context/SettingsContext';
 import axios from '../api/axios';
 import HeroSection from '../components/home/HeroSection';
 import CategoryBanners from '../components/home/CategoryBanners';
@@ -9,6 +10,7 @@ import ProductSection from '../components/home/ProductSection';
 import styles from './Home.module.css';
 
 function Home() {
+  const { settings } = useSettings();
   const [products, setProducts] = useState([]);
   const [blogPosts, setBlogPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,7 +22,12 @@ function Home() {
         setLoading(true);
         // Fetch products and blog posts in parallel
         const [prodRes, blogRes] = await Promise.all([
-          axios.get('/products/search', { params: { status: 'ACTIVE', size: 8 } }),
+          axios.get('/products/search', { 
+            params: { 
+              status: 'ACTIVE', 
+              size: parseInt(settings.items_per_page) || 12 
+            } 
+          }),
           axios.get('/blog-posts/latest', { params: { limit: 3 } })
         ]);
 
@@ -37,7 +44,7 @@ function Home() {
       }
     };
     fetchHomeData();
-  }, []);
+  }, [settings.items_per_page]);
 
   const fadeInUp = {
     initial: { opacity: 0, y: 30 },

@@ -148,16 +148,15 @@ const AdminSettings = () => {
                         </div>
                         <div className={styles.group}>
                             <label>Items Per Page (Frontend)</label>
-                            <select 
+                            <input 
+                                type="number" 
                                 name="items_per_page" 
                                 value={settings.items_per_page} 
                                 onChange={handleChange}
-                            >
-                                <option value="8">8</option>
-                                <option value="12">12</option>
-                                <option value="24">24</option>
-                                <option value="48">48</option>
-                            </select>
+                                min="1"
+                                max="100"
+                                placeholder="e.g. 12"
+                            />
                         </div>
                     </div>
                 </div>

@@ -88,7 +88,7 @@ const ProductSection = ({ title, products, loading }) => {
                             </motion.div>
                         ))
                     ) : filteredProducts.length > 0 ? (
-                        filteredProducts.slice(0, 10).map((product) => (
+                        filteredProducts.map((product) => (
                             <motion.div
                                 key={`p-${product.id}`}
                                 initial={{ opacity: 0, y: 20 }}
