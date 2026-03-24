@@ -14,7 +14,9 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
             "LEFT JOIN product_variants pv ON p.id = pv.product_id " +
             "LEFT JOIN order_items oi ON pv.id = oi.product_variant_id " +
             "GROUP BY c.id " +
-            "ORDER BY SUM(COALESCE(oi.quantity, 0)) DESC, c.name ASC " +
+            "ORDER BY MAX(CASE WHEN p.tags LIKE '%BANNER%' THEN 1 ELSE 0 END) DESC, " +
+            "         SUM(COALESCE(oi.quantity, 0)) DESC, " +
+            "         c.name ASC " +
             "LIMIT 7", nativeQuery = true)
     List<Category> findTopCategoriesBySales();
 }

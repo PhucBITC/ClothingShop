@@ -51,6 +51,7 @@ public class CategoryController {
                     return new CategoryBannerDTO(
                             cat.getId(),
                             cat.getName().toUpperCase() + " COLLECTION",
+                            cat.getCategoryType(),
                             topImage,
                             count
                     );

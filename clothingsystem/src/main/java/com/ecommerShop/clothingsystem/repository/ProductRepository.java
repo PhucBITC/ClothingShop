@@ -23,13 +23,15 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
 
     @Query(value = "SELECT pi.image_url FROM product_images pi " +
             "JOIN ( " +
-            "    SELECT p.id, SUM(COALESCE(oi.quantity,0)) as total_sales " +
+            "    SELECT p.id, " +
+            "           (CASE WHEN p.tags LIKE '%BANNER%' THEN 1 ELSE 0 END) as is_banner, " +
+            "           SUM(COALESCE(oi.quantity,0)) as total_sales " +
             "    FROM products p " +
             "    LEFT JOIN product_variants pv ON p.id = pv.product_id " +
             "    LEFT JOIN order_items oi ON pv.id = oi.product_variant_id " +
             "    WHERE p.category_id = :categoryId " +
             "    GROUP BY p.id " +
-            "    ORDER BY total_sales DESC " +
+            "    ORDER BY is_banner DESC, total_sales DESC " +
             "    LIMIT 1 " +
             ") best_product ON pi.product_id = best_product.id " +
             "ORDER BY pi.is_primary DESC " +

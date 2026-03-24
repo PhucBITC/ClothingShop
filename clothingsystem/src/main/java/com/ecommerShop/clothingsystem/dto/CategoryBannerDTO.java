@@ -3,15 +3,17 @@ package com.ecommerShop.clothingsystem.dto;
 public class CategoryBannerDTO {
     private Long id;
     private String name;
+    private String categoryType;
     private String imageUrl;
     private Long productCount;
 
     public CategoryBannerDTO() {
     }
 
-    public CategoryBannerDTO(Long id, String name, String imageUrl, Long productCount) {
+    public CategoryBannerDTO(Long id, String name, String categoryType, String imageUrl, Long productCount) {
         this.id = id;
         this.name = name;
+        this.categoryType = categoryType;
         this.imageUrl = imageUrl;
         this.productCount = productCount;
     }
@@ -31,6 +33,14 @@ public class CategoryBannerDTO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getCategoryType() {
+        return categoryType;
+    }
+
+    public void setCategoryType(String categoryType) {
+        this.categoryType = categoryType;
     }
 
     public String getImageUrl() {

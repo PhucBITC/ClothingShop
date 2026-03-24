@@ -8,13 +8,13 @@ import api from '../../api/axios';
 const PLACEHOLDER_IMAGE = "https://placehold.co/600x400?text=Product+Image";
 
 const ORIGINAL_CATEGORIES = [
-    { id: 'WOMEN', title: "WOMEN'S COLLECTION", image: PLACEHOLDER_IMAGE, link: "/products?category=WOMEN", keywords: ['women', 'nữ', 'váy', 'đầm'] },
-    { id: 'MEN', title: "MEN'S COLLECTION", image: PLACEHOLDER_IMAGE, link: "/products?category=MEN", keywords: ['men', 'nam'] },
-    { id: 'KIDS', title: "KIDS' COLLECTION", image: PLACEHOLDER_IMAGE, link: "/products?category=KIDS", keywords: ['kids', 'trẻ em', 'bé'] },
-    { id: 'FOOTWEAR', title: "PREMIUM FOOTWEAR", image: PLACEHOLDER_IMAGE, link: "/products?category=FOOTWEAR", keywords: ['footwear', 'giày', 'shoes'] },
-    { id: 'ACCESSORIES', title: "LUXURY ACCESSORIES", image: PLACEHOLDER_IMAGE, link: "/products?category=ACCESSORIES", keywords: ['accessories', 'phụ kiện', 'túi', 'ví'] },
+    { id: 'WOMEN', title: "WOMEN'S COLLECTION", image: PLACEHOLDER_IMAGE, link: "/products?category=WOMEN", keywords: ['women', 'nữ', 'váy', 'đầm', 'dress', 'gown', 'top', 'shirt'] },
+    { id: 'MEN', title: "MEN'S COLLECTION", image: PLACEHOLDER_IMAGE, link: "/products?category=MEN", keywords: ['men', 'nam', 'shirt', 'polo', 'trousers', 'pants', 'jackets', 'coats', 'suits', 'blazers'] },
+    { id: 'KIDS', title: "KIDS' COLLECTION", image: PLACEHOLDER_IMAGE, link: "/products?category=KIDS", keywords: ['kids', 'trẻ em', 'bé', 'casual', 'wear', 'bottoms'] },
+    { id: 'FOOTWEAR', title: "PREMIUM FOOTWEAR", image: PLACEHOLDER_IMAGE, link: "/products?category=FOOTWEAR", keywords: ['footwear', 'giày', 'shoes', 'sneakers'] },
+    { id: 'ACCESSORIES', title: "LUXURY ACCESSORIES", image: PLACEHOLDER_IMAGE, link: "/products?category=ACCESSORIES", keywords: ['accessories', 'phụ kiện', 'túi', 'ví', 'bag', 'wallet'] },
     { id: 'NEW_ARRIVALS', title: "NEW ARRIVALS 2024", image: PLACEHOLDER_IMAGE, link: "/products?category=NEW_ARRIVALS", keywords: ['new', 'mới'] },
-    { id: 'BEST_SELLERS', title: "BEST SELLERS", image: PLACEHOLDER_IMAGE, link: "/products", keywords: ['best', 'bán chạy'] }
+    { id: 'BEST_SELLERS', title: "BEST SELLERS", image: PLACEHOLDER_IMAGE, link: "/products", keywords: ['best', 'bán chạy', 'hot'] }
 ];
 
 const CategoryBanners = () => {
@@ -32,19 +32,27 @@ const CategoryBanners = () => {
                     const mappedDynamic = dynamicData.map(cat => ({
                         dbId: cat.id,
                         name: cat.name,
+                        type: cat.categoryType, // New field from backend
                         image: cat.imageUrl,
                         link: `/products?category=${cat.id}`
                     }));
 
                     // Smart Match: Try to pair dynamic categories with original slots
                     const result = ORIGINAL_CATEGORIES.map(slot => {
-                        const match = mappedDynamic.find(d => 
-                            slot.keywords.some(k => d.name.toLowerCase().includes(k))
+                        // 1. Try matching by categoryType (e.g., 'MEN' matches slot.id 'MEN')
+                        let match = mappedDynamic.find(d => 
+                            !d.used && d.type === slot.id
                         );
 
+                        // 2. Fallback: Try matching by keywords in the category name
+                        if (!match) {
+                            match = mappedDynamic.find(d => 
+                                !d.used && slot.keywords.some(k => d.name.toLowerCase().includes(k))
+                            );
+                        }
+
                         if (match) {
-                            // Mark as used so we don't repeat it
-                            match.used = true;
+                            match.used = true; // Mark as used so we don't repeat it in other slots
                             return {
                                 ...slot,
                                 id: match.dbId,
@@ -56,8 +64,6 @@ const CategoryBanners = () => {
                         return slot; // Keep original if no match
                     });
 
-                    // If there are dynamic categories that DIDN'T match any slot, 
-                    // we could replace the least important slots, but for now let's stick to matching.
                     setCategories(result);
                 }
             } catch (error) {
