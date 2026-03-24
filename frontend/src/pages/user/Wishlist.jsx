@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { BiTrash } from 'react-icons/bi';
 import UserSidebar from './UserSidebar';
 import styles from './Wishlist.module.css';
@@ -13,6 +13,7 @@ function Wishlist() {
     const { addToCart } = useCart();
     const [modalConfig, setModalConfig] = useState({ isOpen: false, item: null });
     const toast = useToast();
+    const navigate = useNavigate();
 
     const handleDeleteClick = (e, item) => {
         e.preventDefault();
@@ -29,7 +30,7 @@ function Wishlist() {
 
     const handleViewDetails = (e, item) => {
         e.preventDefault();
-        window.location.href = `/products/${item.id}`;
+        navigate(`/products/${item.id}`);
     };
 
     return (

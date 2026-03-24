@@ -1,13 +1,11 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { BiUser, BiPackage, BiHeart, BiMap, BiCreditCard, BiBell, BiCog } from 'react-icons/bi';
 import { useAuth } from '../../context/AuthContext';
 import styles from './UserSidebar.module.css';
 
 function UserSidebar() {
-    const location = useLocation();
     const { user } = useAuth();
-    const currentPath = location.pathname;
 
     const menuItems = [
         { name: 'Personal Information', path: '/user/profile', icon: <BiUser /> },
@@ -41,16 +39,16 @@ function UserSidebar() {
             </div>
 
             <nav className={styles.nav}>
-                <ul className={styles.naxList}>
+                <ul className={styles.navList}>
                     {menuItems.map((item) => (
                         <li key={item.name}>
-                            <Link
+                            <NavLink
                                 to={item.path}
-                                className={`${styles.navItem} ${currentPath === item.path ? styles.active : ''}`}
+                                className={({ isActive }) => `${styles.navItem} ${isActive ? styles.active : ''}`}
                             >
                                 <span className={styles.navIcon}>{item.icon}</span>
                                 {item.name}
-                            </Link>
+                            </NavLink>
                         </li>
                     ))}
                 </ul>

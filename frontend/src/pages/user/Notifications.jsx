@@ -61,10 +61,6 @@ function Notifications() {
         }
     };
 
-    if (loading && notifications.length === 0) {
-        return <div className={styles.loading}>Loading notifications...</div>;
-    }
-
     return (
         <div className={styles.pageContainer}>
             <h1 className={styles.pageTitle}>My Profile</h1>
@@ -73,53 +69,59 @@ function Notifications() {
                 <UserSidebar />
 
                 <div className={styles.mainContent}>
-                    <div className={styles.headerRow}>
-                        <h2>Notifications</h2>
-                        <div className={styles.headerActions}>
-                            {notifications.some(n => !n.isRead) && (
-                                <button onClick={markAllAsRead} className={styles.markAllBtn}>
-                                    Mark all as read
-                                </button>
-                            )}
-                            {notifications.length > 0 && (
-                                <button onClick={handleDeleteAll} className={styles.clearAllBtn}>
-                                    Clear all
-                                </button>
-                            )}
-                        </div>
-                    </div>
-
-                    <div className={styles.notificationList}>
-                        {notifications.length === 0 ? (
-                            <div className={styles.emptyState}>No notifications yet</div>
-                        ) : (
-                            notifications.map((note) => (
-                                <div
-                                    key={note.id}
-                                    className={`${styles.notificationItem} ${!note.isRead ? styles.unread : ''}`}
-                                    onClick={() => !note.isRead && markAsRead(note.id)}
-                                >
-                                    <div className={styles.iconWrapper}>
-                                        {renderIcon(note)}
-                                    </div>
-                                    <div className={styles.notifContent}>
-                                        <div className={styles.notifTitle}>{note.title}</div>
-                                        <div className={styles.notifDesc}>{note.content}</div>
-                                    </div>
-                                    <div className={styles.itemActions}>
-                                        <div className={styles.timestamp}>{formatTime(note.createdAt)}</div>
-                                        <button
-                                            className={styles.deleteBtn}
-                                            onClick={(e) => handleDelete(e, note.id)}
-                                            title="Delete"
-                                        >
-                                            <BiTrash />
+                    {loading && notifications.length === 0 ? (
+                        <div className={styles.loading}>Loading notifications...</div>
+                    ) : (
+                        <>
+                            <div className={styles.headerRow}>
+                                <h2>Notifications</h2>
+                                <div className={styles.headerActions}>
+                                    {notifications.some(n => !n.isRead) && (
+                                        <button onClick={markAllAsRead} className={styles.markAllBtn}>
+                                            Mark all as read
                                         </button>
-                                    </div>
+                                    )}
+                                    {notifications.length > 0 && (
+                                        <button onClick={handleDeleteAll} className={styles.clearAllBtn}>
+                                            Clear all
+                                        </button>
+                                    )}
                                 </div>
-                            ))
-                        )}
-                    </div>
+                            </div>
+
+                            <div className={styles.notificationList}>
+                                {notifications.length === 0 ? (
+                                    <div className={styles.emptyState}>No notifications yet</div>
+                                ) : (
+                                    notifications.map((note) => (
+                                        <div
+                                            key={note.id}
+                                            className={`${styles.notificationItem} ${!note.isRead ? styles.unread : ''}`}
+                                            onClick={() => !note.isRead && markAsRead(note.id)}
+                                        >
+                                            <div className={styles.iconWrapper}>
+                                                {renderIcon(note)}
+                                            </div>
+                                            <div className={styles.notifContent}>
+                                                <div className={styles.notifTitle}>{note.title}</div>
+                                                <div className={styles.notifDesc}>{note.content}</div>
+                                            </div>
+                                            <div className={styles.itemActions}>
+                                                <div className={styles.timestamp}>{formatTime(note.createdAt)}</div>
+                                                <button
+                                                    className={styles.deleteBtn}
+                                                    onClick={(e) => handleDelete(e, note.id)}
+                                                    title="Delete"
+                                                >
+                                                    <BiTrash />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
         </div>

@@ -1,7 +1,7 @@
 .pageContainer {
     padding: 3rem 5%;
     font-family: 'Inter', sans-serif;
-    background: #f8f9fb;
+    background: var(--bg-page);
     min-height: 100vh;
 }
 
@@ -10,7 +10,7 @@
     font-weight: 700;
     margin-bottom: 2rem;
     font-family: 'Playfair Display', serif;
-    color: #131118;
+    color: var(--text-main);
 }
 
 .contentWrapper {
@@ -21,10 +21,11 @@
 
 .mainContent {
     flex: 1;
-    background: #fff;
+    background: var(--bg-card);
     border-radius: 8px;
     padding: 2rem;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
 }
 
 .addNewBtn {
