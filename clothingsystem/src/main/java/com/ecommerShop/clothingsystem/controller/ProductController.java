@@ -39,6 +39,7 @@ public class ProductController {
             return ResponseEntity.ok(createdProduct);
         } catch (Exception e) {
             return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
+                    .header("X-Error-Message", e.getMessage())
                     .body(null); 
         }
     }
