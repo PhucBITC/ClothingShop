@@ -44,6 +44,7 @@ import AdminHelp from "./admin/pages/help/AdminHelp";
 import AdminBlogList from "./admin/pages/blog/AdminBlogList";
 import AdminBlogForm from "./admin/pages/blog/AdminBlogForm";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ChatBot from "./components/chat/ChatBot";
 
 function AppLayout() {
   const location = useLocation();
@@ -123,6 +124,7 @@ function AppLayout() {
         <Route path="*" element={<h2 className="text-center mt-5">404 - Page Not Found</h2>} />
       </Routes>
       {!isAuthPage && !isAdminPage && <Footer />}
+      {!isAuthPage && !isAdminPage && <ChatBot />}
     </>
   );
 }
