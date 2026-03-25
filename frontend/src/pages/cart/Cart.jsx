@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { BiTrash, BiCheck } from 'react-icons/bi';
 import { useCart } from '../../context/CartContext';
 import { useToast } from '../../components/common/toast/ToastContext';
+import { useAuth } from '../../context/AuthContext';
 import { useSettings } from '../../context/SettingsContext';
 import ConfirmModal from '../../components/common/modal/ConfirmModal';
 import styles from './Cart.module.css';
@@ -21,6 +22,7 @@ function Cart() {
     const [modalConfig, setModalConfig] = useState({ isOpen: false, type: '', data: null });
     const [isCheckingOut, setIsCheckingOut] = useState(false);
     const { formatPrice } = useSettings();
+    const { user } = useAuth();
     const toast = useToast();
 
     // Calculate totals based on selection
@@ -65,6 +67,9 @@ function Cart() {
             clearCart();
             setSelectedItems([]);
             toast.success("All products removed from cart");
+        } else if (type === 'LOGIN') {
+            toast.info("Redirecting to login...");
+            navigate('/login', { state: { from: '/checkout', selectedItems: data.selectedItems } });
         }
 
         setModalConfig({ isOpen: false, type: '', data: null });
@@ -240,6 +245,14 @@ function Cart() {
                         style={(selectedItems.length === 0 || isCheckingOut) ? { opacity: 0.6, cursor: 'not-allowed' } : {}}
                         disabled={selectedItems.length === 0 || isCheckingOut}
                         onClick={() => {
+                            if (!user) {
+                                setModalConfig({
+                                    isOpen: true,
+                                    type: 'LOGIN',
+                                    data: { selectedItems: selectedCartItems }
+                                });
+                                return;
+                            }
                             setIsCheckingOut(true);
                             setTimeout(() => navigate('/checkout', { state: { selectedItems: selectedCartItems } }), 600);
                         }}
@@ -280,9 +293,13 @@ function Cart() {
                         ? 'Are you sure you want to delete'
                         : modalConfig.type === 'MULTIPLE'
                             ? `Are you sure you want to delete ${modalConfig.data?.items.length} selected items`
-                            : 'Are you sure you want to clear your entire cart'
+                            : modalConfig.type === 'LOGIN'
+                                ? 'You need to be logged in to proceed to checkout'
+                                : 'Are you sure you want to clear your entire cart'
                 }
                 itemName={modalConfig.type === 'SINGLE' ? modalConfig.data?.name : ''}
+                confirmText={modalConfig.type === 'LOGIN' ? 'Login Now' : undefined}
+                confirmColor={modalConfig.type === 'LOGIN' ? '#D4A373' : undefined}
             />
         </div>
     );

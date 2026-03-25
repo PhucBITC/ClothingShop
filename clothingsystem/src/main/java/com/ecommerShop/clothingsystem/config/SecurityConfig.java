@@ -57,7 +57,7 @@ public class SecurityConfig {
                                                 .requestMatchers(org.springframework.http.HttpMethod.GET,
                                                                 "/api/products/**", "/api/categories/**",
                                                                 "/api/orders/{id}",
-                                                                "/api/blogs/**")
+                                                                "/api/blogs/**", "/api/blog-posts/**")
                                                 .permitAll()
                                                 .requestMatchers(org.springframework.http.HttpMethod.POST,
                                                                 "/api/contact")

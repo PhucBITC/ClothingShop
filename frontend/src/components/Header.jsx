@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { BiSearch, BiShoppingBag, BiChevronDown, BiTrash, BiMenu, BiX, BiUser, BiPackage, BiCog, BiLogOut, BiBell, BiLock, BiChevronLeft } from 'react-icons/bi';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import axios from '../api/axios';
 import { products } from '../data/mockData';
 import styles from './Header.module.css';
@@ -21,6 +21,7 @@ function Header() {
     const [selectedNote, setSelectedNote] = useState(null);
     const [categories, setCategories] = useState([]);
     const [showMegaMenu, setShowMegaMenu] = useState(false);
+    const navigate = useNavigate();
 
     const { wishlistItems } = useWishlist();
     const { cartItems, cartCount, subtotal, removeFromCart, removeMultipleFromCart, clearCart } = useCart();
@@ -55,7 +56,13 @@ function Header() {
             toast.success("Cart has been cleared");
         } else if (type === 'LOGOUT') {
             logout();
-            toast.success("Logged out successfully");
+            toast.success("Logged out", "You have been logged out successfully");
+            setModalConfig({ isOpen: false, type: '', data: null });
+            navigate('/login');
+            return;
+        } else if (type === 'LOGIN') {
+            toast.info("Redirecting to login...");
+            navigate('/login', { state: { from: '/checkout' } });
         }
 
         setModalConfig({ isOpen: false, type: '', data: null });
@@ -252,7 +259,22 @@ function Header() {
                                 </div>
                                 <div className={styles.miniCartActions}>
                                     <Link to="/cart" className={styles.viewCartBtn}>View Cart</Link>
-                                    <Link to="/checkout" className={styles.checkoutBtn}>Checkout</Link>
+                                    <button 
+                                        className={styles.checkoutBtn}
+                                        onClick={() => {
+                                            if (!user) {
+                                                setModalConfig({
+                                                    isOpen: true,
+                                                    type: 'LOGIN',
+                                                    data: null
+                                                });
+                                            } else {
+                                                navigate('/checkout');
+                                            }
+                                        }}
+                                    >
+                                        Checkout
+                                    </button>
                                 </div>
                             </div>
                         )}
@@ -389,7 +411,8 @@ function Header() {
                     modalConfig.type === 'CLEAR' ? 'Clear Cart' :
                         modalConfig.type === 'MULTIPLE' ? 'Delete Items' :
                             modalConfig.type === 'LOGOUT' ? 'Logout Confirmation' :
-                                'Confirm Delete'
+                                modalConfig.type === 'LOGIN' ? 'Login Required' :
+                                    'Confirm Delete'
                 }
                 message={
                     modalConfig.type === 'SINGLE'
@@ -398,14 +421,22 @@ function Header() {
                             ? `Are you sure you want to delete ${modalConfig.data?.items.length} selected items`
                             : modalConfig.type === 'LOGOUT'
                                 ? 'Are you sure you want to logout from your account'
-                                : 'Are you sure you want to clear your entire cart'
+                                : modalConfig.type === 'LOGIN'
+                                    ? 'You need to be logged in to proceed to checkout'
+                                    : 'Are you sure you want to clear your entire cart'
                 }
                 itemName={
                     modalConfig.type === 'SINGLE' ? modalConfig.data?.name :
                         modalConfig.type === 'LOGOUT' ? (user?.fullName || '') : ''
                 }
-                confirmText={modalConfig.type === 'LOGOUT' ? 'Logout' : 'Delete'}
-                confirmColor={modalConfig.type === 'LOGOUT' ? '#dc2626' : '#dc2626'}
+                confirmText={
+                    modalConfig.type === 'LOGOUT' ? 'Logout' : 
+                        modalConfig.type === 'LOGIN' ? 'Login Now' : 'Delete'
+                }
+                confirmColor={
+                    modalConfig.type === 'LOGOUT' ? '#dc2626' : 
+                        modalConfig.type === 'LOGIN' ? '#D4A373' : '#dc2626'
+                }
             />
         </header>
     );

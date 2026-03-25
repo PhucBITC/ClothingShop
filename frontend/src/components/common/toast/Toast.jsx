@@ -9,12 +9,12 @@ import {
 } from 'react-icons/hi';
 import styles from './Toast.module.css';
 
-const Toast = ({ type = 'info', title, message, duration = 3000, onClose }) => {
+const Toast = ({ id, type = 'info', title, message, duration = 3000, onClose }) => {
     useEffect(() => {
         if (type === 'loading') return;
 
         const timer = setTimeout(() => {
-            onClose();
+            onClose(id);
         }, duration);
 
         return () => {
@@ -49,7 +49,7 @@ const Toast = ({ type = 'info', title, message, duration = 3000, onClose }) => {
                     {title && <h4 className={styles.title}>{title}</h4>}
                     {message && <p className={styles.message}>{message}</p>}
                 </div>
-                <button className={styles.closeBtn} onClick={onClose}>
+                <button className={styles.closeBtn} onClick={() => onClose(id)}>
                     <HiXCircle />
                 </button>
             </div>

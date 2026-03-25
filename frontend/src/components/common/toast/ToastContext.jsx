@@ -70,7 +70,7 @@ export const ToastProvider = ({ children }) => {
                         <Toast
                             key={t.id}
                             {...t}
-                            onClose={() => removeToast(t.id)}
+                            onClose={removeToast}
                         />
                     ))}
                 </AnimatePresence>

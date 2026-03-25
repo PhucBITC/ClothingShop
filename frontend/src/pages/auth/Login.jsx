@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { FaEye, FaEyeSlash, FaGoogle, FaFacebook } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
@@ -9,6 +9,9 @@ import loginBg from '../../assets/login_bg.jpg';
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from || '/';
+  const selectedItems = location.state?.selectedItems || [];
   const { login } = useAuth();
   const toast = useToast();
   const [email, setEmail] = useState('');
@@ -96,7 +99,7 @@ const Login = () => {
           if (response.data.role === 'ADMIN') {
             navigate('/admin');
           } else {
-            navigate('/');
+            navigate(from, { state: { selectedItems }, replace: true });
           }
         }
       } else {
@@ -141,7 +144,7 @@ const Login = () => {
         if (response.data.role === 'ADMIN') {
           navigate('/admin');
         } else {
-          navigate('/');
+          navigate(from, { state: { selectedItems }, replace: true });
         }
       } else {
         setIsLoading(false);

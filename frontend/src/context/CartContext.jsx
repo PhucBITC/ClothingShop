@@ -1,26 +1,26 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import axios from '../api/axios';
+import { useAuth } from './AuthContext';
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
     const [cartItems, setCartItems] = useState(() => {
-        const token = localStorage.getItem('token');
-        if (!token) return [];
         const saved = localStorage.getItem('cart');
         return saved ? JSON.parse(saved) : [];
     });
-    const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
 
-    // Check login status periodically or when token changes manually
+    const { user } = useAuth();
+    const isLoggedIn = !!user;
+    const prevIsLoggedIn = useRef(isLoggedIn);
+
+    // Handle logout: clear cart state when logged in status changes from true to false
     useEffect(() => {
-        const checkLogin = () => {
-            const token = localStorage.getItem('token');
-            setIsLoggedIn(!!token);
-        };
-        window.addEventListener('storage', checkLogin);
-        return () => window.removeEventListener('storage', checkLogin);
-    }, []);
+        if (prevIsLoggedIn.current && !isLoggedIn) {
+            setCartItems([]);
+        }
+        prevIsLoggedIn.current = isLoggedIn;
+    }, [isLoggedIn]);
 
     const fetchCart = useCallback(async () => {
         try {
