@@ -67,20 +67,20 @@ public class AIChatServiceImpl implements AIChatService {
                     .collect(Collectors.joining("\n"));
 
             // 3. Lấy ngữ cảnh đơn hàng cá nhân (nếu đã đăng nhập)
-            String personalContext = "Khách hàng hiện tại chưa đăng nhập (Guest).";
+            String personalContext = "Current customer is not logged in (Guest).";
             if (currentUserEmail != null) {
                 com.ecommerShop.clothingsystem.model.User user = userRepository.findByEmail(currentUserEmail).orElse(null);
                 if (user != null) {
                     List<Order> userOrders = orderRepository.findByUserIdOrderByCreatedAtDesc(user.getId());
                     if (userOrders.isEmpty()) {
-                        personalContext = String.format("Khách hàng: %s. Hiện chưa có đơn hàng nào.", user.getFullName());
+                        personalContext = String.format("Customer: %s. No orders yet.", user.getFullName());
                     } else {
                         String orderSummary = userOrders.stream()
                                 .limit(5)
-                                .map(o -> String.format("- Mã DH: %s, Tổng: $%.2f, Trạng thái: %s", 
+                                .map(o -> String.format("- Order Code: %s, Total: $%.2f, Status: %s", 
                                     o.getOrderCode(), o.getTotalPrice(), o.getStatus()))
                                 .collect(Collectors.joining("\n"));
-                        personalContext = String.format("Khách hàng: %s. 5 đơn hàng gần nhất:\n%s", 
+                        personalContext = String.format("Customer: %s. 5 most recent orders:\n%s", 
                             user.getFullName(), orderSummary);
                     }
                 }
@@ -123,15 +123,15 @@ public class AIChatServiceImpl implements AIChatService {
                     .body(requestBody)
                     .retrieve()
                     .onStatus(status -> status.value() == 401, (request, responseSpec) -> {
-                        throw new RuntimeException("Lỗi xác thực: API Key Groq không hợp lệ!");
+                        throw new RuntimeException("Authentication Error: Invalid Groq API Key!");
                     })
                     .onStatus(status -> status.value() == 429, (request, responseSpec) -> {
-                        throw new RuntimeException("Hệ thống đang bận. Vui lòng thử lại sau vài giây!");
+                        throw new RuntimeException("System is busy. Please try again in a few seconds!");
                     })
                     .body(String.class);
 
             if (response == null) {
-                return new ChatResponse("AI tạm thời không phản hồi. Vui lòng thử lại sau!");
+                return new ChatResponse("AI is temporarily unresponsive. Please try again later!");
             }
 
             // 4. Parse kết quả (Định dạng OpenAI: choices[0].message.content)
@@ -150,7 +150,7 @@ public class AIChatServiceImpl implements AIChatService {
                 return new ChatResponse(errorMsg);
             }
             e.printStackTrace();
-            return new ChatResponse("L&Y Assistant hiện đang bận. Vui lòng thử lại sau ít phút!");
+            return new ChatResponse("L&Y Assistant is currently busy. Please try again in a few minutes!");
         }
     }
 }

@@ -10,7 +10,7 @@ const ChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([
-    { role: 'ai', content: 'Xin chào! Tôi là L&Y Assistant. Tôi có thể giúp gì cho bạn hôm nay?' }
+    { role: 'ai', content: 'Hello! I am L&Y Assistant. How can I help you today?' }
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
@@ -37,7 +37,7 @@ const ChatBot = () => {
       setMessages(prev => [...prev, aiMessage]);
     } catch (error) {
       console.error('Error sending message:', error);
-      setMessages(prev => [...prev, { role: 'ai', content: 'Xin lỗi, tôi gặp sự cố kết nối. Vui lòng thử lại sau!' }]);
+      setMessages(prev => [...prev, { role: 'ai', content: "Sorry, I'm having connection issues. Please try again later!" }]);
     } finally {
       setIsLoading(false);
     }
@@ -88,7 +88,7 @@ const ChatBot = () => {
               ))}
               {isLoading && (
                 <div className={styles.typingIndicator}>
-                  L&Y Assistant đang trả lời...
+                  L&Y Assistant is typing...
                 </div>
               )}
               <div ref={messagesEndRef} />
@@ -97,7 +97,7 @@ const ChatBot = () => {
             <div className={styles.chatInputArea}>
               <input 
                 type="text" 
-                placeholder="Nhập câu hỏi của bạn..." 
+                placeholder="Type your question..." 
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={handleKeyPress}
