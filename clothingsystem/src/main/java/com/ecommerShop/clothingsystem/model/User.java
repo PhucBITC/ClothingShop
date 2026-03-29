@@ -58,6 +58,12 @@ public class User implements UserDetails {
     @Column(name = "avatar_url")
     private String avatarUrl;
 
+    @Column(name = "try_on_count", columnDefinition = "int default 0")
+    private int tryOnCount = 0;
+
+    @Column(name = "last_try_on_date")
+    private LocalDateTime lastTryOnDate;
+
     // Constructors
     public User() {
     }
@@ -180,6 +186,22 @@ public class User implements UserDetails {
 
     public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
+    }
+
+    public int getTryOnCount() {
+        return tryOnCount;
+    }
+
+    public void setTryOnCount(int tryOnCount) {
+        this.tryOnCount = tryOnCount;
+    }
+
+    public LocalDateTime getLastTryOnDate() {
+        return lastTryOnDate;
+    }
+
+    public void setLastTryOnDate(LocalDateTime lastTryOnDate) {
+        this.lastTryOnDate = lastTryOnDate;
     }
 
     // --- Các phương thức bắt buộc của UserDetails ---

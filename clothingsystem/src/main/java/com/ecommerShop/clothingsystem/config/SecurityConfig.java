@@ -47,7 +47,7 @@ public class SecurityConfig {
                                         return cfg;
                                 }))
                                 .authorizeHttpRequests(auth -> auth
-                                                .requestMatchers("/api/auth/**", "/api/files/**",
+                                                .requestMatchers("/api/auth/**", "/api/files/**", "/images/**",
                                                                 "/api/orders/vnpay-return",
                                                                 "/api/orders/paypal-success",
                                                                 "/api/discounts/validate",
@@ -63,8 +63,12 @@ public class SecurityConfig {
                                                 .requestMatchers(org.springframework.http.HttpMethod.POST,
                                                                 "/api/contact")
                                                 .permitAll()
-                                                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/discounts").authenticated()
-                                                .requestMatchers("/api/discounts/**", "/api/notifications/**", "/api/admin/**").hasRole("ADMIN")
+                                                .requestMatchers(org.springframework.http.HttpMethod.GET,
+                                                                "/api/discounts")
+                                                .authenticated()
+                                                .requestMatchers("/api/discounts/**", "/api/notifications/**",
+                                                                "/api/admin/**")
+                                                .hasRole("ADMIN")
                                                 .anyRequest().authenticated())
                                 .exceptionHandling(exception -> exception
                                                 .authenticationEntryPoint(

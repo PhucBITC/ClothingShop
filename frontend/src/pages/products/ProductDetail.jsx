@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { BiHeart, BiCheck, BiChevronLeft, BiChevronRight, BiBox, BiDollarCircle, BiHeadphone, BiCreditCard } from 'react-icons/bi';
+import { HiSparkles } from 'react-icons/hi';
 import { FaStar } from 'react-icons/fa';
 import axios from '../../api/axios';
 import { useToast } from '../../components/common/toast/ToastContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { useCart } from '../../context/CartContext';
 import { useSettings } from '../../context/SettingsContext';
+import TryOnModal from '../../components/products/TryOnModal';
 import styles from './ProductDetail.module.css';
 
 const ProductDetail = () => {
@@ -26,6 +28,7 @@ const ProductDetail = () => {
     const [relatedProducts, setRelatedProducts] = useState([]);
     const [zoomStyle, setZoomStyle] = useState({});
     const [thumbIndex, setThumbIndex] = useState(0);
+    const [isTryOnOpen, setIsTryOnOpen] = useState(false);
 
     const handleMouseMove = (e) => {
         const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
@@ -83,7 +86,7 @@ const ProductDetail = () => {
 
         fetchProduct();
         window.scrollTo(0, 0);
-    }, [id, toast]);
+    }, [id]);
 
     if (loading) return <div className={styles.loadingContainer}>Loading product details...</div>;
     if (!product) return <div className={styles.errorContainer}>Product not found.</div>;
@@ -215,13 +218,13 @@ const ProductDetail = () => {
                     <div className={styles.headerRow}>
                         <h2 className={styles.categoryName}>{product.category?.name || 'Uncategorized'}</h2>
                         <div className={
-                            stockCount <= 0 ? styles.outOfStockBadge : 
-                            stockCount < 10 ? styles.lowStockBadge : 
-                            styles.stockBadge
+                            stockCount <= 0 ? styles.outOfStockBadge :
+                                stockCount < 10 ? styles.lowStockBadge :
+                                    styles.stockBadge
                         }>
-                            {stockCount <= 0 ? 'Out of Stock' : 
-                             stockCount < 10 ? `Only ${stockCount} left` : 
-                             `${stockCount} in stock`}
+                            {stockCount <= 0 ? 'Out of Stock' :
+                                stockCount < 10 ? `Only ${stockCount} left` :
+                                    `${stockCount} in stock`}
                         </div>
                     </div>
 
@@ -294,10 +297,10 @@ const ProductDetail = () => {
                     <div className={styles.actionRow}>
                         <div className={styles.quantityControl}>
                             <button className={styles.qtyBtn} onClick={() => setQuantity(q => Math.max(1, q - 1))}>-</button>
-                            <input 
-                                type="text" 
-                                className={styles.qtyInput} 
-                                value={quantity} 
+                            <input
+                                type="text"
+                                className={styles.qtyInput}
+                                value={quantity}
                                 onChange={handleQuantityChange}
                                 onBlur={handleBlur}
                             />
@@ -313,12 +316,26 @@ const ProductDetail = () => {
                         </button>
 
                         <button
+                            className={styles.tryOnBtn}
+                            onClick={() => setIsTryOnOpen(true)}
+                            title="AI Virtual Try-On"
+                        >
+                            <HiSparkles />
+                        </button>
+
+                        <button
                             className={`${styles.wishlistBtn} ${isInWishlist(product.id) ? styles.active : ''}`}
                             onClick={() => toggleWishlist(product)}
                         >
                             <BiHeart />
                         </button>
                     </div>
+
+                    <TryOnModal
+                        isOpen={isTryOnOpen}
+                        onClose={() => setIsTryOnOpen(false)}
+                        product={product}
+                    />
 
                     {/* Meta Info */}
                     <div className={styles.metaInfo}>
