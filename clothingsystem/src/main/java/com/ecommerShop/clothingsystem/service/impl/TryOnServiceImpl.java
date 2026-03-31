@@ -73,19 +73,28 @@ public class TryOnServiceImpl implements TryOnService {
 
         if (fitRoomApiKey == null || fitRoomApiKey.isBlank() || fitRoomApiKey.equals("YOUR_FITROOM_API_KEY_HERE")) {
             throw new RuntimeException(
-                    "FitRoom API Key chưa được cấu hình. Vui lòng kiểm tra file application.properties!");
+                    "FitRoom API Key not configured. Please check application.properties!");
         }
 
-        // Gọi FitRoom API (Mới)
+        // Call FitRoom API
         String resultImageUrl = callFitRoomAPI(product, request.getUserImage());
 
-        // Tăng đếm lượt thử
-        user.setTryOnCount(user.getTryOnCount() + 1);
+        // Update counts logic
+        if (user.getTryOnCount() < dailyLimit) {
+            // Use daily free limit
+            user.setTryOnCount(user.getTryOnCount() + 1);
+        } else if (user.getPurchasedCredits() > 0) {
+            // Use purchased credits
+            user.setPurchasedCredits(user.getPurchasedCredits() - 1);
+        }
+        
         user.setLastTryOnDate(LocalDateTime.now());
         userRepository.save(user);
 
-        int remaining = dailyLimit - user.getTryOnCount();
-        return new TryOnResponse(resultImageUrl, Math.max(0, remaining), "Ghép ảnh thành công!");
+        int remainingFree = Math.max(0, dailyLimit - user.getTryOnCount());
+        int totalRemaining = remainingFree + user.getPurchasedCredits();
+        
+        return new TryOnResponse(resultImageUrl, totalRemaining, "Try-On completed successfully!");
     }
 
     private void validateRateLimit(User user) {
@@ -96,8 +105,10 @@ public class TryOnServiceImpl implements TryOnService {
                 userRepository.save(user);
             }
         }
-        if (user.getTryOnCount() >= dailyLimit) {
-            throw new RuntimeException("LIMIT_REACHED: Bạn đã dùng hết lượt thử miễn phí hôm nay.");
+        
+        // If daily free limit reached AND no purchased credits
+        if (user.getTryOnCount() >= dailyLimit && user.getPurchasedCredits() <= 0) {
+            throw new RuntimeException("LIMIT_REACHED: You have used all your free tries for today.");
         }
     }
 
@@ -132,7 +143,7 @@ public class TryOnServiceImpl implements TryOnService {
         if (product.getCategory() == null)
             return "upper";
         String catName = product.getCategory().getName().toLowerCase();
-        System.out.println("Đang mapping cho category: " + catName);
+        System.out.println("Mapping category: " + catName);
 
         if (catName.contains("áo") || catName.contains("shirt") || catName.contains("top") || catName.contains("vest")) {
             return "upper";
@@ -150,68 +161,66 @@ public class TryOnServiceImpl implements TryOnService {
 
     private String translateError(String errorMsg) {
         if (errorMsg == null)
-            return "Lỗi không xác định từ máy chủ AI.";
+            return "Unknown error from AI server.";
         String lower = errorMsg.toLowerCase();
 
         if (lower.contains("no person") || lower.contains("person not found")) {
-            return "Không tìm thấy người trong ảnh. Vui lòng chụp rõ khuôn mặt và cơ thể của bạn.";
+            return "No person detected in the image. Please upload a clear photo showing your body.";
         }
         if (lower.contains("cloth not found") || lower.contains("garment not found")) {
-            return "Không nhận diện được sản phẩm quần áo. Vui lòng thử lại với sản phẩm khác.";
+            return "Could not detect the clothing item. Please try with another product.";
         }
         if (lower.contains("insufficient") || lower.contains("credit")) {
-            return "Hệ thống đang bảo trì hạn mức (Hết Credits). Vui lòng liên hệ Admin!";
+            return "The AI system is currently out of credits. Please contact the administrator.";
         }
         if (lower.contains("invalid cloth_type")) {
-            return "Sản phẩm này hiện chưa hỗ trợ thử đồ AI (Loại trang phục không khớp).";
+            return "This product type is not yet supported for AI try-on.";
         }
         if (lower.contains("body part") || lower.contains("missing")) {
-            return "Ảnh của bạn bị thiếu bộ phận cơ thể cần thiết (ví dụ: thiếu chân khi thử quần). Vui lòng chụp đầy đủ hơn.";
+            return "The image is missing necessary body parts (e.g., missing legs for pants). Please provide a more complete photo.";
         }
 
-        return "Máy chủ AI báo lỗi: " + errorMsg;
+        return "AI Server Error: " + errorMsg;
     }
 
     private String callFitRoomAPI(Product product, MultipartFile imageFile) {
         try {
-            System.out.println("--- Bắt đầu quy trình Thử đồ AI với FitRoom ---");
+            System.out.println("--- Starting FitRoom AI Try-On Process ---");
 
-            // 1. Tạo Task (POST /tasks)
+            // 1. Create Task (POST /tasks)
             String taskId = createFitRoomTask(product, imageFile);
-            System.out.println("Đã tạo Task ID: " + taskId);
+            System.out.println("Task created with ID: " + taskId);
 
-            // 2. Polling Loop để lấy kết quả
+            // 2. Polling Loop
             long startTime = System.currentTimeMillis();
             long maxDuration = (long) timeoutMinutes * 60 * 1000;
 
             while (System.currentTimeMillis() - startTime < maxDuration) {
                 Thread.sleep(pollInterval);
-                System.out.println("Đang kiểm tra trạng thái Task: " + taskId + "...");
+                System.out.println("Checking Task Status: " + taskId + "...");
 
                 JsonNode statusNode = getFitRoomTaskStatus(taskId);
                 String status = statusNode.get("status").asText();
 
                 if ("COMPLETED".equalsIgnoreCase(status)) {
                     String resultUrl = statusNode.get("download_signed_url").asText();
-                    System.out.println("--- Thử đồ THÀNH CÔNG! ---");
+                    System.out.println("--- Try-On SUCCESS! ---");
                     return resultUrl;
                 } else if ("FAILED".equalsIgnoreCase(status)) {
                     String error = statusNode.has("error_message") ? statusNode.get("error_message").asText() : "FAILED";
                     throw new RuntimeException(translateError(error));
                 }
-
-                // Nếu vẫn đang CREATED hoặc PROCESSING thì tiếp tục đợi
             }
 
-            throw new RuntimeException("Hết thời gian chờ (Timeout). Vui lòng thử lại sau ít phút!");
+            throw new RuntimeException("Wait time exceeded (Timeout). Please try again later.");
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException("Tiến trình bị gián đoạn.");
+            throw new RuntimeException("Process interrupted.");
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
-            throw new RuntimeException("Lỗi kết nối FitRoom API: " + e.getMessage());
+            throw new RuntimeException("FitRoom API Connection Error: " + e.getMessage());
         }
     }
 
@@ -221,7 +230,7 @@ public class TryOnServiceImpl implements TryOnService {
             productBytes = getProductImageBytes(product.getImages().get(0).getImageUrl());
         }
         if (productBytes == null) {
-            throw new RuntimeException("Không tìm thấy ảnh sản phẩm để thử.");
+            throw new RuntimeException("Could not find product image for try-on.");
         }
 
         String clothType = mapClothType(product);
@@ -268,9 +277,9 @@ public class TryOnServiceImpl implements TryOnService {
             JsonNode json = objectMapper.readTree(response.body());
             return json.get("task_id").asText();
         } else if (response.statusCode() == 402) {
-            throw new RuntimeException("Tài khoản FitRoom hết lượt thử (Credits).");
+            throw new RuntimeException("FitRoom account out of credits.");
         } else {
-            throw new RuntimeException("Lỗi tạo Task FitRoom (HTTP " + response.statusCode() + "): " + response.body());
+            throw new RuntimeException("FitRoom Task creation failed (HTTP " + response.statusCode() + "): " + response.body());
         }
     }
 
@@ -287,7 +296,7 @@ public class TryOnServiceImpl implements TryOnService {
         if (response.statusCode() == 200) {
             return objectMapper.readTree(response.body());
         } else {
-            throw new RuntimeException("Lỗi kiểm tra trạng thái Task: HTTP " + response.statusCode());
+            throw new RuntimeException("Error checking task status: HTTP " + response.statusCode());
         }
     }
 }

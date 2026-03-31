@@ -48,9 +48,9 @@ function PaymentResult() {
                 </h2>
                 <p className={styles.message}>{message}</p>
 
-                <div className={styles.actions}>
-                    <button className={styles.primaryBtn} onClick={() => navigate('/account/orders')}>View Orders</button>
-                    <button className={styles.secondaryBtn} onClick={() => navigate('/')}>Continue Shopping</button>
+                <div className={styles.buttonGroup}>
+                    <button className={styles.primaryBtn} onClick={() => navigate('/user/orders')}>View Orders</button>
+                    <button className={styles.secondaryBtn} onClick={() => navigate('/')}>Back to Shop</button>
                 </div>
             </div>
         </div>

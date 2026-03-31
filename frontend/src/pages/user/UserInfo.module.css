@@ -202,3 +202,27 @@
 .fullWidth {
     grid-column: span 2;
 }
+
+.tierBadge {
+    display: inline-block;
+    padding: 0.4rem 1rem;
+    background: #f0f7ff;
+    color: #007bff;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    border: 1px solid #cce5ff;
+    width: fit-content;
+    text-transform: uppercase;
+}
+
+.creditValue {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #28a745;
+    background: #e9f7ef;
+    padding: 0.4rem 1rem;
+    border-radius: 6px;
+    border: 1px solid #d4edda;
+    width: fit-content;
+}

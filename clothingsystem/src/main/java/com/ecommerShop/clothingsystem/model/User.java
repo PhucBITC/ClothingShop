@@ -64,6 +64,12 @@ public class User implements UserDetails {
     @Column(name = "last_try_on_date")
     private LocalDateTime lastTryOnDate;
 
+    @Column(name = "subscription_tier", columnDefinition = "varchar(20) default 'FREE'")
+    private String subscriptionTier = "FREE";
+
+    @Column(name = "purchased_credits", columnDefinition = "int default 0")
+    private int purchasedCredits = 0;
+
     // Constructors
     public User() {
     }
@@ -202,6 +208,22 @@ public class User implements UserDetails {
 
     public void setLastTryOnDate(LocalDateTime lastTryOnDate) {
         this.lastTryOnDate = lastTryOnDate;
+    }
+
+    public String getSubscriptionTier() {
+        return subscriptionTier;
+    }
+
+    public void setSubscriptionTier(String subscriptionTier) {
+        this.subscriptionTier = subscriptionTier;
+    }
+
+    public int getPurchasedCredits() {
+        return purchasedCredits;
+    }
+
+    public void setPurchasedCredits(int purchasedCredits) {
+        this.purchasedCredits = purchasedCredits;
     }
 
     // --- Các phương thức bắt buộc của UserDetails ---

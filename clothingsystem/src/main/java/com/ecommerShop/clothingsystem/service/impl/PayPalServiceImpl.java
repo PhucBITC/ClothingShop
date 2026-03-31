@@ -41,6 +41,11 @@ public class PayPalServiceImpl implements PayPalService {
 
     @Override
     public String createPaymentUrl(Order order) {
+        return createPaymentUrl(order, "http://localhost:8080/api/orders/paypal-success?orderId=" + order.getId());
+    }
+
+    @Override
+    public String createPaymentUrl(Order order, String customReturnUrl) {
         OrderRequest orderRequest = new OrderRequest();
         orderRequest.checkoutPaymentIntent("CAPTURE");
 
@@ -52,7 +57,7 @@ public class PayPalServiceImpl implements PayPalService {
         orderRequest.purchaseUnits(purchaseUnits);
 
         ApplicationContext applicationContext = new ApplicationContext()
-                .returnUrl("http://localhost:8080/api/orders/paypal-success?orderId=" + order.getId())
+                .returnUrl(customReturnUrl)
                 .cancelUrl("http://localhost:5173/checkout/payment-result?method=paypal&status=cancel");
         orderRequest.applicationContext(applicationContext);
 
@@ -67,13 +72,9 @@ public class PayPalServiceImpl implements PayPalService {
                         .orElseThrow(() -> new RuntimeException("No approval link"))
                         .href();
             } else {
-                System.err.println("PayPal Error Status: " + response.statusCode());
-                System.err.println("PayPal Error Response: " + response.result());
                 throw new RuntimeException("PayPal order creation failed with status: " + response.statusCode());
             }
         } catch (IOException e) {
-            System.err.println("PayPal IOException: " + e.getMessage());
-            e.printStackTrace();
             throw new RuntimeException("PayPal order creation failed: " + e.getMessage(), e);
         }
     }

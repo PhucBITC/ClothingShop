@@ -50,6 +50,8 @@ public class SecurityConfig {
                                                 .requestMatchers("/api/auth/**", "/api/files/**", "/images/**",
                                                                 "/api/orders/vnpay-return",
                                                                 "/api/orders/paypal-success",
+                                                                "/api/recharge/vnpay-return",
+                                                                "/api/recharge/paypal-success",
                                                                 "/api/discounts/validate",
                                                                 "/api/admin/settings/public",
                                                                 "/api/ai/**",

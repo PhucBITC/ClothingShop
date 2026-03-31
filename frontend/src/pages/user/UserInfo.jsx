@@ -190,11 +190,20 @@ function UserInfo() {
                             <label className={styles.label}>Email Address</label>
                             <input type="email" className={styles.input} defaultValue={user.email} readOnly />
                         </div>
-{/* 
-                        <div className={`${styles.formGroup} ${styles.fullWidth}`}>
-                            <label className={styles.label}>Address</label>
-                            <input type="text" className={styles.input} defaultValue="Address management in separate tab" readOnly />
-                        </div> */}
+
+                        <div className={styles.formGroup}>
+                            <label className={styles.label}>Subscription Tier</label>
+                            <div className={styles.tierBadge}>
+                                {user.subscriptionTier || 'FREE'}
+                            </div>
+                        </div>
+
+                        <div className={styles.formGroup}>
+                            <label className={styles.label}>AI Try-On Credits</label>
+                            <div className={styles.creditValue}>
+                                {user.purchasedCredits || 0} credits
+                            </div>
+                        </div>
                     </form>
 
                 </div>
