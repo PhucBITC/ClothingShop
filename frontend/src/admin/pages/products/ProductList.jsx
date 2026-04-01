@@ -54,9 +54,8 @@ const ProductList = () => {
 
     useEffect(() => {
         CATEGORY_TYPES.forEach(type => {
-            if (expandedGroups.has(type)) {
-                fetchProductsByType(type);
-            }
+            const size = expandedGroups.has(type) ? 5 : 0;
+            fetchProductsByType(type, 0, size);
         });
     }, [expandedGroups, filters]);
 
@@ -69,7 +68,7 @@ const ProductList = () => {
         }
     };
 
-    const fetchProductsByType = async (type, pageNum = 0) => {
+    const fetchProductsByType = async (type, pageNum = 0, pageSize = 5) => {
         try {
             setGroupData(prev => ({
                 ...prev,
@@ -78,7 +77,7 @@ const ProductList = () => {
 
             const params = {
                 page: pageNum,
-                size: 5,
+                size: pageSize,
                 keyword: filters.keyword,
                 categoryId: filters.categoryId,
                 categoryType: type,
