@@ -52,12 +52,24 @@ const ProductList = () => {
         fetchCategories();
     }, []);
 
+    // 1. Initial counts fetch or when filters change
     useEffect(() => {
         CATEGORY_TYPES.forEach(type => {
-            const size = expandedGroups.has(type) ? 5 : 0;
+            const size = expandedGroups.has(type) ? 5 : 1;
             fetchProductsByType(type, 0, size);
         });
-    }, [expandedGroups, filters]);
+    }, [filters]);
+
+    // 2. Fetch products for newly expanded groups
+    useEffect(() => {
+        expandedGroups.forEach(type => {
+            const data = groupData[type];
+            // If it was only fetched for count (size <= 1) or is empty
+            if (data?.totalElements > 0 && (!data.products || data.products.length <= 1) && !data.loading) {
+                fetchProductsByType(type, 0, 5);
+            }
+        });
+    }, [expandedGroups]);
 
     const fetchCategories = async () => {
         try {
