@@ -38,6 +38,7 @@ public class ProductController {
             Product createdProduct = productService.createProduct(productRequest, files);
             return ResponseEntity.ok(createdProduct);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
                     .header("X-Error-Message", e.getMessage())
                     .body(null); 
@@ -54,6 +55,7 @@ public class ProductController {
             Product updatedProduct = productService.updateProduct(id, productRequest, files);
             return ResponseEntity.ok(updatedProduct);
         } catch (RuntimeException e) {
+            e.printStackTrace();
             return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
                     .header("X-Error-Message", e.getMessage())
                     .body(null); 

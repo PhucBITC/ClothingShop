@@ -265,6 +265,18 @@ const ProductForm = () => {
             return;
         }
 
+        // Check for duplicate variants (same size and color)
+        const variantSet = new Set();
+        for (const v of variants) {
+            const key = `${v.size}-${v.color}`;
+            if (variantSet.has(key)) {
+                toast.error("Duplicate Variants", `You have multiple variants with size "${v.size}" and color "${v.color}".`);
+                setLoading(false);
+                return;
+            }
+            variantSet.add(key);
+        }
+
         try {
             const productData = {
                 ...formData,

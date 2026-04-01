@@ -44,6 +44,7 @@ public class SecurityConfig {
                                         cfg.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "PATCH",
                                                         "HEAD", "OPTIONS"));
                                         cfg.setAllowedHeaders(java.util.List.of("*"));
+                                        cfg.setExposedHeaders(java.util.List.of("X-Error-Message"));
                                         return cfg;
                                 }))
                                 .authorizeHttpRequests(auth -> auth
