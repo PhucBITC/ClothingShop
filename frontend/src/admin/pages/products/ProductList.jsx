@@ -43,7 +43,7 @@ const ProductList = () => {
     const [isProcessing, setIsProcessing] = useState(false);
 
     // Grouping State
-    const [expandedGroups, setExpandedGroups] = useState(new Set([CATEGORY_TYPES[0]]));
+    const [expandedGroups, setExpandedGroups] = useState(new Set());
     const [groupData, setGroupData] = useState({}); // { TYPE: { products: [], page: 0, totalPages: 0, totalElements: 0, loading: false } }
 
     const navigate = useNavigate();
