@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/categories") // Đường dẫn gốc cho API này
+@RequestMapping("/api/categories")
 public class CategoryController {
 
     @Autowired
@@ -29,21 +29,27 @@ public class CategoryController {
         return categoryRepository.findAll();
     }
 
-    // NEW: Lấy 7 danh mục "hot" nhất để làm banner trang chủ
+    // NEW: Lấy các danh mục được gắn tag BANNER để làm banner trang chủ
     @GetMapping("/banners")
     public List<CategoryBannerDTO> getCategoryBanners() {
+        // Chỉ lấy những danh mục có sản phẩm mang tag BANNER
         return categoryRepository.findTopCategoriesBySales().stream()
                 .map(cat -> {
                     String topImage = productRepository.findTopProductImageByCategoryId(cat.getId());
                     
-                    // Ensure absolute URL for dynamic images
-                    if (topImage != null && !topImage.startsWith("http") && !topImage.startsWith("/api/files/")) {
-                        topImage = "/api/files/" + topImage;
+                    // Xử lý URL tuyệt đối cho hình ảnh
+                    if (topImage != null && !topImage.startsWith("http")) {
+                        String cleanPath = topImage.startsWith("/") ? topImage.substring(1) : topImage;
+                        if (cleanPath.startsWith("api/files/")) {
+                             topImage = "http://localhost:8080/" + cleanPath;
+                        } else {
+                             topImage = "http://localhost:8080/api/files/" + cleanPath;
+                        }
                     }
 
                     long count = productRepository.countByCategoryId(cat.getId());
                     
-                    // Fallback image if category has no products
+                    // Fallback nếu không tìm thấy ảnh (mặc dù query đã đảm bảo)
                     if (topImage == null || topImage.isEmpty()) {
                         topImage = "https://placehold.co/600x400?text=Product+Image";
                     }
@@ -91,9 +97,7 @@ public class CategoryController {
     public ResponseEntity<?> deleteCategory(@PathVariable Long id) {
         return categoryRepository.findById(id)
                 .map(category -> {
-                    // Cập nhật các sản phẩm liên quan bằng batch update
                     productRepository.unlinkProductsFromCategory(id);
-
                     categoryRepository.delete(category);
                     return ResponseEntity.ok().build();
                 }).orElse(ResponseEntity.notFound().build());

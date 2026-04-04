@@ -14,26 +14,17 @@ import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
-    // Bạn có thể thêm các hàm tìm kiếm nhanh ở đây, ví dụ:
+    
     List<Product> findByCategoryId(Long categoryId);
 
     Optional<Product> findBySlug(String slug);
 
     boolean existsBySlug(String slug);
 
+    // Lấy ảnh của sản phẩm có tag BANNER trong danh mục
     @Query(value = "SELECT pi.image_url FROM product_images pi " +
-            "JOIN ( " +
-            "    SELECT p.id, " +
-            "           (CASE WHEN p.tags LIKE '%BANNER%' THEN 1 ELSE 0 END) as is_banner, " +
-            "           SUM(COALESCE(oi.quantity,0)) as total_sales " +
-            "    FROM products p " +
-            "    LEFT JOIN product_variants pv ON p.id = pv.product_id " +
-            "    LEFT JOIN order_items oi ON pv.id = oi.product_variant_id " +
-            "    WHERE p.category_id = :categoryId " +
-            "    GROUP BY p.id " +
-            "    ORDER BY is_banner DESC, total_sales DESC " +
-            "    LIMIT 1 " +
-            ") best_product ON pi.product_id = best_product.id " +
+            "JOIN products p ON pi.product_id = p.id " +
+            "WHERE p.category_id = :categoryId AND UPPER(p.tags) LIKE '%BANNER%' " +
             "ORDER BY pi.is_primary DESC " +
             "LIMIT 1", nativeQuery = true)
     String findTopProductImageByCategoryId(@Param("categoryId") Long categoryId);

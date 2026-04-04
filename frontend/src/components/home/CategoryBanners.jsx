@@ -8,7 +8,7 @@ import api from '../../api/axios';
 const PLACEHOLDER_IMAGE = "https://placehold.co/600x400?text=Product+Image";
 
 const ORIGINAL_CATEGORIES = [
-    { id: 'WOMEN', title: "WOMEN'S COLLECTIONSSSS ", image: PLACEHOLDER_IMAGE, link: "/products?category=WOMEN", keywords: ['women', 'nữ', 'váy', 'đầm', 'dress', 'gown', 'top', 'shirt'] },
+    { id: 'WOMEN', title: "Tops & Shirts", image: PLACEHOLDER_IMAGE, link: "/products?category=WOMEN", keywords: ['women', 'nữ', 'váy', 'đầm', 'dress', 'gown', 'top', 'shirt'] },
     { id: 'MEN', title: "MEN'S COLLECTION", image: PLACEHOLDER_IMAGE, link: "/products?category=MEN", keywords: ['men', 'nam', 'shirt', 'polo', 'trousers', 'pants', 'jackets', 'coats', 'suits', 'blazers'] },
     { id: 'KIDS', title: "KIDS' COLLECTION", image: PLACEHOLDER_IMAGE, link: "/products?category=KIDS", keywords: ['kids', 'trẻ em', 'bé', 'casual', 'wear', 'bottoms'] },
     { id: 'FOOTWEAR', title: "Sneakers", image: PLACEHOLDER_IMAGE, link: "/products?category=FOOTWEAR", keywords: ['footwear', 'giày', 'shoes', 'sneakers'] },
@@ -20,6 +20,14 @@ const CategoryBanners = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [categories, setCategories] = useState(ORIGINAL_CATEGORIES);
     const [loading, setLoading] = useState(true);
+
+    const getBannerImage = (imageUrl) => {
+        if (!imageUrl) return PLACEHOLDER_IMAGE;
+        if (imageUrl.startsWith('http')) return imageUrl;
+        const cleanPath = imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl;
+        return `http://localhost:8080/api/files/${cleanPath}`;
+    };
+
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -108,7 +116,7 @@ const CategoryBanners = () => {
                             <div key={cat.dbId || cat.id} className={styles.banner}>
                                 <Link to={cat.link} className={styles.bannerLink}>
                                     <img
-                                        src={cat.image}
+                                        src={getBannerImage(cat.image)}
                                         alt={cat.title || "Category Collection"}
                                         className={styles.image}
                                         onError={handleImageError}
