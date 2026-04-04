@@ -10,20 +10,27 @@ const HeroSection = () => {
     const [slides, setSlides] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    const getHeroImage = (imageUrl) => {
+        if (!imageUrl) return "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=1600&q=80";
+        if (imageUrl.startsWith('http')) return imageUrl;
+        const cleanPath = imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl;
+        return `http://localhost:8080/api/files/${cleanPath}`;
+    };
+
     useEffect(() => {
         const fetchHeroData = async () => {
             try {
-                // Priority 1: Try fetching products with the 'HERO' tag
+                // Priority 1: Try fetching products with the 'HERO' tag (7 items)
                 const heroTagResponse = await api.get('/products/search', {
-                    params: { tag: 'HERO', size: 3, sortBy: 'createdAt', direction: 'desc', status: 'ACTIVE' }
+                    params: { tag: 'HERO', size: 7, sortBy: 'createdAt', direction: 'desc', status: 'ACTIVE' }
                 });
 
                 let results = heroTagResponse.data?.content || [];
 
-                // Priority 2: Fallback to the latest 3 products if no HERO products are found
+                // Priority 2: Fallback (7 items)
                 if (results.length === 0) {
                     const latestResponse = await api.get('/products/search', {
-                        params: { size: 3, sortBy: 'createdAt', direction: 'desc', status: 'ACTIVE' }
+                        params: { size: 7, sortBy: 'createdAt', direction: 'desc', status: 'ACTIVE' }
                     });
                     results = latestResponse.data?.content || [];
                 }
@@ -31,7 +38,7 @@ const HeroSection = () => {
                 if (results.length > 0) {
                     const dynamicSlides = results.map(product => ({
                         id: product.id,
-                        image: product.images?.[0]?.imageUrl || "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=1600&q=80",
+                        image: getHeroImage(product.images?.[0]?.imageUrl),
                         title: product.name.toUpperCase(),
                         subtitle: product.category?.name?.toUpperCase() || "NEW COLLECTION",
                         offer: product.basePrice ? `FROM $${product.basePrice.toLocaleString()}` : "EXCLUSIVE DEAL",
@@ -49,6 +56,16 @@ const HeroSection = () => {
         fetchHeroData();
     }, []);
 
+    // Auto-advance logic
+    useEffect(() => {
+        if (slides.length > 0) {
+            const timer = setInterval(() => {
+                setCurrentIndex((prev) => (prev + 1) % slides.length);
+            }, 5000);
+            return () => clearInterval(timer);
+        }
+    }, [slides.length]);
+
     const nextSlide = () => {
         if (slides.length === 0) return;
         setCurrentIndex((prev) => (prev + 1) % slides.length);
@@ -58,6 +75,7 @@ const HeroSection = () => {
         if (slides.length === 0) return;
         setCurrentIndex((prev) => (prev - 1 + slides.length) % slides.length);
     };
+
 
     if (loading) return <div className={styles.loading}>Loading Hero...</div>;
     if (slides.length === 0) return null;

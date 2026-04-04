@@ -1,6 +1,6 @@
 .heroContainer {
-    padding: 0 5%;
-    margin-top: 1rem;
+    padding: 0 2rem; /* Đồng bộ với padding của Header */
+    margin-top: 1.5rem;
     background: var(--bg-page);
     transition: all 0.3s ease;
 }
@@ -8,45 +8,49 @@
 .sliderWrapper {
     position: relative;
     width: 100%;
-    max-width: 1400px;
+    max-width: 1400px; /* Mở rộng để thẳng hàng với Header */
     margin: 0 auto;
     overflow: hidden;
-    /* Distinct Ivy Moda rounded corners: Top-Left and Bottom-Right */
-    border-radius: 60px 0 60px 0;
+    border-radius: 30px; /* Bo góc đồng đều */
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
 .bannerItem {
     position: relative;
     width: 100%;
-    aspect-ratio: 21 / 9;
-    min-height: 400px;
+    aspect-ratio: 2.5 / 1;
+    max-height: 400px;
+    background: #ffffff; /* Chuyển sang trắng tinh */
+    overflow: hidden;
 }
 
 .slideLink {
-    display: block;
+    display: flex; /* Chia đôi không gian */
+    align-items: center;
+    justify-content: space-between;
     width: 100%;
     height: 100%;
     text-decoration: none;
+    padding: 0 8%;
 }
 
 .heroImage {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    width: 45%;
+    height: 80%;
+    object-fit: contain;
+    object-position: center;
+    mix-blend-mode: multiply; /* Kỹ thuật giúp ảnh hòa tan hoàn toàn vào nền trắng */
 }
 
+
 .overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
+    position: relative; /* Không còn absolute để nằm bên phải ảnh */
+    width: 50%;
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    padding-right: 15%;
-    background: linear-gradient(90deg, transparent 40%, rgba(0, 0, 0, 0.05) 100%);
+    background: transparent; /* Loại bỏ gradient vì đã chia đôi */
 }
 
 .content {
