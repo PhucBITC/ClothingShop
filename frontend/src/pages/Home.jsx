@@ -11,6 +11,7 @@ import styles from './Home.module.css';
 
 function Home() {
   const { settings } = useSettings();
+  const [activeTab, setActiveTab] = useState('ALL');
   const [products, setProducts] = useState([]);
   const [blogPosts, setBlogPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,14 +21,19 @@ function Home() {
     const fetchHomeData = async () => {
       try {
         setLoading(true);
+
+        const params = {
+          status: 'ACTIVE',
+          size: activeTab === 'ALL' ? 15 : 10,
+        };
+
+        if (activeTab !== 'ALL') {
+          params.categoryType = activeTab;
+        }
+
         // Fetch products and blog posts in parallel
         const [prodRes, blogRes] = await Promise.all([
-          axios.get('/products/search', { 
-            params: { 
-              status: 'ACTIVE', 
-              size: parseInt(settings.items_per_page) || 12 
-            } 
-          }),
+          axios.get('/products/search', { params }),
           axios.get('/blog-posts/latest', { params: { limit: 3 } })
         ]);
 
@@ -44,7 +50,8 @@ function Home() {
       }
     };
     fetchHomeData();
-  }, [settings.items_per_page]);
+  }, [activeTab]);
+
 
   const fadeInUp = {
     initial: { opacity: 0, y: 30 },
@@ -92,6 +99,8 @@ function Home() {
               title="Product News" 
               products={products} 
               loading={loading} 
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
             />
           </motion.div>
 

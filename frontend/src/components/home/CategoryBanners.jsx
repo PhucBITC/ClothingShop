@@ -8,13 +8,12 @@ import api from '../../api/axios';
 const PLACEHOLDER_IMAGE = "https://placehold.co/600x400?text=Product+Image";
 
 const ORIGINAL_CATEGORIES = [
-    { id: 'WOMEN', title: "WOMEN'S COLLECTION", image: PLACEHOLDER_IMAGE, link: "/products?category=WOMEN", keywords: ['women', 'nữ', 'váy', 'đầm', 'dress', 'gown', 'top', 'shirt'] },
+    { id: 'WOMEN', title: "WOMEN'S COLLECTIONSSSS ", image: PLACEHOLDER_IMAGE, link: "/products?category=WOMEN", keywords: ['women', 'nữ', 'váy', 'đầm', 'dress', 'gown', 'top', 'shirt'] },
     { id: 'MEN', title: "MEN'S COLLECTION", image: PLACEHOLDER_IMAGE, link: "/products?category=MEN", keywords: ['men', 'nam', 'shirt', 'polo', 'trousers', 'pants', 'jackets', 'coats', 'suits', 'blazers'] },
     { id: 'KIDS', title: "KIDS' COLLECTION", image: PLACEHOLDER_IMAGE, link: "/products?category=KIDS", keywords: ['kids', 'trẻ em', 'bé', 'casual', 'wear', 'bottoms'] },
-    { id: 'FOOTWEAR', title: "PREMIUM FOOTWEAR", image: PLACEHOLDER_IMAGE, link: "/products?category=FOOTWEAR", keywords: ['footwear', 'giày', 'shoes', 'sneakers'] },
-    { id: 'ACCESSORIES', title: "LUXURY ACCESSORIES", image: PLACEHOLDER_IMAGE, link: "/products?category=ACCESSORIES", keywords: ['accessories', 'phụ kiện', 'túi', 'ví', 'bag', 'wallet'] },
-    { id: 'NEW_ARRIVALS', title: "NEW ARRIVALS 2024", image: PLACEHOLDER_IMAGE, link: "/products?category=NEW_ARRIVALS", keywords: ['new', 'mới'] },
-    { id: 'BEST_SELLERS', title: "BEST SELLERS", image: PLACEHOLDER_IMAGE, link: "/products", keywords: ['best', 'bán chạy', 'hot'] }
+    { id: 'FOOTWEAR', title: "Sneakers", image: PLACEHOLDER_IMAGE, link: "/products?category=FOOTWEAR", keywords: ['footwear', 'giày', 'shoes', 'sneakers'] },
+    { id: 'ACCESSORIES', title: "Bags & Totes", image: PLACEHOLDER_IMAGE, link: "/products?category=ACCESSORIES", keywords: ['accessories', 'phụ kiện', 'túi', 'ví', 'bag', 'wallet'] },
+    { id: 'TRADITIONAL_WEAR', title: "Women's Cultural Wear", image: PLACEHOLDER_IMAGE, link: "/products?category=TRADITIONAL_WEAR", keywords: ['traditional', 'cổ truyền', 'hot'] }
 ];
 
 const CategoryBanners = () => {
@@ -27,7 +26,7 @@ const CategoryBanners = () => {
             try {
                 const response = await api.get('/categories/banners');
                 const dynamicData = response.data || [];
-                
+
                 if (dynamicData.length > 0) {
                     const mappedDynamic = dynamicData.map(cat => ({
                         dbId: cat.id,
@@ -40,13 +39,13 @@ const CategoryBanners = () => {
                     // Smart Match: Try to pair dynamic categories with original slots
                     const result = ORIGINAL_CATEGORIES.map(slot => {
                         // 1. Try matching by categoryType (e.g., 'MEN' matches slot.id 'MEN')
-                        let match = mappedDynamic.find(d => 
+                        let match = mappedDynamic.find(d =>
                             !d.used && d.type === slot.id
                         );
 
                         // 2. Fallback: Try matching by keywords in the category name
                         if (!match) {
-                            match = mappedDynamic.find(d => 
+                            match = mappedDynamic.find(d =>
                                 !d.used && slot.keywords.some(k => d.name.toLowerCase().includes(k))
                             );
                         }
@@ -108,10 +107,10 @@ const CategoryBanners = () => {
                         {displayCategories.map((cat) => (
                             <div key={cat.dbId || cat.id} className={styles.banner}>
                                 <Link to={cat.link} className={styles.bannerLink}>
-                                    <img 
-                                        src={cat.image} 
-                                        alt={cat.title || "Category Collection"} 
-                                        className={styles.image} 
+                                    <img
+                                        src={cat.image}
+                                        alt={cat.title || "Category Collection"}
+                                        className={styles.image}
                                         onError={handleImageError}
                                     />
                                     <div className={styles.overlay}>

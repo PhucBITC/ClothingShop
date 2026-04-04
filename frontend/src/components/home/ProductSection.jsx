@@ -5,9 +5,7 @@ import ProductCard from './ProductCard';
 import SkeletonCard from './SkeletonCard';
 import styles from './ProductSection.module.css';
 
-const ProductSection = ({ title, products, loading }) => {
-    const [activeTab, setActiveTab] = useState('ALL');
-
+const ProductSection = ({ title, products, loading, activeTab, onTabChange }) => {
     const tabs = [
         { id: 'ALL', label: 'All' },
         { id: 'WOMEN', label: 'Women' },
@@ -19,14 +17,6 @@ const ProductSection = ({ title, products, loading }) => {
         { id: 'NEW_ARRIVALS', label: 'New Arrivals' }
     ];
 
-    const filteredProducts = activeTab === 'ALL'
-        ? products
-        : products.filter(p => {
-            const catName = p.category?.name?.toUpperCase() || '';
-            const catType = p.category?.categoryType?.toUpperCase() || '';
-            return catName === activeTab || catType === activeTab;
-        });
-
     const getViewAllLink = () => {
         switch (activeTab) {
             case 'ALL':
@@ -37,6 +27,7 @@ const ProductSection = ({ title, products, loading }) => {
                 return `/products?category=${activeTab}`;
         }
     };
+
 
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -65,7 +56,7 @@ const ProductSection = ({ title, products, loading }) => {
                         <button
                             key={tab.id}
                             className={`${styles.tabBtn} ${activeTab === tab.id ? styles.activeTab : ''}`}
-                            onClick={() => setActiveTab(tab.id)}
+                            onClick={() => onTabChange(tab.id)}
                         >
                             {tab.label}
                         </button>
@@ -87,8 +78,8 @@ const ProductSection = ({ title, products, loading }) => {
                                 <SkeletonCard />
                             </motion.div>
                         ))
-                    ) : filteredProducts.length > 0 ? (
-                        filteredProducts.map((product) => (
+                    ) : products.length > 0 ? (
+                        products.map((product) => (
                             <motion.div
                                 key={`p-${product.id}`}
                                 initial={{ opacity: 0, y: 20 }}
