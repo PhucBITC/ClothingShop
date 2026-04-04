@@ -13,8 +13,8 @@
 .sliderGrid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    height: 500px;
+    gap: 20px; /* Tăng khoảng cách giữa 2 banner */
+    height: 420px; /* Hạ độ cao xuống để tỷ lệ cân đối hơn */
     width: 100%;
 }
 
@@ -23,6 +23,8 @@
     height: 100%;
     overflow: hidden;
     cursor: pointer;
+    background: #ffffff; /* Nền trắng để hòa quyện */
+    border-radius: 12px; /* Bo góc nhẹ cho hiện đại */
 }
 
 .bannerLink {
@@ -35,8 +37,10 @@
 .image {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain; /* Hiển thị trọn vẹn sản phẩm, không bị cắt */
+    mix-blend-mode: multiply; /* Hòa tan nền ảnh vào nền trắng */
     transition: transform 1.2s ease;
+    padding: 1rem; /* Tạo khoảng trống để ảnh không sát mép */
 }
 
 .banner:hover .image {
@@ -48,13 +52,13 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    padding: 3rem;
-    background: linear-gradient(transparent, rgba(0, 0, 0, 0.5));
+    padding: 2rem;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.4), transparent);
     color: #fff;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 1rem;
+    gap: 0.5rem;
 }
 
 .title {
