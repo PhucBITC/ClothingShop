@@ -21,6 +21,7 @@ function Header() {
     const [selectedNote, setSelectedNote] = useState(null);
     const [categories, setCategories] = useState([]);
     const [showMegaMenu, setShowMegaMenu] = useState(false);
+    const [isMobileShopOpen, setIsMobileShopOpen] = useState(false);
     const navigate = useNavigate();
 
     const { wishlistItems } = useWishlist();
@@ -140,21 +141,51 @@ function Header() {
 
             {/* Navigation */}
             <nav className={`${styles.nav} ${isMenuOpen ? styles.navOpen : ''}`}>
-                <div className={styles.navItem}>
-                    <NavLink to="/" className={getNavLinkClass}><span title="Home">Home</span></NavLink>
+                {/* Mobile Features */}
+                <div className={styles.mobileActions}>
+                    <Link to="/user/wishlist" className={styles.mobileActionItem} onClick={closeMenu}>
+                        <FiHeart /> 
+                        <span>Wishlist</span>
+                        {wishlistItems.length > 0 && <span className={styles.mobileBadge}>{wishlistItems.length}</span>}
+                    </Link>
+                    <Link to="/user/notifications" className={styles.mobileActionItem} onClick={closeMenu}>
+                        <BiBell /> 
+                        <span>Notifications</span>
+                        {unreadCount > 0 && <span className={styles.mobileBadge}>{unreadCount}</span>}
+                    </Link>
                 </div>
 
-                {/* Shop Mega Menu Trigger */}
+                <div className={styles.navItem}>
+                    <NavLink to="/" className={getNavLinkClass} onClick={closeMenu}><span title="Home">Home</span></NavLink>
+                </div>
+
+                {/* Shop Mega Menu Trigger (Desktop) / Submenu (Mobile) */}
                 <div 
                     className={styles.navItem}
                     onMouseEnter={() => setShowMegaMenu(true)}
                     onMouseLeave={() => setShowMegaMenu(false)}
                 >
-                    <NavLink to="/products" className={`${styles.navLink} ${styles.shopTrigger}`}>
-                        <span title="Shop">Shop</span> <BiChevronDown />
-                    </NavLink>
+                    <div className={styles.shopNavHeader} onClick={(e) => {
+                        if (window.innerWidth <= 992) {
+                            setIsMobileShopOpen(!isMobileShopOpen);
+                        }
+                    }}>
+                        <NavLink 
+                            to="/products" 
+                            className={`${styles.navLink} ${styles.shopTrigger}`}
+                            onClick={(e) => {
+                                if (window.innerWidth <= 992) {
+                                    e.preventDefault();
+                                } else {
+                                    closeMenu();
+                                }
+                            }}
+                        >
+                            <span title="Shop">Shop</span> <BiChevronDown className={`${styles.chevron} ${isMobileShopOpen ? styles.rotated : ''}`} />
+                        </NavLink>
+                    </div>
 
-                    {/* Mega Menu Content */}
+                    {/* Desktop Mega Menu Content */}
                     <div className={`${styles.megaMenu} ${showMegaMenu ? styles.show : ''}`}>
                         {Object.entries(groupedCategories).length > 0 ? (
                             Object.entries(groupedCategories).map(([type, items]) => (
@@ -181,16 +212,50 @@ function Header() {
                             <div className={styles.noCategories}>No categories found</div>
                         )}
                     </div>
+
+                    {/* Mobile Submenu Content */}
+                    <div className={`${styles.mobileSubMenu} ${isMobileShopOpen ? styles.active : ''}`}>
+                        {Object.entries(groupedCategories).map(([type, items]) => (
+                            <div key={type} className={styles.mobileSubGroup}>
+                                <div className={styles.mobileGroupTitle}>{type}</div>
+                                <div className={styles.mobileGroupLinks}>
+                                    {items.map(cat => (
+                                        <Link 
+                                            key={cat.id} 
+                                            to={`/products?category=${cat.id}`} 
+                                            className={styles.mobileSubLink}
+                                            onClick={() => {
+                                                closeMenu();
+                                                setIsMobileShopOpen(false);
+                                            }}
+                                        >
+                                            {cat.name}
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                        <Link 
+                            to="/products" 
+                            className={styles.mobileViewAllLink}
+                            onClick={() => {
+                                closeMenu();
+                                setIsMobileShopOpen(false);
+                            }}
+                        >
+                            View All Products
+                        </Link>
+                    </div>
                 </div>
 
                 <div className={styles.navItem}>
-                    <NavLink to="/story" className={getNavLinkClass}><span title="Our Story">Our Story</span></NavLink>
+                    <NavLink to="/story" className={getNavLinkClass} onClick={closeMenu}><span title="Our Story">Our Story</span></NavLink>
                 </div>
                 <div className={styles.navItem}>
-                    <NavLink to="/blog" className={getNavLinkClass}><span title="Blog">Blog</span></NavLink>
+                    <NavLink to="/blog" className={getNavLinkClass} onClick={closeMenu}><span title="Blog">Blog</span></NavLink>
                 </div>
                 <div className={styles.navItem}>
-                    <NavLink to="/contact" className={getNavLinkClass}><span title="Contact Us">Contact Us</span></NavLink>
+                    <NavLink to="/contact" className={getNavLinkClass} onClick={closeMenu}><span title="Contact Us">Contact Us</span></NavLink>
                 </div>
             </nav>
 
@@ -199,7 +264,7 @@ function Header() {
                 <button className={styles.iconBtn} aria-label="Search">
                     <BiSearch />
                 </button>
-                <Link to="/user/wishlist" className={styles.iconBtn} aria-label="Wishlist">
+                <Link to="/user/wishlist" className={`${styles.iconBtn} ${styles.desktopOnly}`} aria-label="Wishlist">
                     <FiHeart />
                     {wishlistItems.length > 0 && <span className={styles.cartBadge}>{wishlistItems.length}</span>}
                 </Link>
@@ -282,7 +347,7 @@ function Header() {
                 </div>
 
                 {/* Notifications with MiniNotification Hover */}
-                <div className={styles.notifContainer}>
+                <div className={`${styles.notifContainer} ${styles.desktopOnly}`}>
                     <Link to="/user/notifications" className={styles.iconBtn} aria-label="Notifications">
                         <BiBell />
                         {unreadCount > 0 && <span className={styles.cartBadge}>{unreadCount}</span>}
@@ -365,7 +430,7 @@ function Header() {
                                 </div>
                             )}
                             <span className={styles.userName}>{user.fullName}</span>
-                            <BiChevronDown />
+                            <BiChevronDown className={styles.desktopOnly} />
                         </div>
 
                         <div className={styles.userDropdown}>

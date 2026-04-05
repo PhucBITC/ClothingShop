@@ -64,6 +64,16 @@
     position: relative;
 }
 
+/* Base styles for new components to avoid layout shifts on Desktop */
+.shopNavHeader {
+    display: flex;
+    align-items: center;
+}
+
+.mobileSubMenu {
+    display: none;
+}
+
 .navLink span::after {
     content: attr(title);
     font-weight: 700;
@@ -136,6 +146,15 @@
 .columnLinks li a:hover {
     color: var(--text-main);
     font-weight: 500;
+}
+
+.chevron {
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
+}
+
+.rotated {
+    transform: rotate(180deg);
 }
 
 .noCategories {
@@ -783,6 +802,15 @@
     z-index: 1100;
 }
 
+
+.mobileActions {
+    display: none;
+}
+
+.mobileBadge {
+    display: none;
+}
+
 @media (max-width: 992px) {
     .header {
         padding: 1rem;
@@ -794,9 +822,65 @@
     }
 
     .logoImg {
-        height: 40px;
-        /* Smaller logo on mobile */
+        height: 55px; /* Increased from 40px */
     }
+
+    .desktopOnly {
+        display: none !important;
+    }
+
+    .userName {
+        display: none;
+    }
+
+    .userTrigger {
+        padding: 0.3rem;
+        gap: 0;
+        background: transparent;
+        border: none;
+    }
+
+    .mobileActions {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+
+    .mobileActionItem {
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+        padding: 0.9rem 0;
+        color: var(--text-main);
+        font-weight: 600;
+        font-size: 1.1rem;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .mobileActionItem:active {
+        color: var(--accent-blue);
+        opacity: 0.8;
+    }
+
+    .mobileBadge {
+        background: #ff4d4f;
+        color: white;
+        font-size: 0.75rem;
+        padding: 2px 8px;
+        border-radius: 12px;
+        margin-left: auto;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+
 
     /* Fixed Sidebar Navigation for Mobile */
     .nav {
@@ -809,7 +893,7 @@
         background: var(--bg-card);
         flex-direction: column;
         align-items: flex-start;
-        padding: 5rem 2rem 2rem;
+        padding: 4.5rem 2rem 2rem; /* Increased top padding to avoid X button */
         box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
         transition: left 0.3s ease;
         z-index: 1050;
@@ -829,7 +913,76 @@
     /* Hide Mega Menu on Mobile for simplicity or adjust */
     .megaMenu {
         display: none;
-        /* For now, hide mega menu on mobile to avoid clutter */
+    }
+
+    .shopNavHeader {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        cursor: pointer;
+    }
+
+    .chevron {
+        transition: transform 0.3s ease;
+    }
+
+    .rotated {
+        transform: rotate(180deg);
+    }
+
+    .mobileSubMenu {
+        max-height: 0;
+        overflow: hidden;
+        transition: all 0.4s ease-in-out;
+        width: 100%;
+        padding-left: 1rem;
+    }
+
+    .mobileSubMenu.active {
+        max-height: 1000px; /* Allow enough height for all categories */
+        padding-top: 1rem;
+        margin-top: 0.5rem;
+    }
+
+    .mobileSubGroup {
+        margin-bottom: 1.5rem;
+    }
+
+    .mobileGroupTitle {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05rem;
+        margin-bottom: 0.8rem;
+        padding-bottom: 0.3rem;
+        border-bottom: 1px dashed var(--border-color);
+    }
+
+    .mobileGroupLinks {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    .mobileSubLink {
+        font-size: 1rem;
+        color: var(--text-main);
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .mobileViewAllLink {
+        display: block;
+        margin-top: 1rem;
+        padding: 0.8rem;
+        background: var(--bg-hover);
+        color: var(--accent-blue);
+        text-align: center;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.9rem;
     }
 
     .actions {
@@ -844,4 +997,12 @@
     .iconBtn {
         font-size: 1.1rem;
     }
+
+    /* Small screens: further logo adjustment */
+    @media (max-width: 576px) {
+        .logoImg {
+            height: 50px;
+        }
+    }
 }
+

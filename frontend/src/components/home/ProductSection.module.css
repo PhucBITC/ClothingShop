@@ -27,6 +27,15 @@
     border-bottom: 1px solid var(--border-color);
     width: 100%;
     justify-content: center;
+    overflow-x: auto;
+    white-space: nowrap;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    padding-bottom: 1px;
+}
+
+.tabs::-webkit-scrollbar {
+    display: none;
 }
 
 .tabBtn {
@@ -107,11 +116,30 @@
     }
 
     .tabs {
-        gap: 1rem;
+        gap: 1.5rem;
+        justify-content: flex-start;
+        padding-left: 1rem;
+        padding-right: 1rem;
     }
 
     .tabBtn {
-        font-size: 0.8rem;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .section {
+        padding: 3rem 1rem;
+    }
+
+    .productGrid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .sectionTitle {
+        font-size: 1.5rem;
     }
 }
 

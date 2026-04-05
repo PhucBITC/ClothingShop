@@ -2,6 +2,7 @@
     min-height: 100vh;
     background-color: var(--bg-page);
     transition: background-color 0.3s ease;
+    overflow-x: hidden;
 }
 
 .errorContainer {
@@ -278,6 +279,32 @@
     }
 
     .brandStory {
-        padding: 4rem 5%;
+        padding: 3rem 1.5rem;
+        gap: 2rem;
+    }
+
+    .storyTitle {
+        font-size: 1.8rem;
+    }
+
+    .storyGallery {
+        flex-direction: column;
+        height: auto;
+    }
+
+    /* Journal Section Responsive */
+    .journalSection {
+        padding: 3rem 1.5rem;
+    }
+
+    .journalGrid {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+
+    .journalCard {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
     }
 }
