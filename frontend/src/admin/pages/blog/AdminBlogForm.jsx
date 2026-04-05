@@ -238,20 +238,6 @@ const BlogForm = () => {
                                 </div>
                             </div>
 
-                            <div className={styles.group}>
-                                <label>Or Image URL / Base64</label>
-                                <div className={styles.inputWithIcon}>
-                                    <BiLink />
-                                    <input 
-                                        type="text" 
-                                        name="coverImage" 
-                                        value={post.coverImage} 
-                                        onChange={handleChange} 
-                                        placeholder="https://images.unsplash.com/..."
-                                    />
-                                </div>
-                            </div>
-
                             {(previewUrl || post.coverImage) && (
                                 <div className={styles.preview}>
                                     <label>Preview Image</label>
