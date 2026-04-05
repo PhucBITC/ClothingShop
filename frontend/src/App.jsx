@@ -45,6 +45,7 @@ import AdminBlogList from "./admin/pages/blog/AdminBlogList";
 import AdminBlogForm from "./admin/pages/blog/AdminBlogForm";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ChatBot from "./components/chat/ChatBot";
+import ScrollToTop from "./components/common/ScrollToTop";
 
 function AppLayout() {
   const location = useLocation();
@@ -55,6 +56,7 @@ function AppLayout() {
 
   return (
     <>
+      <ScrollToTop />
       {!isAuthPage && !isAdminPage && <Header />}
       <Routes>
         {/* home */}
