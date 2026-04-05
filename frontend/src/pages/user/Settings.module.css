@@ -300,3 +300,49 @@ input:checked+.slider:before {
         opacity: 1;
     }
 }
+
+/* --- Responsive Design --- */
+@media (max-width: 992px) {
+    .pageContainer {
+        padding: 2rem 3%;
+    }
+
+    .contentWrapper {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .mainContent {
+        width: 100%;
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .pageContainer {
+        padding: 1.5rem 1rem;
+    }
+
+    .pageTitle {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .settingItem {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .selectInput {
+        width: 100%;
+    }
+
+    .passwordForm {
+        max-width: 100%;
+    }
+
+    .saveBtn {
+        width: 100%;
+    }
+}

@@ -4,6 +4,7 @@
     background: var(--bg-page);
     min-height: 100vh;
     transition: all 0.3s ease;
+    overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
 .pageTitle {
@@ -214,6 +215,60 @@
     border: 1px solid #cce5ff;
     width: fit-content;
     text-transform: uppercase;
+}
+
+/* --- Responsive --- */
+@media (max-width: 992px) {
+    .pageContainer {
+        padding: 2rem 3%;
+    }
+
+    .contentWrapper {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .mainContent {
+        width: 100%;
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .pageContainer {
+        padding: 1.5rem 1rem;
+    }
+
+    .pageTitle {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .profileHeaderSection {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.5rem;
+    }
+
+    .formGrid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .fullWidth {
+        grid-column: span 1;
+    }
+
+    .editActions {
+        width: 100%;
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    .saveActionBtn, .cancelActionBtn, .editProfileBtn {
+        width: 100%;
+        justify-content: center;
+    }
 }
 
 .creditValue {

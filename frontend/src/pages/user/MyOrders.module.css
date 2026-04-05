@@ -4,6 +4,7 @@
     background: var(--bg-page);
     min-height: 100vh;
     transition: all 0.3s ease;
+    overflow-x: hidden;
 }
 
 .pageTitle {
@@ -249,49 +250,86 @@
     min-width: 140px;
 }
 
-.actionBtn {
-    padding: 0.6rem;
-    border-radius: 4px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    cursor: pointer;
-    text-align: center;
-    border: 1px solid var(--primary-black);
-    background: var(--bg-card);
-    color: var(--text-main);
-    transition: all 0.2s;
+/* --- Responsive Design --- */
+@media (max-width: 992px) {
+    .pageContainer {
+        padding: 2rem 3%;
+    }
+
+    .contentWrapper {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .sidebarContainer {
+        position: relative;
+        top: 0;
+        width: 100%;
+    }
+
+    .mainContent {
+        width: 100%;
+    }
+
+    .controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .searchBox {
+        width: 100%;
+    }
+
+    .orderCard {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1.5rem;
+    }
+
+    .productSection {
+        flex: none;
+    }
+
+    .statusSection {
+        flex: none;
+        padding-left: 0;
+        border-top: 1px solid var(--border-color);
+        padding-top: 1rem;
+    }
+
+    .actionSection {
+        flex-direction: row;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .actionBtn {
+        flex: 1;
+    }
 }
 
-.actionBtn:hover {
-    background: var(--bg-hover);
-}
+@media (max-width: 576px) {
+    .pageContainer {
+        padding: 1.5rem 1rem;
+    }
 
-.actionBtn.primary {
-    background: var(--primary-black);
-    color: var(--primary-white);
-}
+    .pageTitle {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
 
-.actionBtn.primary:hover {
-    opacity: 0.9;
-}
+    .productSection {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
 
-.actionBtn.cancel {
-    border-color: #ff6b6b;
-    background: #ff6b6b;
-    color: #fff;
-}
-
-.actionBtn.cancel:hover {
-    opacity: 0.9;
-}
-
-.loading,
-.emptyState {
-    padding: 3rem;
-    text-align: center;
-    background: var(--bg-card);
-    border-radius: 8px;
-    color: var(--text-muted);
-    font-size: 1.1rem;
-    border: 1px solid var(--border-color);
+    .productImg {
+        width: 100%;
+        height: 200px;
+    }
+    
+    .actionSection {
+        flex-direction: column;
+    }
 }
