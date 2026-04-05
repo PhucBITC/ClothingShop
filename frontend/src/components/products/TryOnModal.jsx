@@ -63,7 +63,7 @@ const TryOnModal = ({ isOpen, onClose, product }) => {
                 return;
             }
 
-            toast.error("Lỗi", errorMsg);
+            toast.error("Error", errorMsg);
             setStep('preview');
         } finally {
             setLoading(false);
