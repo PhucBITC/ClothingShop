@@ -472,6 +472,14 @@
     .span3, .span2 {
         grid-column: span 2;
     }
+
+    .chartCard {
+        overflow-x: auto;
+    }
+
+    .filterGroup {
+        flex-wrap: wrap;
+    }
 }
 
 /* Small Mobile */
@@ -486,5 +494,17 @@
 
     .card {
         padding: 16px;
+    }
+
+    .chartHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .filterGroup {
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 4px;
     }
 }

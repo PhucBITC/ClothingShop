@@ -76,12 +76,15 @@
     border-radius: 12px;
     border: 1px solid var(--admin-border);
     overflow: hidden;
+    overflow-x: auto;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+    width: 100%;
 }
 
 .table {
     width: 100%;
     border-collapse: collapse;
+    min-width: 650px;
 }
 
 .table th {
@@ -273,4 +276,15 @@
 .confirmBtn {
     background: #EF4444;
     color: white;
+}
+
+@media (max-width: 768px) {
+    .header {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .searchContainer {
+        max-width: 100%;
+    }
 }

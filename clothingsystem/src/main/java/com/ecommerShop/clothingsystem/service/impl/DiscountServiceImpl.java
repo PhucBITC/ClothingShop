@@ -108,8 +108,8 @@ public class DiscountServiceImpl implements DiscountService {
     @Transactional
     public void broadcastDiscount(Long id) {
         Discount discount = getDiscountById(id);
-        String title = "Mã giảm giá mới: " + discount.getCode();
-        String content = "Sử dụng mã " + discount.getCode() + " để được nhận ưu đãi hấp dẫn! " +
+        String title = "New discount code: " + discount.getCode();
+        String content = "Use code " + discount.getCode() + " to get attractive offers! " +
                 (discount.getDescription() != null ? discount.getDescription() : "");
         
         notificationService.broadcastGlobalNotification(title, content, Notification.NotificationType.PROMO);

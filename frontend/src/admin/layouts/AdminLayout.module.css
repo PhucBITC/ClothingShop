@@ -136,7 +136,8 @@
     display: flex;
     flex-direction: column;
     width: calc(100% - var(--sidebar-width));
-    /* Ensure proper width */
+    min-width: 0;
+    overflow-x: hidden;
     transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
 }
 
@@ -148,10 +149,9 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 30px;
-    position: fixed;
+    position: sticky;
     top: 0;
-    right: 0;
-    left: var(--sidebar-width);
+    width: 100%;
     border-bottom: 1px solid var(--admin-border);
     transition: all 0.3s ease-in-out;
     z-index: 99;
@@ -199,8 +199,9 @@
     padding: 8px 16px;
     display: flex;
     align-items: center;
-    width: 300px;
+    width: 400px; /* Increased width for desktop */
     border: 1px solid var(--admin-border);
+    transition: all 0.3s ease;
 }
 
 .searchInput {
@@ -510,10 +511,9 @@
 /* Content wrapper */
 .content {
     padding: 32px;
-    padding-top: calc(var(--topbar-height) + 32px);
     width: 100%;
     overflow-x: hidden;
-    /* Prevent horizontal scroll on body */
+    /* Removed padding-top since topbar is now sticky, not fixed */
 }
 
 /* Overlay for mobile */
@@ -556,6 +556,7 @@
     .mainContent {
         margin-left: 0;
         width: 100%;
+        overflow-x: hidden;
     }
 
     .menuBtn {
@@ -564,11 +565,12 @@
 
     .topbar {
         padding: 0 16px;
+        left: 0 !important;
+        width: 100% !important;
     }
 
     .content {
         padding: 16px;
-        padding-top: calc(var(--topbar-height) + 16px);
     }
 }
 

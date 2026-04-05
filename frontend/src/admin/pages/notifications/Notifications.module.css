@@ -2,6 +2,8 @@
     padding: 24px;
     background-color: var(--admin-bg);
     min-height: 100%;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .header {
@@ -209,13 +211,16 @@
     border-radius: 15px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     overflow: hidden;
+    overflow-x: auto;
     border: 1px solid var(--admin-border);
+    width: 100%;
 }
 
 .table {
     width: 100%;
     border-collapse: collapse;
     text-align: left;
+    min-width: 650px;
 }
 
 .table th {
@@ -511,4 +516,59 @@
 .bulkReadBtn:hover {
     background: #2e7d32;
     color: white;
+}
+
+@media (max-width: 768px) {
+    .messagesContainer {
+        padding: 1rem;
+    }
+
+    .controls {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .searchBox {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .filterGroup {
+        flex-wrap: wrap;
+        width: 100%;
+    }
+
+    .actionGroup {
+        flex-wrap: wrap;
+        width: 100%;
+    }
+
+    .tabsWrapper {
+        padding-bottom: 8px;
+        gap: 4px;
+        flex-wrap: wrap;
+    }
+
+    .tabBtn {
+        white-space: nowrap;
+        padding: 8px 14px;
+    }
+
+    .title {
+        font-size: 1.4rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .messagesContainer {
+        padding: 0.75rem;
+    }
+
+    .bulkDeleteBtn,
+    .deleteAllBtn,
+    .markAllReadBtnMain,
+    .bulkReadBtn {
+        font-size: 0.8rem;
+        padding: 8px 10px;
+    }
 }
