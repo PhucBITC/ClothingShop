@@ -83,14 +83,38 @@ const DiscountForm = () => {
             // Validation
             if (!formData.code) throw new Error('Discount code is required');
             if (!formData.value) throw new Error('Discount value is required');
+            
+            const numValue = parseFloat(formData.value);
+            if (isNaN(numValue) || numValue <= 0) throw new Error('Discount value must be greater than 0');
+            if (formData.type === 'PERCENTAGE' && numValue > 100) throw new Error('Percentage discount cannot exceed 100%');
+
+            const now = new Date();
+            const start = formData.startDate ? new Date(formData.startDate) : null;
+            const end = formData.endDate ? new Date(formData.endDate) : null;
+
+            // For new discounts, start date shouldn't be in the past
+            if (!isEditMode && start && start < now) {
+                // Allow a small margin (e.g., 1 minute) for submission delay
+                if (now - start > 60000) {
+                    throw new Error('Start date cannot be in the past');
+                }
+            }
+
+            if (start && end && end <= start) {
+                throw new Error('End date must be after start date');
+            }
+
+            if (!start && end) {
+                throw new Error('Start date is required if end date is set');
+            }
 
             const payload = { ...formData };
             
             // Clean numeric fields
-            payload.value = parseFloat(formData.value);
-            payload.minOrderAmount = formData.minOrderAmount ? parseFloat(formData.minOrderAmount) : null;
-            payload.maxDiscountAmount = formData.maxDiscountAmount ? parseFloat(formData.maxDiscountAmount) : null;
-            payload.usageLimit = formData.usageLimit ? parseInt(formData.usageLimit) : null;
+            payload.value = numValue;
+            payload.minOrderAmount = formData.minOrderAmount ? Math.max(0, parseFloat(formData.minOrderAmount)) : null;
+            payload.maxDiscountAmount = formData.maxDiscountAmount ? Math.max(0, parseFloat(formData.maxDiscountAmount)) : null;
+            payload.usageLimit = formData.usageLimit ? Math.max(1, parseInt(formData.usageLimit)) : null;
 
             if (isEditMode) {
                 await axios.put(`/discounts/${id}`, payload);
@@ -256,6 +280,7 @@ const DiscountForm = () => {
                                     value={formData.startDate}
                                     onChange={handleChange}
                                     onClick={(e) => e.target.showPicker()}
+                                    min={!isEditMode ? new Date().toISOString().slice(0, 16) : undefined}
                                     className={styles.input}
                                 />
                             </div>
@@ -271,6 +296,7 @@ const DiscountForm = () => {
                                     value={formData.endDate}
                                     onChange={handleChange}
                                     onClick={(e) => e.target.showPicker()}
+                                    min={formData.startDate || new Date().toISOString().slice(0, 16)}
                                     className={styles.input}
                                 />
                             </div>

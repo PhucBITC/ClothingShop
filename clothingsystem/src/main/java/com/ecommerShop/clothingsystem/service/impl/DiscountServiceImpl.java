@@ -36,6 +36,7 @@ public class DiscountServiceImpl implements DiscountService {
     @Override
     @Transactional
     public Discount createDiscount(DiscountRequest request) {
+        validateRequest(request, true);
         if (discountRepository.findByCode(request.getCode()).isPresent()) {
             throw new RuntimeException("Discount code already exists: " + request.getCode());
         }
@@ -48,6 +49,7 @@ public class DiscountServiceImpl implements DiscountService {
     @Override
     @Transactional
     public Discount updateDiscount(Long id, DiscountRequest request) {
+        validateRequest(request, false);
         Discount discount = getDiscountById(id);
         
         // If code changes, ensure uniqueness
@@ -121,6 +123,36 @@ public class DiscountServiceImpl implements DiscountService {
         Discount discount = getDiscountById(id);
         discount.setUsageCount(discount.getUsageCount() + 1);
         discountRepository.save(discount);
+    }
+
+    private void validateRequest(DiscountRequest request, boolean isNew) {
+        if (request.getCode() == null || request.getCode().trim().isEmpty()) {
+            throw new RuntimeException("Discount code is required");
+        }
+        if (request.getValue() == null || request.getValue() <= 0) {
+            throw new RuntimeException("Discount value must be greater than 0");
+        }
+        if (request.getType() == com.ecommerShop.clothingsystem.model.DiscountType.PERCENTAGE && request.getValue() > 100) {
+            throw new RuntimeException("Percentage discount cannot exceed 100%");
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        if (request.getStartDate() != null && request.getEndDate() != null) {
+            if (!request.getEndDate().isAfter(request.getStartDate())) {
+                throw new RuntimeException("End date must be after start date");
+            }
+        }
+
+        if (isNew && request.getStartDate() != null) {
+            // Allow 5 minutes grace period for network/server time difference
+            if (request.getStartDate().isBefore(now.minusMinutes(5))) {
+                throw new RuntimeException("Start date cannot be in the past");
+            }
+        }
+        
+        if (request.getEndDate() != null && request.getEndDate().isBefore(now)) {
+            throw new RuntimeException("End date cannot be in the past");
+        }
     }
 
     private void mapRequestToEntity(DiscountRequest request, Discount discount) {
