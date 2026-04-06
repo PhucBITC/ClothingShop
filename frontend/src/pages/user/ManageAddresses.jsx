@@ -14,6 +14,7 @@ function ManageAddresses() {
     const [showModal, setShowModal] = useState(false);
     const [editingAddress, setEditingAddress] = useState(null);
     const [deleteModalConfig, setDeleteModalConfig] = useState({ isOpen: false, address: null });
+    const [errors, setErrors] = useState({});
 
     // States for Vietnam Address API
     const [provinces, setProvinces] = useState([]);
@@ -99,6 +100,11 @@ function ManageAddresses() {
             [name]: type === 'checkbox' ? checked : value
         }));
 
+        // Clear error when user starts typing
+        if (errors[name]) {
+            setErrors(prev => ({ ...prev, [name]: null }));
+        }
+
         if (name === 'province') {
             const selectedProvince = provinces.find(p => p.name === value);
             if (selectedProvince) {
@@ -120,6 +126,7 @@ function ManageAddresses() {
     const handleOpenAddModal = () => {
         setEditingAddress(null);
         setFormData(initialFormData);
+        setErrors({});
         setShowModal(true);
     };
 
@@ -161,11 +168,56 @@ function ManageAddresses() {
             console.error("Error pre-populating address levels:", error);
         }
 
+        setErrors({});
         setShowModal(true);
+    };
+
+    const validateForm = () => {
+        const newErrors = {};
+
+        // Full Name validation: at least 2 words, no numbers/special chars
+        if (!formData.fullName.trim()) {
+            newErrors.fullName = "Full name is required";
+        } else {
+            const nameParts = formData.fullName.trim().split(/\s+/);
+            if (nameParts.length < 2) {
+                newErrors.fullName = "Please enter your full name (at least 2 words)";
+            }
+            if (/[0-9!@#$%^&*(),.?":{}|<>_{}]/.test(formData.fullName)) {
+                newErrors.fullName = "Full name cannot contain numbers or special characters";
+            }
+        }
+
+        // Phone validation: Vietnamese format (10-11 digits)
+        const phoneRegex = /^(0|84|\+84)(3|5|7|8|9|1[2689])([0-9]{8})$/;
+        if (!formData.phone.trim()) {
+            newErrors.phone = "Phone number is required";
+        } else if (!phoneRegex.test(formData.phone.replace(/[\s.-]/g, ''))) {
+            newErrors.phone = "Invalid Vietnamese phone number format";
+        }
+
+        if (!formData.province) newErrors.province = "Please select a province/city";
+        if (!formData.district) newErrors.district = "Please select a district";
+        if (!formData.ward) newErrors.ward = "Please select a ward";
+
+        if (!formData.streetAddress.trim()) {
+            newErrors.streetAddress = "Street address is required";
+        } else if (formData.streetAddress.trim().length < 5) {
+            newErrors.streetAddress = "Street address is too short";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+        if (!validateForm()) {
+            toast.error("Validation Error", "Please check the form for errors.");
+            return;
+        }
+
         try {
             if (editingAddress) {
                 await axios.put(`/addresses/${editingAddress.id}`, formData);
@@ -271,42 +323,86 @@ function ManageAddresses() {
                             <div className={styles.formGrid}>
                                 <div className={styles.formGroup}>
                                     <label className={styles.label}>Full Name</label>
-                                    <input name="fullName" type="text" className={styles.input} required value={formData.fullName} onChange={handleInputChange} placeholder="E.g. John Doe" />
+                                    <input 
+                                        name="fullName" 
+                                        type="text" 
+                                        className={`${styles.input} ${errors.fullName ? styles.invalidInput : ''}`} 
+                                        value={formData.fullName} 
+                                        onChange={handleInputChange} 
+                                        placeholder="E.g. John Doe" 
+                                    />
+                                    {errors.fullName && <span className={styles.errorText}>{errors.fullName}</span>}
                                 </div>
                                 <div className={styles.formGroup}>
                                     <label className={styles.label}>Mobile Number</label>
-                                    <input name="phone" type="text" className={styles.input} required value={formData.phone} onChange={handleInputChange} placeholder="E.g. 0123456789" />
+                                    <input 
+                                        name="phone" 
+                                        type="text" 
+                                        className={`${styles.input} ${errors.phone ? styles.invalidInput : ''}`} 
+                                        value={formData.phone} 
+                                        onChange={handleInputChange} 
+                                        placeholder="E.g. 0123456789" 
+                                    />
+                                    {errors.phone && <span className={styles.errorText}>{errors.phone}</span>}
                                 </div>
                             </div>
 
                             <div className={styles.formGrid}>
                                 <div className={styles.formGroup}>
                                     <label className={styles.label}>Province / City</label>
-                                    <select name="province" className={styles.input} required value={formData.province} onChange={handleInputChange}>
+                                    <select 
+                                        name="province" 
+                                        className={`${styles.input} ${errors.province ? styles.invalidInput : ''}`} 
+                                        value={formData.province} 
+                                        onChange={handleInputChange}
+                                    >
                                         <option value="">-- Select Province --</option>
                                         {provinces.map(p => <option key={p.code} value={p.name}>{p.name}</option>)}
                                     </select>
+                                    {errors.province && <span className={styles.errorText}>{errors.province}</span>}
                                 </div>
                                 <div className={styles.formGroup}>
                                     <label className={styles.label}>District</label>
-                                    <select name="district" className={styles.input} required value={formData.district} onChange={handleInputChange} disabled={!formData.province}>
+                                    <select 
+                                        name="district" 
+                                        className={`${styles.input} ${errors.district ? styles.invalidInput : ''}`} 
+                                        value={formData.district} 
+                                        onChange={handleInputChange} 
+                                        disabled={!formData.province}
+                                    >
                                         <option value="">-- Select District --</option>
                                         {districts.map(d => <option key={d.code} value={d.name}>{d.name}</option>)}
                                     </select>
+                                    {errors.district && <span className={styles.errorText}>{errors.district}</span>}
                                 </div>
                             </div>
 
                             <div className={styles.formGrid}>
                                 <div className={styles.formGroup}>
                                     <label className={styles.label}>Ward</label>
-                                    <select name="ward" className={styles.input} required value={formData.ward} onChange={handleInputChange} disabled={!formData.district}>
+                                    <select 
+                                        name="ward" 
+                                        className={`${styles.input} ${errors.ward ? styles.invalidInput : ''}`} 
+                                        value={formData.ward} 
+                                        onChange={handleInputChange} 
+                                        disabled={!formData.district}
+                                    >
                                         <option value="">-- Select Ward --</option>
                                         {wards.map(w => <option key={w.code} value={w.name}>{w.name}</option>)}
                                     </select>
+                                    {errors.ward && <span className={styles.errorText}>{errors.ward}</span>}
                                 </div>
                                 <div className={styles.formGroup}>
                                     <label className={styles.label}>Street & House Number</label>
-                                    <input name="streetAddress" type="text" className={styles.input} required value={formData.streetAddress} onChange={handleInputChange} placeholder="E.g. 123 Le Loi St" />
+                                    <input 
+                                        name="streetAddress" 
+                                        type="text" 
+                                        className={`${styles.input} ${errors.streetAddress ? styles.invalidInput : ''}`} 
+                                        value={formData.streetAddress} 
+                                        onChange={handleInputChange} 
+                                        placeholder="E.g. 123 Le Loi St" 
+                                    />
+                                    {errors.streetAddress && <span className={styles.errorText}>{errors.streetAddress}</span>}
                                 </div>
                             </div>
 

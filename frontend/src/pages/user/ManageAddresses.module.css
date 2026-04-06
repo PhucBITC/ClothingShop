@@ -361,3 +361,17 @@
         grid-column: span 1;
     }
 }
+.errorText {
+    color: #ef4444;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    font-weight: 500;
+}
+
+.invalidInput {
+    border-color: #ef4444 !important;
+}
+
+.invalidInput:focus {
+    box-shadow: 0 0 0 1px #fecaca !important;
+}

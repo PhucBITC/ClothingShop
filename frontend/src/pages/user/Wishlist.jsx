@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { BiTrash } from 'react-icons/bi';
+import { BiTrash, BiShoppingBag } from 'react-icons/bi';
 import UserSidebar from './UserSidebar';
 import styles from './Wishlist.module.css';
 import { useWishlist } from '../../context/WishlistContext';
@@ -49,7 +49,9 @@ function Wishlist() {
                     {wishlistItems.length === 0 ? (
                         <div className={styles.emptyWishlist}>
                             <p>Your wishlist is currently empty.</p>
-                            <Link to="/products" className={styles.shopNowBtn}>Shop Now</Link>
+                            <Link to="/products" className={styles.shopNowBtn}>
+                                <BiShoppingBag /> Shop Now
+                            </Link>
                         </div>
                     ) : (
                         <div className={styles.wishlistGrid}>

@@ -147,6 +147,46 @@
     color: var(--primary-white);
 }
 
+.emptyWishlist {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    text-align: center;
+    background: rgba(249, 250, 251, 0.5);
+    border-radius: 12px;
+    border: 1px dashed var(--border-color);
+}
+
+.emptyWishlist p {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+}
+
+.shopNowBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.9rem 2.2rem;
+    background: var(--primary-black, #1a1a1a);
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.shopNowBtn:hover {
+    background: #333;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    color: white;
+}
+
 /* --- Responsive Design --- */
 @media (max-width: 992px) {
     .pageContainer {
