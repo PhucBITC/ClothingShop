@@ -7,6 +7,8 @@ import com.ecommerShop.clothingsystem.repository.NotificationRepository;
 import com.ecommerShop.clothingsystem.repository.UserRepository;
 import com.ecommerShop.clothingsystem.service.EmailService;
 import com.ecommerShop.clothingsystem.service.NotificationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +17,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class NotificationServiceImpl implements NotificationService {
+    private static final Logger logger = LoggerFactory.getLogger(NotificationServiceImpl.class);
 
     @Autowired
     private NotificationRepository notificationRepository;
@@ -49,14 +52,19 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public List<NotificationResponse> getNotifications(User user) {
-        return notificationRepository.findByUserIdOrderByCreatedAtDesc(user.getId()).stream()
+        logger.info("Fetching notifications for user ID: {} ({})", user.getId(), user.getEmail());
+        List<Notification> notifications = notificationRepository.findByUserIdOrderByCreatedAtDesc(user.getId());
+        logger.info("Found {} notifications for user ID: {}", notifications.size(), user.getId());
+        return notifications.stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
     @Override
     public long getUnreadCount(User user) {
-        return notificationRepository.countByUserIdAndIsReadFalse(user.getId());
+        long count = notificationRepository.countByUserIdAndIsReadFalse(user.getId());
+        logger.info("Unread count for user ID {}: {}", user.getId(), count);
+        return count;
     }
 
     @Override
@@ -110,11 +118,32 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     @Transactional
     public void broadcastGlobalNotification(String title, String content, Notification.NotificationType type) {
+        logger.info("Starting broadcast for title: '{}'", title);
+        
         List<User> allUsers = userRepository.findAll();
-        List<Notification> notifications = allUsers.stream()
-                .map(u -> new Notification(u, title, content, type))
-                .collect(Collectors.toList());
-        notificationRepository.saveAll(notifications);
+        logger.info("Found {} total users in database", allUsers.size());
+        
+        int successCount = 0;
+        for (User u : allUsers) {
+            try {
+                // Ensure the user object is not null and has an ID
+                if (u == null || u.getId() == null) {
+                    logger.warn("Skipping a null user or user with null ID");
+                    continue;
+                }
+                
+                Notification notification = new Notification(u, title, content, type);
+                notificationRepository.save(notification);
+                successCount++;
+                logger.info("Successfully created notification for user ID: {} ({})", u.getId(), u.getEmail());
+            } catch (Exception e) {
+                logger.error("Failed to create notification for user ID: {}", u != null ? u.getId() : "unknown", e);
+            }
+        }
+        
+        // Force flush to ensure records are written to DB before transaction commits
+        notificationRepository.flush();
+        logger.info("Broadcast complete. Successfully notified {}/{} users and flushed to database", successCount, allUsers.size());
     }
 
     private NotificationResponse mapToResponse(Notification notification) {

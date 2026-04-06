@@ -88,18 +88,18 @@ export const NotificationProvider = ({ children }) => {
     useEffect(() => {
         if (user) {
             fetchUnreadCount();
-            fetchNotifications(); // Add this to populate notifications on load/refresh
+            fetchNotifications();
+            // Refresh counts and notifications every 5 seconds for real-time feel
             const interval = setInterval(() => {
                 fetchUnreadCount();
-                // Optionally update notifications too if we want real-time list
-                // fetchNotifications(); 
-            }, 60000);
+                fetchNotifications();
+            }, 5000);
             return () => clearInterval(interval);
         } else {
             setUnreadCount(0);
             setNotifications([]);
         }
-    }, [user, fetchUnreadCount]);
+    }, [user, fetchUnreadCount, fetchNotifications]);
 
     return (
         <NotificationContext.Provider value={{

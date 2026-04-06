@@ -62,8 +62,8 @@ const AdminLayout = () => {
 
     useEffect(() => {
         refreshAllCounts();
-        // Refresh every 30 seconds
-        const interval = setInterval(refreshAllCounts, 30000);
+        // Refresh every 5 seconds for real-time feel
+        const interval = setInterval(refreshAllCounts, 5000);
         return () => clearInterval(interval);
     }, []);
 

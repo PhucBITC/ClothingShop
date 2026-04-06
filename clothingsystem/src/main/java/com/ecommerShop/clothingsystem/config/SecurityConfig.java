@@ -69,7 +69,7 @@ public class SecurityConfig {
                                                 .requestMatchers(org.springframework.http.HttpMethod.GET,
                                                                 "/api/discounts")
                                                 .authenticated()
-                                                .requestMatchers("/api/discounts/**", "/api/notifications/**",
+                                                .requestMatchers("/api/discounts/**",
                                                                 "/api/admin/**")
                                                 .hasRole("ADMIN")
                                                 .anyRequest().authenticated())

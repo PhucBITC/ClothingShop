@@ -18,11 +18,19 @@ public class NotificationController {
 
     @GetMapping
     public ResponseEntity<List<NotificationResponse>> getNotifications(@AuthenticationPrincipal User user) {
+        if (user == null) {
+            System.err.println("CRITICAL DBG: User principal is NULL in getNotifications! Check AuthContext or JWT.");
+            return ResponseEntity.status(401).build();
+        }
         return ResponseEntity.ok(notificationService.getNotifications(user));
     }
 
     @GetMapping("/unread-count")
     public ResponseEntity<Long> getUnreadCount(@AuthenticationPrincipal User user) {
+        if (user == null) {
+            System.err.println("CRITICAL DBG: User principal is NULL in getUnreadCount!");
+            return ResponseEntity.status(401).build();
+        }
         return ResponseEntity.ok(notificationService.getUnreadCount(user));
     }
 
