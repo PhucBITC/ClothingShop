@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BiSearch, BiSliderAlt } from 'react-icons/bi';
+import { BiSearch, BiSliderAlt, BiShow, BiX, BiStar } from 'react-icons/bi';
 import UserSidebar from './UserSidebar';
 import styles from './MyOrders.module.css';
 import axios from '../../api/axios';
@@ -172,17 +172,19 @@ function MyOrders() {
                                             className={styles.actionBtn}
                                             onClick={() => handleViewDetails(order)}
                                         >
-                                            View Details
+                                            <BiShow /> View Details
                                         </button>
                                         {order.status === 'DELIVERED' ? (
-                                            <button className={`${styles.actionBtn} ${styles.primary}`}>Write A Review</button>
+                                            <button className={`${styles.actionBtn} ${styles.primary}`}>
+                                                <BiStar /> Write A Review
+                                            </button>
                                         ) : (
                                             order.status !== 'CANCELLED' && (
                                                 <button
                                                     className={`${styles.actionBtn} ${styles.cancel}`}
                                                     onClick={() => setModalConfig({ isOpen: true, orderId: order.id })}
                                                 >
-                                                    Cancel Order
+                                                    <BiX /> Cancel Order
                                                 </button>
                                             )
                                         )}
