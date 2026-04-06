@@ -257,19 +257,21 @@ public class OrderServiceImpl implements OrderService {
     protected void decrementStock(Order order) {
         for (OrderItem item : order.getItems()) {
             ProductVariant variant = item.getProductVariant();
-            int currentStock = variant.getStock();
             int orderQty = item.getQuantity();
 
-            if (currentStock < orderQty) {
-                // In a real system, we should have checked this at checkout start too
-                throw new RuntimeException("Insufficient stock for variant: " + variant.getSku());
+            // Atomic decrement: only succeeds if stock >= orderQty
+            int updatedRows = productVariantRepository.decrementStock(variant.getId(), orderQty);
+            
+            if (updatedRows == 0) {
+                // If 0 rows updated, it means stock was insufficient at the moment of execution
+                throw new RuntimeException("Insufficient stock for variant: " + variant.getSku() + 
+                                           " (Available stock may have changed by another order)");
             }
 
-            variant.setStock(currentStock - orderQty);
-            productVariantRepository.save(variant);
-            System.out.println("Decremented stock for " + variant.getSku() + ": " + currentStock + " -> " + (currentStock - orderQty));
+            System.out.println("Successfully decremented stock for " + variant.getSku() + " by " + orderQty);
         }
     }
+
 
     // --- Helpers & Migration ---
 

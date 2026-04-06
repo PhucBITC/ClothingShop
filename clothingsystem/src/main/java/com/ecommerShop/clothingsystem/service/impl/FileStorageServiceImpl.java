@@ -72,8 +72,19 @@ public class FileStorageServiceImpl implements FileStorageService {
     @Override
     public Resource load(String filename) {
         try {
+            // Security: Prevent Path Traversal
+            if (filename.contains("..")) {
+                throw new RuntimeException("Cannot load file with relative path.");
+            }
+
             // filename might potentially be "customers/xyz.jpg" or just "xyz.jpg"
-            Path file = root.resolve(filename);
+            Path file = root.resolve(filename).normalize();
+
+            // Security: Ensure the resolved path is within the root directory
+            if (!file.toAbsolutePath().startsWith(root.toAbsolutePath().normalize())) {
+                throw new RuntimeException("Access denied: File is outside the upload directory.");
+            }
+
             Resource resource = new UrlResource(file.toUri());
 
             if (resource.exists() || resource.isReadable()) {
@@ -85,6 +96,7 @@ public class FileStorageServiceImpl implements FileStorageService {
             throw new RuntimeException("Error: " + e.getMessage());
         }
     }
+
 
     @Override
     public void deleteAll() {
