@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import axios from '../../../api/axios';
 import {
     BiMap,
@@ -23,6 +24,27 @@ const CustomerList = () => {
     const [loading, setLoading] = useState(true);
     const [expandedUser, setExpandedUser] = useState(null);
     const [addresses, setAddresses] = useState({});
+    const [searchParams] = useSearchParams();
+    const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
+
+    // Sync URL search parameter to searchTerm
+    useEffect(() => {
+        const query = searchParams.get('search') || '';
+        if (query !== searchTerm) {
+            setSearchTerm(query);
+        }
+    }, [searchParams]);
+
+    const filteredCustomers = useMemo(() => {
+        if (!searchTerm.trim()) return customers;
+        const s = searchTerm.toLowerCase().trim();
+        return customers.filter(c => 
+            (c.fullName?.toLowerCase() || '').includes(s) ||
+            (c.email?.toLowerCase() || '').includes(s) ||
+            (c.id?.toString() || '').includes(s) ||
+            (c.phoneNumber?.toLowerCase() || '').includes(s)
+        );
+    }, [customers, searchTerm]);
     const toast = useToast();
 
     // Modal & Form State for Addresses
@@ -363,9 +385,12 @@ const CustomerList = () => {
         <div className={styles.container}>
             <div className={styles.header}>
                 <h2 className={styles.title}>Customer Management</h2>
-                <button className={styles.addAddressBtn} onClick={() => handleOpenUserModal()}>
-                    <BiPlus /> Create Customer
-                </button>
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                    <span className={styles.resultsCount}>{filteredCustomers.length} Users found</span>
+                    <button className={styles.addAddressBtn} onClick={() => handleOpenUserModal()}>
+                        <BiPlus /> Create Customer
+                    </button>
+                </div>
             </div>
 
             <div className={styles.tableContainer}>
@@ -380,7 +405,7 @@ const CustomerList = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {customers.map(user => (
+                        {filteredCustomers.map(user => (
                             <React.Fragment key={user.id}>
                                 <tr>
                                     <td className={styles.userInfo}>
@@ -457,8 +482,8 @@ const CustomerList = () => {
                                 )}
                             </React.Fragment>
                         ))}
-                        {customers.length === 0 && !loading && (
-                            <tr><td colSpan="5" style={{ textAlign: 'center', padding: '40px' }}>No customers found.</td></tr>
+                        {filteredCustomers.length === 0 && !loading && (
+                            <tr><td colSpan="5" style={{ textAlign: 'center', padding: '40px' }}>No customers found matching "{searchTerm}".</td></tr>
                         )}
                     </tbody>
                 </table>

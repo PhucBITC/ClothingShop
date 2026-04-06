@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import axios from '../../../api/axios';
 import {
     BiPlus,
@@ -47,6 +47,15 @@ const ProductList = () => {
     const [groupData, setGroupData] = useState({}); // { TYPE: { products: [], page: 0, totalPages: 0, totalElements: 0, loading: false } }
 
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+
+    // Sync URL search parameter to filters
+    useEffect(() => {
+        const query = searchParams.get('search') || '';
+        if (query !== filters.keyword) {
+            setFilters(prev => ({ ...prev, keyword: query }));
+        }
+    }, [searchParams]);
 
     useEffect(() => {
         fetchCategories();

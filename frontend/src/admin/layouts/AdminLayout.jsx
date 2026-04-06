@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink, Outlet, useLocation, Link, useNavigate } from 'react-router-dom';
+import { NavLink, Outlet, useLocation, Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
     BiGridAlt, BiCart, BiPackage, BiUser,
     BiFile, BiPurchaseTag, BiLink, BiHelpCircle, BiNews,
@@ -28,6 +28,33 @@ const AdminLayout = () => {
     const { theme, toggleTheme } = useTheme();
     const { settings } = useSettings();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const [adminSearchTerm, setAdminSearchTerm] = useState(searchParams.get('search') || '');
+
+    // Synchronize local search term with URL search param
+    useEffect(() => {
+        const query = searchParams.get('search') || '';
+        setAdminSearchTerm(query);
+    }, [searchParams]);
+
+    const handleAdminSearch = (e) => {
+        if (e) e.preventDefault();
+        
+        const currentPath = location.pathname;
+        const searchablePaths = ['/admin/products', '/admin/orders', '/admin/customers', '/admin/blogs', '/admin/categories', '/admin/discounts'];
+        
+        let targetPath = currentPath;
+        // If not on a searchable page, default to products
+        if (!searchablePaths.some(p => currentPath.startsWith(p))) {
+            targetPath = '/admin/products';
+        }
+
+        if (adminSearchTerm.trim()) {
+            navigate(`${targetPath}?search=${encodeURIComponent(adminSearchTerm.trim())}`);
+        } else {
+            navigate(targetPath);
+        }
+    };
 
     const refreshAllCounts = async () => {
         try {
@@ -169,8 +196,18 @@ const AdminLayout = () => {
                     </div>
 
                     <div className={styles.searchBar}>
-                        <BiSearch color="#999" size={20} />
-                        <input type="text" placeholder="Search..." className={styles.searchInput} />
+                        <form onSubmit={handleAdminSearch} style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                            <button type="submit" style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                                <BiSearch color="#999" size={20} />
+                            </button>
+                            <input 
+                                type="text" 
+                                placeholder="Search..." 
+                                className={styles.searchInput} 
+                                value={adminSearchTerm}
+                                onChange={(e) => setAdminSearchTerm(e.target.value)}
+                            />
+                        </form>
                     </div>
 
                     <div className={styles.topbarActions}>

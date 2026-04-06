@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { BiSearch, BiFilterAlt, BiShow, BiDotsVerticalRounded, BiTrash, BiXCircle } from 'react-icons/bi';
 import axios from '../../../api/axios';
 import { useToast } from '../../../components/common/toast/ToastContext';
@@ -8,10 +8,19 @@ import styles from './OrderList.module.css';
 
 const OrderList = () => {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const toast = useToast();
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
+
+    // Sync URL search parameter to searchTerm
+    useEffect(() => {
+        const query = searchParams.get('search') || '';
+        if (query !== searchTerm) {
+            setSearchTerm(query);
+        }
+    }, [searchParams]);
     const [statusFilter, setStatusFilter] = useState('ALL');
     const [activeMenu, setActiveMenu] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);

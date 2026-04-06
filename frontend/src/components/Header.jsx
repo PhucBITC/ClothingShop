@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { BiSearch, BiShoppingBag, BiChevronDown, BiTrash, BiMenu, BiX, BiUser, BiPackage, BiCog, BiLogOut, BiBell, BiLock, BiChevronLeft } from 'react-icons/bi';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import axios from '../api/axios';
@@ -23,6 +23,11 @@ function Header() {
     const [showMegaMenu, setShowMegaMenu] = useState(false);
     const [isMobileShopOpen, setIsMobileShopOpen] = useState(false);
     const navigate = useNavigate();
+
+    // Search State
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [searchKeyword, setSearchKeyword] = useState('');
+    const searchRef = useRef(null);
 
     const { wishlistItems } = useWishlist();
     const { cartItems, cartCount, subtotal, removeFromCart, removeMultipleFromCart, clearCart } = useCart();
@@ -126,6 +131,39 @@ function Header() {
 
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
     const closeMenu = () => setIsMenuOpen(false);
+
+    // Handle Search Submission
+    const handleSearch = (e) => {
+        if (e) e.preventDefault();
+        if (searchKeyword.trim()) {
+            navigate(`/products?search=${encodeURIComponent(searchKeyword.trim())}`);
+            setIsSearchOpen(false);
+            setSearchKeyword('');
+            closeMenu();
+        }
+    };
+
+    // Close search on click outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (searchRef.current && !searchRef.current.contains(event.target)) {
+                setIsSearchOpen(false);
+            }
+        };
+
+        const handleEsc = (event) => {
+            if (event.key === 'Escape') setIsSearchOpen(false);
+        };
+
+        if (isSearchOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+            document.addEventListener('keydown', handleEsc);
+        }
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('keydown', handleEsc);
+        };
+    }, [isSearchOpen]);
 
     return (
         <header className={styles.header}>
@@ -261,9 +299,36 @@ function Header() {
 
             {/* Actions */}
             <div className={styles.actions}>
-                <button className={styles.iconBtn} aria-label="Search">
-                    <BiSearch />
-                </button>
+                <div 
+                    className={`${styles.searchContainer} ${isSearchOpen ? styles.searchActive : ''}`}
+                    ref={searchRef}
+                >
+                    <button 
+                        className={styles.iconBtn} 
+                        aria-label="Search"
+                        onClick={() => {
+                            if (isSearchOpen && searchKeyword) {
+                                handleSearch();
+                            } else {
+                                setIsSearchOpen(!isSearchOpen);
+                            }
+                        }}
+                    >
+                        <BiSearch />
+                    </button>
+                    <div className={styles.searchWrapper}>
+                        <form onSubmit={handleSearch}>
+                            <input
+                                type="text"
+                                placeholder="Search products..."
+                                className={styles.searchInput}
+                                value={searchKeyword}
+                                onChange={(e) => setSearchKeyword(e.target.value)}
+                                autoFocus={isSearchOpen}
+                            />
+                        </form>
+                    </div>
+                </div>
                 <Link to="/user/wishlist" className={`${styles.iconBtn} ${styles.desktopOnly}`} aria-label="Wishlist">
                     <FiHeart />
                     {wishlistItems.length > 0 && <span className={styles.cartBadge}>{wishlistItems.length}</span>}
