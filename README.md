@@ -1,9 +1,5 @@
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="frontend/src/assets/Logo/Lighter%20and%20Princess%20Dark.png">
-    <source media="(prefers-color-scheme: light)" srcset="frontend/src/assets/Logo/Lighter%20and%20Princess.png">
-    <img src="frontend/src/assets/Logo/Lighter%20and%20Princess.png" alt="Lighter and Princess Logo" width="350">
-  </picture>
+  <img src="frontend/src/assets/Logo/logo_banner.png" alt="Lighter and Princess Banner" width="600">
 </p>
 
 <h1 align="center">👑 Lighter and Princess</h1>
