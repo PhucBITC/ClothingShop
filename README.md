@@ -1,14 +1,16 @@
-<div align="center">
-  <img src="frontend/src/assets/Logo/Lighter%20and%20Princess.png" alt="Lighter and Princess Logo" width="200" height="auto">
+<p align="center">
+  <img src="frontend/src/assets/Logo/Lighter%20and%20Princess.png" alt="Lighter and Princess Logo" width="350">
+</p>
 
-  # 👑 Lighter and Princess
-  ### *Elevating Fashion with AI Intelligence and Seamless Experience*
+<h1 align="center">👑 Lighter and Princess</h1>
+<p align="center"><b>Elevating Fashion with AI Intelligence and Seamless Experience</b></p>
 
-  [![Status](https://img.shields.io/badge/Status-Development-orange.svg)]()
-  [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.2-brightgreen.svg)]()
-  [![React](https://img.shields.io/badge/React-19-blue.svg)]()
-  [![License](https://img.shields.io/badge/License-MIT-purple.svg)]()
-</div>
+<p align="center">
+  <img src="https://img.shields.io/badge/Status-Development-orange.svg" alt="Status">
+  <img src="https://img.shields.io/badge/Spring%20Boot-3.4.2-brightgreen.svg" alt="Spring Boot">
+  <img src="https://img.shields.io/badge/React-19-blue.svg" alt="React">
+  <img src="https://img.shields.io/badge/License-MIT-purple.svg" alt="License">
+</p>
 
 ---
 
@@ -21,6 +23,7 @@
 *   **🤖 Smart AI Assistant**: A personalized shopping guide powered by Groq LLM, helping users find the perfect outfit and answering any product queries in real-time.
 *   **🛡️ Secure Architecture**: Implementing JWT Stateless Authentication for secure, scalable access across all devices.
 *   **📊 Enterprise-Grade Admin Dashboard**: Deep business insights, automated order management, and intuitive inventory control.
+*   **🌓 Adaptive UI**: Full support for **Dark & Light Themes** to provide a comfortable viewing experience at any time.
 
 ---
 
@@ -28,17 +31,16 @@
 
 ### Backend
 - **Core**: Java 21, Spring Boot 3.4.2
-- **Security**: Spring Security, JWT (Json Web Token), OAuth2
+- **Security**: Spring Security, JWT, OAuth2 (Google/Facebook)
 - **Data**: Spring Data JPA, MySQL
-- **Integrations**: PayPal Payment Gateway, Spring Mail
+- **Payments**: VNPay, PayPal SDK
 - **Reporting**: Apache POI (Excel), OpenPDF (Invoices)
 
 ### Frontend
 - **Framework**: React 19 + Vite
-- **Styling**: Vanilla CSS, Framer Motion (Animations)
+- **Styling**: Vanilla CSS (Variables-based Theming), Framer Motion
 - **Charts**: Recharts (for Analytics)
-- **Maps**: Leaflet (for order tracking/maps)
-- **State Management**: React Context / Hooks
+- **Maps**: Leaflet (Optional utility)
 
 ### AI & Intelligence
 - **Virtual Fitting**: Fitroom API
@@ -46,26 +48,31 @@
 
 ---
 
-## 📸 System Showcase
+## 📸 System Showcase (Visual Roadmap)
 
 > [!TIP]
-> **To the User:** Please replace the placeholders below with your actual system screenshots. You can save them in a folder named `docs/screenshots/`.
+> **Recommended Screenshots:** To give recruiters and users a 360° view of your project, we recommend capturing the following UI components:
 
-### 🏠 Storefront - Landing Page
-*Brief description of your clean, responsive UI designed for fashion.*
-![Home Page Placeholder](https://via.placeholder.com/1200x600?text=Home+Page+Screenshot)
+### 1️⃣ Customer Experience 🛍️
+- **Landing Page**: Showcase the hero section and featured collections.
+- **Product Details & Search**: Show off the filter/search bar and beautiful product galleries.
+- **Smart AI Chatbot**: A screenshot of a conversation with the AI assistant.
+- **Virtual Try-on**: A clear view of the "Try it on" feature in action.
 
-### 👗 AI Virtual Try-on (Fitroom)
-*Showcase how customers can visualize clothing items.*
-![AI Try-on Placeholder](https://via.placeholder.com/1200x600?text=AI+Virtual+Try-on+Screenshot)
+### 2️⃣ Checkout & Payments 💳
+- **Shopping Cart**: The dynamic sidebar or cart page with price calculations.
+- **Payment Method Selection**: Showcase the integration of **VNPay** and **PayPal** options.
+- **Order Status & Details**: A detailed view of a placed order, showing item lists and current status.
 
-### 💬 AI Intelligent Chatbot
-*Demonstrate the AI interaction within the shop.*
-![AI Chatbot Placeholder](https://via.placeholder.com/1200x600?text=AI+Chatbot+Screenshot)
+### 3️⃣ Administrative Intelligence ⚙️
+- **Analytics Dashboard**: Show those beautiful charts (Recharts) representing sales and data.
+- **Order Management**: The grid view of orders with status badges.
+- **Inventory Control**: Management of stock levels and product entries.
+- **Report Exports**: A screenshot of the "Export PDF/Excel" buttons and maybe the generated file.
 
-### 📊 Administrative Command Center
-*Deep dive into the analytics, user management, and order tracking.*
-![Admin Dashboard Placeholder](https://via.placeholder.com/1200x600?text=Admin+Dashboard+Screenshot)
+### 4️⃣ UI Innovation 🌓
+- **Dark Theme Mode**: Showcase the application's stunning dark interface design.
+- **Security & Access**: Clean authentication UI with **Google/Facebook** login buttons.
 
 ---
 
@@ -77,27 +84,54 @@
 - **MySQL Server**
 - **Maven**
 
-### 1. Backend Setup
+### 1. Backend Configuration
+Create a `.env` file in the `clothingsystem` directory and populate it with your credentials:
+
 ```bash
-# Navigate to backend directory
+# Database & General
+DB_URL=jdbc:mysql://localhost:3306/clothing_db
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+JWT_SECRET=your_jwt_secret
+
+# Social Login
+GOOGLE_CLIENT_ID=...
+GOOGLE_CLIENT_SECRET=...
+FACEBOOK_CLIENT_ID=...
+FACEBOOK_CLIENT_SECRET=...
+
+# Mail Service
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=...
+MAIL_PASSWORD=...
+
+# VNPay Payment
+VNP_TMN_CODE=...
+VNP_HASH_SECRET=...
+VNP_PAY_URL=...
+
+# PayPal Payment
+PAYPAL_CLIENT_ID=...
+PAYPAL_CLIENT_SECRET=...
+PAYPAL_MODE=sandbox
+
+# AI Configuration
+GROQ_API_KEY=...
+FITROOM_API_KEY=...
+```
+
+### 2. Execution
+**Run Backend:**
+```bash
 cd clothingsystem
-
-# Configure your .env file with:
-# DB_URL, DB_USERNAME, DB_PASSWORD, JWT_SECRET, GROQ_API_KEY, FITROOM_API_KEY
-
-# Run the application
 mvn spring-boot:run
 ```
 
-### 2. Frontend Setup
+**Run Frontend:**
 ```bash
-# Navigate to frontend directory
 cd frontend
-
-# Install dependencies
 npm install
-
-# Start development server
 npm run dev
 ```
 
