@@ -240,6 +240,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public Product getProductBySlug(String slug) {
+        return productRepository.findBySlug(slug)
+                .orElseThrow(() -> new RuntimeException("Product with slug " + slug + " not found"));
+    }
+
+    @Override
     @Transactional
     public Product duplicateProduct(Long originalId) {
         Product original = getProductById(originalId);

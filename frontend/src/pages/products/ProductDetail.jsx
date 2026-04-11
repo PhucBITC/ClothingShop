@@ -12,7 +12,7 @@ import TryOnModal from '../../components/products/TryOnModal';
 import styles from './ProductDetail.module.css';
 
 const ProductDetail = () => {
-    const { id } = useParams();
+    const { slug } = useParams();
     const toast = useToast();
     const { toggleWishlist, isInWishlist } = useWishlist();
     const { addToCart } = useCart();
@@ -50,10 +50,13 @@ const ProductDetail = () => {
 
     // Fetch product data
     useEffect(() => {
+        let isMounted = true;
         const fetchProduct = async () => {
             setLoading(true);
             try {
-                const response = await axios.get(`/products/${id}`);
+                const response = await axios.get(`/products/slug/${slug}`);
+                if (!isMounted) return;
+                
                 const data = response.data;
                 setProduct(data);
 
@@ -74,19 +77,26 @@ const ProductDetail = () => {
                     const relatedRes = await axios.get('/products/search', {
                         params: { categoryId: data.category.id, status: 'ACTIVE', size: 4 }
                     });
-                    setRelatedProducts(relatedRes.data.content.filter(p => p.id !== parseInt(id)));
+                    if (isMounted) {
+                        setRelatedProducts(relatedRes.data.content.filter(p => p.slug !== slug));
+                    }
                 }
             } catch (err) {
+                if (!isMounted) return;
                 console.error("Error fetching product:", err);
                 toast.error("Error", "Failed to load product details.");
             } finally {
-                setLoading(false);
+                if (isMounted) setLoading(false);
             }
         };
 
         fetchProduct();
         window.scrollTo(0, 0);
-    }, [id]);
+
+        return () => {
+            isMounted = false;
+        };
+    }, [slug]);
 
     if (loading) return <div className={styles.loadingContainer}>Loading product details...</div>;
     if (!product) return <div className={styles.errorContainer}>Product not found.</div>;
@@ -408,7 +418,7 @@ const ProductDetail = () => {
                     <h2 className={styles.sectionTitle}>Related Products</h2>
                     <div className={styles.productGrid}>
                         {relatedProducts.map(item => (
-                            <Link to={`/products/${item.id}`} key={item.id} className={styles.relatedCard}>
+                            <Link to={`/products/${item.slug}`} key={item.id} className={styles.relatedCard}>
                                 <div className={styles.relatedImgWrapper}>
                                     <img
                                         src={item.images?.find(img => img.isPrimary)?.imageUrl || item.images?.[0]?.imageUrl || '/placeholder.png'}

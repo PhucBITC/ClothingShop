@@ -42,7 +42,7 @@ const HeroSection = () => {
                         title: product.name.toUpperCase(),
                         subtitle: product.category?.name?.toUpperCase() || "NEW COLLECTION",
                         offer: product.basePrice ? `FROM $${product.basePrice.toLocaleString()}` : "EXCLUSIVE DEAL",
-                        link: `/products/${product.id}`
+                        link: `/products/${product.slug}`
                     }));
                     setSlides(dynamicSlides);
                 }

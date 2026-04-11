@@ -89,6 +89,17 @@ public class ProductController {
         }
     }
 
+    @GetMapping("/slug/{slug}")
+    public ResponseEntity<?> getProductBySlug(@PathVariable String slug) {
+        try {
+            Product product = productService.getProductBySlug(slug);
+            return ResponseEntity.ok(product);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.NOT_FOUND)
+                    .body(e.getMessage());
+        }
+    }
+
     // 6. Duplicate Product
     @PostMapping("/{id}/duplicate")
     public ResponseEntity<Product> duplicateProduct(@PathVariable Long id) {

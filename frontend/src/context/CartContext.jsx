@@ -34,7 +34,7 @@ export const CartProvider = ({ children }) => {
                 color: item.color,
                 size: item.size,
                 quantity: item.quantity,
-                // Weight is not stored in backend DTO yet, adding default or from product if needed
+                slug: item.productSlug,
                 weight: 0
             })));
         } catch (error) {
@@ -64,6 +64,7 @@ export const CartProvider = ({ children }) => {
                 color: item.color,
                 size: item.size,
                 quantity: item.quantity,
+                slug: item.productSlug,
                 weight: 0
             })));
             localStorage.removeItem('cart'); // Clear local cart after sync
@@ -106,6 +107,7 @@ export const CartProvider = ({ children }) => {
                     color: item.color,
                     size: item.size,
                     quantity: item.quantity,
+                    slug: item.productSlug,
                     weight: 0
                 })));
             } catch (error) {
@@ -132,6 +134,7 @@ export const CartProvider = ({ children }) => {
                             image: product.images?.find(img => img.primary)?.imageUrl || product.images?.[0]?.imageUrl || '',
                             color: variant.color,
                             size: variant.size,
+                            slug: product.slug,
                             weight: product.weight || 0,
                             quantity: quantity
                         }
@@ -154,6 +157,7 @@ export const CartProvider = ({ children }) => {
                     color: item.color,
                     size: item.size,
                     quantity: item.quantity,
+                    slug: item.productSlug,
                     weight: 0
                 })));
             } catch (error) {
@@ -178,6 +182,7 @@ export const CartProvider = ({ children }) => {
                     color: item.color,
                     size: item.size,
                     quantity: item.quantity,
+                    slug: item.productSlug,
                     weight: 0
                 })));
             } catch (error) {
@@ -210,6 +215,7 @@ export const CartProvider = ({ children }) => {
                     color: item.color,
                     size: item.size,
                     quantity: item.quantity,
+                    slug: item.productSlug,
                     weight: 0
                 })));
             } catch (error) {

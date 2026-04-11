@@ -18,6 +18,8 @@ public interface ProductService {
 
     Product getProductById(Long id);
 
+    Product getProductBySlug(String slug);
+
     Product duplicateProduct(Long originalId);
 
     Page<Product> searchProducts(String keyword, Long categoryId, String categoryType, Double minPrice, Double maxPrice, String tag,

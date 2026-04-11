@@ -360,12 +360,14 @@ function Header() {
                                             onChange={() => handleSelectItem(item.id, item.variantId)}
                                         />
                                     </div>
-                                    <img src={item.image} alt={item.name} className={styles.miniCartImg} />
-                                    <div className={styles.miniCartInfo}>
-                                        <h4 className={styles.miniCartTitle}>{item.name}</h4>
-                                        <div className={styles.miniCartPrice}>{item.quantity} x {formatPrice(item.price)}</div>
-                                        <div className={styles.miniCartSize}>Size: {item.size}</div>
-                                    </div>
+                                    <Link to={`/products/${item.slug}`} className={styles.miniCartLink} onClick={closeMenu}>
+                                        <img src={item.image} alt={item.name} className={styles.miniCartImg} />
+                                        <div className={styles.miniCartInfo}>
+                                            <h4 className={styles.miniCartTitle}>{item.name}</h4>
+                                            <div className={styles.miniCartPrice}>{item.quantity} x {formatPrice(item.price)}</div>
+                                            <div className={styles.miniCartSize}>Size: {item.size}</div>
+                                        </div>
+                                    </Link>
                                     <button
                                         className={styles.removeItemBtn}
                                         onClick={() => handleSingleRemove(item.id, item.variantId, item.name)}

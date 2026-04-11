@@ -9,12 +9,13 @@ public class CartItemDto {
     private String size;
     private Double price;
     private Integer quantity;
+    private String productSlug;
 
     public CartItemDto() {
     }
 
     public CartItemDto(Long variantId, Long productId, String productName, String imageUrl, String color, String size,
-            Double price, Integer quantity) {
+            Double price, Integer quantity, String productSlug) {
         this.variantId = variantId;
         this.productId = productId;
         this.productName = productName;
@@ -23,6 +24,7 @@ public class CartItemDto {
         this.size = size;
         this.price = price;
         this.quantity = quantity;
+        this.productSlug = productSlug;
     }
 
     // Getters and Setters
@@ -88,5 +90,13 @@ public class CartItemDto {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public String getProductSlug() {
+        return productSlug;
+    }
+
+    public void setProductSlug(String productSlug) {
+        this.productSlug = productSlug;
     }
 }

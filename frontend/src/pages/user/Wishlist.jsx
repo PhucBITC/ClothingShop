@@ -30,7 +30,7 @@ function Wishlist() {
 
     const handleViewDetails = (e, item) => {
         e.preventDefault();
-        navigate(`/products/${item.id}`);
+        navigate(`/products/${item.slug}`);
     };
 
     return (

@@ -153,18 +153,24 @@ function Cart() {
                                     </td>
                                     <td>
                                         <div className={styles.productCell}>
-                                            <div className={styles.imgWrapper}>
+                                            <Link to={`/products/${item.slug}`} className={styles.imgWrapper}>
                                                 <img src={item.image} alt={item.name} className={styles.productImg} />
                                                 <button
                                                     className={styles.removeBtn}
-                                                    onClick={() => handleSingleRemove(item.id, item.variantId, item.name)}
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                        handleSingleRemove(item.id, item.variantId, item.name);
+                                                    }}
                                                     title="Remove Item"
                                                 >
                                                     <BiTrash />
                                                 </button>
-                                            </div>
+                                            </Link>
                                             <div className={styles.productMeta}>
-                                                <h4>{item.name}</h4>
+                                                <Link to={`/products/${item.slug}`}>
+                                                    <h4>{item.name}</h4>
+                                                </Link>
                                                 <p>Size: {item.size}</p>
                                                 <p>Color: {item.color}</p>
                                             </div>

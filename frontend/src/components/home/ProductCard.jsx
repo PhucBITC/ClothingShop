@@ -37,7 +37,7 @@ const ProductCard = ({ product }) => {
 
     const handleViewDetails = (e) => {
         e.stopPropagation();
-        navigate(`/products/${product.id}`);
+        navigate(`/products/${product.slug}`);
     };
 
     const onToggleWishlist = (e) => {

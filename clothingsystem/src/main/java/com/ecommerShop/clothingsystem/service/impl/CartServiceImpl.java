@@ -149,7 +149,8 @@ public class CartServiceImpl implements CartService {
                     v.getColor(),
                     v.getSize(),
                     v.getSalePrice() != null ? v.getSalePrice() : v.getPrice(),
-                    item.getQuantity());
+                    item.getQuantity(),
+                    p.getSlug());
         }).collect(Collectors.toList());
 
         double subtotal = items.stream().mapToDouble(i -> i.getPrice() * i.getQuantity()).sum();

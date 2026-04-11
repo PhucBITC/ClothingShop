@@ -70,7 +70,7 @@ function AppLayout() {
 
         {/* products */}
         <Route path="/products" element={<ProductList />} />
-        <Route path="/products/:id" element={<ProductDetail />} />
+        <Route path="/products/:slug" element={<ProductDetail />} />
 
         {/* cart */}
         <Route path="/cart" element={<Cart />} />
