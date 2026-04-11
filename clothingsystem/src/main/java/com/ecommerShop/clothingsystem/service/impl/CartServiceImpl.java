@@ -41,9 +41,11 @@ public class CartServiceImpl implements CartService {
                 .findFirst();
 
         if (existingItem.isPresent()) {
-            existingItem.get().setQuantity(existingItem.get().getQuantity() + quantity);
+            int newQuantity = existingItem.get().getQuantity() + quantity;
+            existingItem.get().setQuantity(Math.min(newQuantity, variant.getStock()));
         } else {
-            CartItem newItem = new CartItem(cart, variant, quantity);
+            int finalQuantity = Math.min(quantity, variant.getStock());
+            CartItem newItem = new CartItem(cart, variant, finalQuantity);
             cart.getItems().add(newItem);
         }
 
@@ -63,7 +65,7 @@ public class CartServiceImpl implements CartService {
         if (quantity <= 0) {
             cart.getItems().remove(item);
         } else {
-            item.setQuantity(quantity);
+            item.setQuantity(Math.min(quantity, item.getProductVariant().getStock()));
         }
 
         cart = cartRepository.save(cart);
@@ -110,9 +112,11 @@ public class CartServiceImpl implements CartService {
                     .findFirst();
 
             if (existingItem.isPresent()) {
-                existingItem.get().setQuantity(existingItem.get().getQuantity() + guestItem.getQuantity());
+                int newQuantity = existingItem.get().getQuantity() + guestItem.getQuantity();
+                existingItem.get().setQuantity(Math.min(newQuantity, variant.getStock()));
             } else {
-                cart.getItems().add(newItemFromDto(cart, variant, guestItem.getQuantity()));
+                int finalQuantity = Math.min(guestItem.getQuantity(), variant.getStock());
+                cart.getItems().add(newItemFromDto(cart, variant, finalQuantity));
             }
         }
         cart = cartRepository.save(cart);
