@@ -50,9 +50,6 @@
 
 ## 📸 System Showcase (Visual Roadmap)
 
-> [!TIP]
-> **Recommended Screenshots:** To give recruiters and users a 360° view of your project, we recommend capturing the following UI components:
-
 ### 1️⃣ Customer Experience 🛍️
 - **Landing Page**: Showcase the hero section and featured collections.
 - **Product Details & Search**: Show off the filter/search bar and beautiful product galleries.
