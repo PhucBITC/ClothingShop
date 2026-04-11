@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation, Link } from 'react-router-dom';
 import { BiHome, BiCreditCard, BiListCheck, BiEdit, BiShoppingBag, BiCheckCircle, BiLoaderAlt, BiXCircle } from 'react-icons/bi';
 import { useCart } from '../../context/CartContext';
 import { useNotifications } from '../../context/NotificationContext';
@@ -162,17 +162,19 @@ function ReviewOrder() {
                             {displayItems.length > 0 ? (
                                 displayItems.map((item, idx) => (
                                     <div key={idx} className={styles.orderItem}>
-                                        <img
-                                            src={item.image.startsWith('http') ? item.image : `http://localhost:8080/api/files/${item.image}`}
-                                            alt={item.name}
-                                            className={styles.productImg}
-                                        />
-                                        <div className={styles.itemInfo}>
+                                        <Link to={`/products/${item.slug || item.productVariant?.product?.slug}`}>
+                                            <img
+                                                src={item.image.startsWith('http') ? item.image : `http://localhost:8080/api/files/${item.image}`}
+                                                alt={item.name}
+                                                className={styles.productImg}
+                                            />
+                                        </Link>
+                                        <Link to={`/products/${item.slug || item.productVariant?.product?.slug}`} className={styles.itemInfo}>
                                             <h4>{item.name}</h4>
                                             <div className={styles.itemPrice}>${item.price.toFixed(2)}</div>
                                             <div className={styles.itemSize}>Size: {item.size}</div>
                                             <div className={styles.itemQty}>Qty: {item.quantity}</div>
-                                        </div>
+                                        </Link>
                                     </div>
                                 ))
                             ) : (

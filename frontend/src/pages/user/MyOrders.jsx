@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BiSearch, BiSliderAlt, BiShow, BiX, BiStar } from 'react-icons/bi';
+import { Link } from 'react-router-dom';
 import UserSidebar from './UserSidebar';
 import styles from './MyOrders.module.css';
 import axios from '../../api/axios';
@@ -139,7 +140,7 @@ function MyOrders() {
                             return (
                                 <div key={order.id} className={styles.orderCard}>
 
-                                    <div className={styles.productSection}>
+                                    <Link to={`/products/${firstItem?.productVariant.product.slug}`} className={styles.productSection}>
                                         <div className={styles.productImg}>
                                             {order.items?.[0]?.productVariant?.product?.images?.[0] ? (
                                                 <img
@@ -158,7 +159,7 @@ function MyOrders() {
                                             <div className={styles.productMeta}>Date: {new Date(order.createdAt).toLocaleDateString()}</div>
                                             <div className={styles.price}>${order.totalPrice.toFixed(2)}</div>
                                         </div>
-                                    </div>
+                                    </Link>
 
                                     <div className={styles.statusSection}>
                                         <span className={`${styles.statusBadge} ${statusInfo.class}`}>

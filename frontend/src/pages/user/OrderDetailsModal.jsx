@@ -1,5 +1,6 @@
 import React from 'react';
 import { BiX, BiPackage, BiCreditCard, BiMapPin } from 'react-icons/bi';
+import { Link } from 'react-router-dom';
 import styles from './OrderDetailsModal.module.css';
 
 const OrderDetailsModal = ({ isOpen, onClose, order }) => {
@@ -60,27 +61,27 @@ const OrderDetailsModal = ({ isOpen, onClose, order }) => {
                         </div>
                         <div className={styles.itemsList}>
                             {order.items.map((item, idx) => (
-                                <div key={idx} className={styles.orderItem}>
-                                    <img
-                                        src={item.productVariant.product.images?.[0]
-                                            ? (item.productVariant.product.images[0].imageUrl.startsWith('http')
-                                                ? item.productVariant.product.images[0].imageUrl
-                                                : `http://localhost:8080/api/files/${item.productVariant.product.images[0].imageUrl}`)
-                                            : ''}
-                                        alt={item.productVariant.product.name}
-                                        className={styles.itemImg}
-                                    />
-                                    <div className={styles.itemInfo}>
-                                        <h4>{item.productVariant.product.name}</h4>
-                                        <div className={styles.itemMeta}>
-                                            <span>Size: {item.productVariant.size}</span>
-                                            <span>Qty: {item.quantity}</span>
+                                    <Link to={`/products/${item.productVariant.product.slug}`} className={styles.orderItem}>
+                                        <img
+                                            src={item.productVariant.product.images?.[0]
+                                                ? (item.productVariant.product.images[0].imageUrl.startsWith('http')
+                                                    ? item.productVariant.product.images[0].imageUrl
+                                                    : `http://localhost:8080/api/files/${item.productVariant.product.images[0].imageUrl}`)
+                                                : ''}
+                                            alt={item.productVariant.product.name}
+                                            className={styles.itemImg}
+                                        />
+                                        <div className={styles.itemInfo}>
+                                            <h4>{item.productVariant.product.name}</h4>
+                                            <div className={styles.itemMeta}>
+                                                <span>Size: {item.productVariant.size}</span>
+                                                <span>Qty: {item.quantity}</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className={styles.itemPrice}>
-                                        ${(item.price * item.quantity).toFixed(2)}
-                                    </div>
-                                </div>
+                                        <div className={styles.itemPrice}>
+                                            ${(item.price * item.quantity).toFixed(2)}
+                                        </div>
+                                    </Link>
                             ))}
                         </div>
                     </div>
