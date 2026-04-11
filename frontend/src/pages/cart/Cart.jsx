@@ -193,20 +193,14 @@ function Cart() {
                             <div className={styles.progressHeader}>
                                 <span className={styles.progressTitle}>Free Shipping</span>
                                 <span className={styles.progressValue}>
-                                    {Math.min(100, Math.round(Math.max(
-                                        (selectedCartItems.reduce((acc, i) => acc + i.quantity, 0) / 3) * 100,
-                                        (subtotal / 30) * 100
-                                    )))}%
+                                    {Math.min(100, Math.round((selectedCartItems.reduce((acc, i) => acc + i.quantity, 0) / 3) * 100))}%
                                 </span>
                             </div>
                             <div className={styles.progressBar}>
                                 <div
                                     className={styles.progressFill}
                                     style={{
-                                        width: `${Math.min(100, Math.max(
-                                            (selectedCartItems.reduce((acc, i) => acc + i.quantity, 0) / 3) * 100,
-                                            (subtotal / 30) * 100
-                                        ))}%`
+                                        width: `${Math.min(100, (selectedCartItems.reduce((acc, i) => acc + i.quantity, 0) / 3) * 100)}%`
                                     }}
                                 ></div>
                             </div>
@@ -215,7 +209,7 @@ function Cart() {
                                     <span>Unlocked! You get <strong>FREE Shipping</strong>! 🎉</span>
                                 ) : (
                                     <span>
-                                        Add <strong>{Math.max(0, 3 - selectedCartItems.reduce((acc, i) => acc + i.quantity, 0))}</strong> more or spend <strong>{formatPrice(Math.max(0, 30 - subtotal))}</strong> for Free Ship.
+                                        Add <strong>{Math.max(0, 3 - selectedCartItems.reduce((acc, i) => acc + i.quantity, 0))}</strong> more items for Free Ship.
                                     </span>
                                 )}
                             </div>

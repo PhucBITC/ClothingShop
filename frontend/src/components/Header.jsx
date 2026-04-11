@@ -399,7 +399,16 @@ function Header() {
                                                     data: null
                                                 });
                                             } else {
-                                                navigate('/checkout');
+                                                const selectedObjects = cartItems.filter(item => 
+                                                    selectedItems.includes(`${item.id}-${item.variantId}`)
+                                                );
+                                                
+                                                if (selectedObjects.length === 0) {
+                                                    toast.info("Please select items to checkout");
+                                                    return;
+                                                }
+                                                
+                                                navigate('/checkout', { state: { selectedItems: selectedObjects } });
                                             }
                                         }}
                                     >

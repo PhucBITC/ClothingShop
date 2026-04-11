@@ -248,7 +248,7 @@ export const CartProvider = ({ children }) => {
         let charge = 1.50;
         if (items.length === 0) {
             charge = 0;
-        } else if (itemSubtotal >= 30 || itemCount >= 3) {
+        } else if (itemCount >= 3) {
             charge = 0;
         } else if (itemWeight > 2000) {
             const extraWeight = itemWeight - 2000;

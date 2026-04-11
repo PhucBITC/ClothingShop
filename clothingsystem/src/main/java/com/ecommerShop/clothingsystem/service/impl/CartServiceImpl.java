@@ -157,7 +157,7 @@ public class CartServiceImpl implements CartService {
 
         // Use same logic as frontend for delivery charge for consistency
         double deliveryCharge = 1.50;
-        if (items.isEmpty() || subtotal >= 30 || totalItems >= 3) {
+        if (items.isEmpty() || totalItems >= 3) {
             deliveryCharge = 0;
         }
 

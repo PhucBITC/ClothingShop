@@ -117,8 +117,8 @@ function ReviewOrder() {
         price: item.price
     })) : cartItems;
 
-    const displaySubtotal = orderData ? (orderData.totalPrice - (orderData.totalPrice >= 30 ? 0 : 1.50)) : subtotal;
-    const displayDelivery = orderData ? (orderData.totalPrice >= 30 ? 0 : 1.50) : deliveryCharge;
+    const displaySubtotal = orderData ? orderData.subtotal : subtotal;
+    const displayDelivery = orderData ? (orderData.deliveryCharge || 0) : deliveryCharge;
     const displayTotal = orderData ? orderData.totalPrice : total;
 
     if (loading) {
