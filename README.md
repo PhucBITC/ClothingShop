@@ -71,6 +71,8 @@
   <tr>
     <td colspan="2" align="center">
       <img src="./docs/screenshots/tryon.png" alt="AI Virtual Try-on" width="100%"/><br/>
+      <img src="./docs/screenshots/tryon1.png" alt="AI Virtual Try-on" width="100%"/><br/>
+      <img src="./docs/screenshots/tryon2.png" alt="AI Virtual Try-on" width="100%"/><br/>
       <b>Fitroom AI Try-on</b>
     </td>
   </tr>
