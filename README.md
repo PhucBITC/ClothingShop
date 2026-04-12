@@ -50,30 +50,27 @@
 
 ## 📸 System Showcase
 ### 1️⃣ Customer Experience 🛍️
-<table width="100%">
+  <table width="100%">
   <tr>
-    <td width="100%" align="center">
-      <img src="./docs/screenshots/landing1.png" alt="Landing Page"/>
-      <img src="./docs/screenshots/landing2.png" alt="Landing Page2"/>
-      <img src="./docs/screenshots/landing3.png" alt="Landing Page3"/>
-      <img src="./docs/screenshots/landing4.png" alt="Landing Page4"/>
-      <img src="./docs/screenshots/landing5.png" alt="Landing Page5"/>
-      <br/>
-      <b>Landing Page</b>
-    </td>
-     <br/>
-    <td width="100%" align="center">
-      <img src="./docs/screenshots/search.png" alt="Product Search"/><br/>
-      <b>Smart Search & Gallery</b>
+    <td colspan="2" align="center">
+      <img src="./docs/screenshots/landing1.png" alt="Landing Page" width="100%"/><br/><br/>
+      <img src="./docs/screenshots/landing2.png" alt="Landing Page 2" width="100%"/><br/><br/>
+      <b>Landing Page Showcase</b>
     </td>
   </tr>
   <tr>
-    <td width="100%" align="center">
+    <td width="50%" align="center">
+      <img src="./docs/screenshots/search.png" alt="Product Search"/><br/>
+      <b>Smart Search & Gallery</b>
+    </td>
+    <td width="50%" align="center">
       <img src="./docs/screenshots/chatbot.png" alt="AI Chatbot"/><br/>
       <b>Groq AI Chatbot</b>
     </td>
-    <td width="100%" align="center">
-      <img src="./docs/screenshots/tryon.png" alt="AI Virtual Try-on"/><br/>
+  </tr>
+  <tr>
+    <td colspan="2" align="center">
+      <img src="./docs/screenshots/tryon.png" alt="AI Virtual Try-on" width="100%"/><br/>
       <b>Fitroom AI Try-on</b>
     </td>
   </tr>
