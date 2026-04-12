@@ -48,31 +48,92 @@
 
 ---
 
-## 📸 System Showcase (Visual Roadmap)
+## 📸 System Showcase
 
-> [!TIP]
-> **Recommended Screenshots:** To give recruiters and users a 360° view of your project, we recommend capturing the following UI components:
+> [!IMPORTANT]
+> **To complete the showcase:** Please save your screenshots into the `docs/screenshots/` folder with the names specified in the `src` attributes below (e.g., `landing.png`, `chatbot.png`).
 
 ### 1️⃣ Customer Experience 🛍️
-- **Landing Page**: Showcase the hero section and featured collections.
-- **Product Details & Search**: Show off the filter/search bar and beautiful product galleries.
-- **Smart AI Chatbot**: A screenshot of a conversation with the AI assistant.
-- **Virtual Try-on**: A clear view of the "Try it on" feature in action.
+<table width="100%">
+  <tr>
+    <td width="50%" align="center">
+      <img src="./docs/screenshots/landing1.png" alt="Landing Page"/>
+      <img src="./docs/screenshots/landing2.png" alt="Landing Page2"/>
+      <br/>
+      <b>Landing Page</b>
+    </td>
+    <td width="50%" align="center">
+      <img src="./docs/screenshots/search.png" alt="Product Search"/><br/>
+      <b>Smart Search & Gallery</b>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center">
+      <img src="./docs/screenshots/chatbot.png" alt="AI Chatbot"/><br/>
+      <b>Groq AI Chatbot</b>
+    </td>
+    <td width="50%" align="center">
+      <img src="./docs/screenshots/tryon.png" alt="AI Virtual Try-on"/><br/>
+      <b>Fitroom AI Try-on</b>
+    </td>
+  </tr>
+</table>
 
 ### 2️⃣ Checkout & Payments 💳
-- **Shopping Cart**: The dynamic sidebar or cart page with price calculations.
-- **Payment Method Selection**: Showcase the integration of **VNPay** and **PayPal** options.
-- **Order Status & Details**: A detailed view of a placed order, showing item lists and current status.
+<table width="100%">
+  <tr>
+    <td width="33%" align="center">
+      <img src="./docs/screenshots/cart.png" alt="Shopping Cart"/><br/>
+      <b>Dynamic Cart</b>
+    </td>
+    <td width="33%" align="center">
+      <img src="./docs/screenshots/payments.png" alt="Payment Methods"/><br/>
+      <b>VNPay & PayPal</b>
+    </td>
+    <td width="33%" align="center">
+      <img src="./docs/screenshots/order-details.png" alt="Order Status"/><br/>
+      <b>Order Status & Details</b>
+    </td>
+  </tr>
+</table>
 
 ### 3️⃣ Administrative Intelligence ⚙️
-- **Analytics Dashboard**: Show those beautiful charts (Recharts) representing sales and data.
-- **Order Management**: The grid view of orders with status badges.
-- **Inventory Control**: Management of stock levels and product entries.
-- **Report Exports**: A screenshot of the "Export PDF/Excel" buttons and maybe the generated file.
+<table width="100%">
+  <tr>
+    <td width="50%" align="center">
+      <img src="./docs/screenshots/admin-dashboard.png" alt="Analytics Dash"/><br/>
+      <b>Sales Analytics</b>
+    </td>
+    <td width="50%" align="center">
+      <img src="./docs/screenshots/admin-orders.png" alt="Order Management"/><br/>
+      <b>Order Command Center</b>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center">
+      <img src="./docs/screenshots/admin-inventory.png" alt="Inventory"/><br/>
+      <b>Inventory Control</b>
+    </td>
+    <td width="50%" align="center">
+      <img src="./docs/screenshots/admin-reports.png" alt="Report Export"/><br/>
+      <b>PDF/Excel Reports</b>
+    </td>
+  </tr>
+</table>
 
-### 4️⃣ UI Innovation 🌓
-- **Dark Theme Mode**: Showcase the application's stunning dark interface design.
-- **Security & Access**: Clean authentication UI with **Google/Facebook** login buttons.
+### 4️⃣ UI Innovation & Security 🌓
+<table width="100%">
+  <tr>
+    <td width="50%" align="center">
+      <img src="./docs/screenshots/dark-mode.png" alt="Dark Theme"/><br/>
+      <b>Stunning Dark Mode</b>
+    </td>
+    <td width="50%" align="center">
+      <img src="./docs/screenshots/login.png" alt="Auth UI"/><br/>
+      <b>Google & FB Auth</b>
+    </td>
+  </tr>
+</table>
 
 ---
 
