@@ -61,6 +61,7 @@
       <br/>
       <b>Landing Page</b>
     </td>
+     <br/>
     <td width="100%" align="center">
       <img src="./docs/screenshots/search.png" alt="Product Search"/><br/>
       <b>Smart Search & Gallery</b>
