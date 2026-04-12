@@ -49,14 +49,10 @@
 ---
 
 ## 📸 System Showcase
-
-> [!IMPORTANT]
-> **To complete the showcase:** Please save your screenshots into the `docs/screenshots/` folder with the names specified in the `src` attributes below (e.g., `landing.png`, `chatbot.png`).
-
 ### 1️⃣ Customer Experience 🛍️
 <table width="100%">
   <tr>
-    <td width="50%" align="center">
+    <td width="100%" align="center">
       <img src="./docs/screenshots/landing1.png" alt="Landing Page"/>
       <img src="./docs/screenshots/landing2.png" alt="Landing Page2"/>
       <br/>
