@@ -144,7 +144,7 @@ const OrderList = () => {
             const matchesStatus = filterStatus === 'ALL' || currentStatus === filterStatus;
 
             return matchesSearch && matchesStatus;
-        });
+        }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     }, [orders, searchTerm, statusFilter]);
 
     // --- Customer Aggregation Logic ---
@@ -285,7 +285,7 @@ const OrderList = () => {
                     <tbody>
                         {viewMode === 'ALL' ? (
                             filteredOrders.length > 0 ? (
-                                filteredOrders.map((order) => (
+                                filteredOrders.map((order, index) => (
                                     <tr key={order.id} className={selectedIds.includes(order.id) ? styles.selectedRow : ''}>
                                         <td className={styles.checkboxCol}>
                                             <input
@@ -321,7 +321,10 @@ const OrderList = () => {
                                                         <BiDotsVerticalRounded />
                                                     </button>
                                                     {activeMenu === order.id && (
-                                                        <div className={styles.dropdownMenu} onClick={(e) => e.stopPropagation()}>
+                                                        <div 
+                                                            className={`${styles.dropdownMenu} ${filteredOrders.length > 3 && index >= filteredOrders.length - 2 ? styles.dropdownMenuUp : ''}`} 
+                                                            onClick={(e) => e.stopPropagation()}
+                                                        >
                                                             <button onClick={() => navigate(`/admin/orders/${order.id}`)}>
                                                                 <BiShow /> View Details
                                                             </button>
