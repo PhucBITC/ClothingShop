@@ -223,6 +223,10 @@ npm run dev
   <a href="#">
     <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn">
   </a>
+
+   <a href="https://www.facebook.com/phuc.viet.656036/">
+    <img src="https://img.shields.io/badge/Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white" alt="Facebook">
+  </a>
 </div>
 
 <p align="center">Made with ❤️ for Fashion and Technology</p>
