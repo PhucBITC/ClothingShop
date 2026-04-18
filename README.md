@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="frontend/src/assets/Logo/logo_banner.png" alt="Lighter and Princess Banner" width="100%" height="300" >
+  <img src="frontend/src/assets/Logo/logo_banner.png" alt="Lighter and Princess Banner" width="100%" height="500" >
 </p>
 
 <h1 align="center">👑 Lighter and Princess</h1>
